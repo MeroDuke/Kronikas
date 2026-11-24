@@ -52,14 +52,14 @@ void main() {
                 ..createAdventure(
                   id: 'synthetic',
                   title: story.title,
-                  description: 'Szintetikus prĂłbatĂ¶rtĂ©net.',
+                  description: 'Szintetikus próbatörténet.',
                 )
                 ..startSession('synthetic', id: 'first', startedAt: start)
                 ..recordImprovisedEvent(
                   'synthetic',
                   'first',
                   id: 'river',
-                  description: 'A csapat Ăˇtkelt a folyĂłn.',
+                  description: 'A csapat átkelt a folyón.',
                 )
                 ..closeSession(
                   'synthetic',
