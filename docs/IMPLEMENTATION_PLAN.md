@@ -1,6 +1,6 @@
 # Implementációs terv – TASK-007
 
-Tulajdonosi jóváhagyásra váró tervezet. Alapja a [roadmap](ROADMAP.md), az elfogadott [architektúra és tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md), valamint a [tesztfuttatási útmutató](TEST_EXECUTION.md). Az azonosítók a munkacsomagokat jelölik. A fejlesztési vagy kiadási ágstruktúra az adott munka jóváhagyott terjedelméhez igazodik.
+Tulajdonos által jóváhagyott terv. Alapja a [roadmap](ROADMAP.md), az elfogadott [architektúra és tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md), valamint a [tesztfuttatási útmutató](TEST_EXECUTION.md). Az azonosítók a munkacsomagokat jelölik. A fejlesztési vagy kiadási ágstruktúra az adott munka jóváhagyott terjedelméhez igazodik.
 
 | ID | Sorrend és feladat | Elfogadási bizonyíték |
 |---|---|---|
