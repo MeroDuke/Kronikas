@@ -94,7 +94,9 @@ jobs:
           if [[ ! -x "$tools/sdkmanager" ]]; then
             tools=$(dirname "$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)")
           fi
-          "$tools/sdkmanager" --install "$image"
+          "$tools/sdkmanager" --install emulator platform-tools "$image"
+          export PATH="$ANDROID_HOME/platform-tools:$PATH"
+          "$ANDROID_HOME/emulator/emulator" -version > build/android-probe/emulator-version.txt 2>&1
           echo no | "$tools/avdmanager" create avd --name kronikas-probe --package "$image" --force
           sudo chmod a+rw /dev/kvm
           emulator_args=(-avd kronikas-probe -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect)
