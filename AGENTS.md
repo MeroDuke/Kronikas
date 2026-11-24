@@ -17,6 +17,7 @@ A repository a projekt hiteles információforrása. A ChatGPT WebUI és a Codex
 
 ## Munkazárás
 - Frissítsd az érintett dokumentumokat, backlogot, projektállapotot és nyitott kérdéseket.
+- Funkcióváltozáskor ellenőrizd a [funkcióláncot](docs/TRACEABILITY.md) a felhasználási esettől a követelményen és munkacsomagon át a tesztig. Frissítsd a visszahivatkozásokat és a futási bizonyítékot.
 - Rögzítsd a tényleges teszteredményeket, hibákat, blokkoló tényezőket és következő lépést. Nem futtatott tesztet ne jelölj sikeresnek.
 - Ellenőrizd a diffet és a titkok hiányát; commitolj és publikálj a jóváhagyott munkafolyamat szerint.
 - A chatben született döntés csak repositoryba rögzítve válik tartós projektinformációvá.

@@ -1,5 +1,7 @@
 # Projektállapot – 2026-11-24
 
+[Funkciók nyomon követése](TRACEABILITY.md)
+
 - Termék és kódnév: Krónikás; brand: Akihabarai Könyvespolc.
 - Fázis: Phase 0 – tervezés; koncepció v0.1.
 - Publikus fejlesztői repository: MeroDuke/Kronikas. A kampányadatok külön tárolandók.
