@@ -7,14 +7,30 @@ typedef _Document = Map<String, Object?>;
 
 const _absent = Object();
 
+/// JSON values for a conflict. Null denotes an absent field or record.
+typedef MergeConflict = ({List<String> path, String? local, String? remote});
+
+typedef ConflictResolver = String? Function(MergeConflict conflict);
+
 /// Combines independent changes to snapshots with a known common ancestor.
 /// A null result leaves both original snapshots available for resolution.
-Chronicle? mergeChronicles(Chronicle base, Chronicle local, Chronicle remote) {
+Chronicle? mergeChronicles(
+  Chronicle base,
+  Chronicle local,
+  Chronicle remote, {
+  ConflictResolver? resolve,
+}) {
   _Document document(Chronicle value) =>
       jsonDecode(encodeChronicle(value)) as _Document;
 
   try {
-    final merged = _merge(document(base), document(local), document(remote));
+    final merged = _merge(
+      document(base),
+      document(local),
+      document(remote),
+      [],
+      resolve,
+    );
     return decodeChronicle(jsonEncode(merged));
   } on _Collision {
     return null;
@@ -24,28 +40,50 @@ Chronicle? mergeChronicles(Chronicle base, Chronicle local, Chronicle remote) {
   }
 }
 
-Object? _merge(Object? base, Object? local, Object? remote) {
+Object? _merge(
+  Object? base,
+  Object? local,
+  Object? remote,
+  List<String> path,
+  ConflictResolver? resolve,
+) {
   if (_same(local, remote) || _same(base, remote)) return local;
   if (_same(base, local)) return remote;
 
   if (base is _Document && local is _Document && remote is _Document) {
-    return _mergeFields(base, local, remote);
+    return _mergeFields(base, local, remote, path, resolve);
   }
   if (base is List<Object?> &&
       local is List<Object?> &&
       remote is List<Object?>) {
-    return _mergeRecords(base, local, remote);
+    return _mergeRecords(base, local, remote, path, resolve);
   }
-  throw const _Collision();
+  if (resolve == null) throw const _Collision();
+  String? encode(Object? value) =>
+      identical(value, _absent) ? null : jsonEncode(value);
+  final selected = resolve((
+    path: List.unmodifiable(path),
+    local: encode(local),
+    remote: encode(remote),
+  ));
+  return selected == null ? _absent : jsonDecode(selected);
 }
 
-_Document _mergeFields(_Document base, _Document local, _Document remote) {
+_Document _mergeFields(
+  _Document base,
+  _Document local,
+  _Document remote,
+  List<String> path,
+  ConflictResolver? resolve,
+) {
   final result = <String, Object?>{};
   for (final key in {...base.keys, ...local.keys, ...remote.keys}) {
     final value = _merge(
       base.containsKey(key) ? base[key] : _absent,
       local.containsKey(key) ? local[key] : _absent,
       remote.containsKey(key) ? remote[key] : _absent,
+      [...path, key],
+      resolve,
     );
     if (!identical(value, _absent)) result[key] = value;
   }
@@ -56,6 +94,8 @@ List<Object?> _mergeRecords(
   List<Object?> base,
   List<Object?> local,
   List<Object?> remote,
+  List<String> path,
+  ConflictResolver? resolve,
 ) {
   _Document indexed(List<Object?> items) => {
     for (final item in items.cast<_Document>()) item['id'] as String: item,
@@ -77,9 +117,10 @@ List<Object?> _mergeRecords(
     // Both clients changed the same milestone by appending history.
     throw const _Collision();
   }
-  final merged = _mergeFields(original, left, right);
+  final merged = _mergeFields(original, left, right, path, resolve);
   // Keep existing order and append remote additions before local additions.
   // Preserving both inputs' relative order avoids replaying history out of order.
+  if (merged.values.any((item) => item is! _Document)) throw const _Collision();
   final order = {
     ...original.keys,
     ...right.keys,
@@ -90,6 +131,9 @@ List<Object?> _mergeRecords(
     if (!_same(kept.toList(), order.where(side.containsKey).toList())) {
       throw const _Collision();
     }
+  }
+  if (order.any((key) => (merged[key] as _Document)['id'] != key)) {
+    throw const _Collision();
   }
   return [for (final key in order) merged[key]];
 }

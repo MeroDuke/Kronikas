@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 
@@ -10,6 +11,8 @@ final syncChecks = <String, Future<void> Function()>{
   'offline edits persist and competing clients keep both versions': _conflict,
   'incompatible sessions preserve both client states': _incompatibleSessions,
   'independent edits survive synchronization on both clients': _independent,
+  'manual conflict review rejects stale versions and restores originals':
+      _resolve,
   'lost write response and concurrent edit recover across reopen':
       _lostResponse,
 };
@@ -189,6 +192,115 @@ Future<void> _incompatibleSessions() async {
       'Published session after conflict',
       first.open().adventures['a']!.sessions.keys.single,
       'first',
+    );
+  });
+}
+
+Future<void> _resolve() async {
+  await _withStores((first, second) async {
+    final remote = _Remote();
+    final firstSync = ChronicleSync(first, remote);
+    final secondSync = ChronicleSync(second, remote);
+    first.update((data) => data.createAdventure(id: 'a', title: 'Base'));
+    await firstSync.synchronize();
+    await secondSync.synchronize();
+    _rename(first, 'Published');
+    _rename(second, 'Local');
+    await firstSync.synchronize();
+    _expect(
+      'Conflict before review',
+      await secondSync.synchronize(),
+      SyncOutcome.conflict,
+    );
+    final staleLocal = await secondSync.reviewConflict();
+    second.update((data) => data.saveAdventureNote('a', 'weather', 'Rain'));
+    _expect(
+      'Local change invalidates approval',
+      await secondSync.resolveConflict(
+        staleLocal,
+        selections: [jsonEncode('Approved')],
+      ),
+      SyncOutcome.localChanged,
+    );
+    final staleRemote = await secondSync.reviewConflict();
+    _rename(first, 'Latest published');
+    await firstSync.synchronize();
+    _expect(
+      'Remote change invalidates approval',
+      await secondSync.resolveConflict(
+        staleRemote,
+        selections: [jsonEncode('Approved')],
+      ),
+      SyncOutcome.conflict,
+    );
+
+    final review = await secondSync.reviewConflict();
+    _expect(
+      'Conflict path',
+      review.conflicts.single.path.join('/'),
+      'adventures/a/title',
+    );
+    _expect(
+      'Local conflict value',
+      jsonDecode(review.conflicts.single.local!),
+      'Local',
+    );
+    _expect(
+      'Remote conflict value',
+      jsonDecode(review.conflicts.single.remote!),
+      'Latest published',
+    );
+    _expect(
+      'Publish manually entered title',
+      await secondSync.resolveConflict(
+        review,
+        selections: [jsonEncode('Approved')],
+      ),
+      SyncOutcome.uploaded,
+    );
+    _expect(
+      'Second client already clean',
+      await secondSync.synchronize(),
+      SyncOutcome.upToDate,
+    );
+    _expect(
+      'First client reads resolution',
+      await firstSync.synchronize(),
+      SyncOutcome.downloaded,
+    );
+    for (final store in [first, second]) {
+      final merged = store.open().adventures['a']!;
+      _expect('Approved title', merged.title, 'Approved');
+      _expect('Independent note preserved', merged.notes['weather'], 'Rain');
+    }
+
+    final reopened = ChronicleSync(
+      LocalChronicleStore(second.directory),
+      remote,
+    );
+    final backup = reopened.listResolutionBackups().single;
+    final localOriginal = await reopened.restoreResolutionBackup(
+      backup,
+      fromRemote: false,
+    );
+    final remoteOriginal = await reopened.restoreResolutionBackup(
+      backup,
+      fromRemote: true,
+    );
+    _expect(
+      'Recovered local original',
+      localOriginal?.adventures['a']?.title,
+      'Local',
+    );
+    _expect(
+      'Recovered remote original',
+      remoteOriginal?.adventures['a']?.title,
+      'Latest published',
+    );
+    _expect(
+      'Restore preserves approved state',
+      second.open().adventures['a']?.title,
+      'Approved',
     );
   });
 }

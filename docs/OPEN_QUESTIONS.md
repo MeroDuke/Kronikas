@@ -4,7 +4,7 @@
 - A [technológiai vizsgálat](TECHNOLOGY_FEASIBILITY.md) alapján a GitHub REST az első adapter iránya. Nyitott az éles belépési mód és az adapter próbája.
 - A [logikai modell](requirements/DOMAIN_MODEL.md) jóváhagyott. Nyitott a végleges fájlséma, a séma verziózása és migrációja, az azonosítók konkrét formátuma és a történeti hivatkozások kezelése tervmódosításkor.
 - A jelenethez rendelhető, kötetlen sorrendű mérföldkövek javasoltak a logikai modellben. Nyitott, hogy szükséges-e előfeltételeket kezelni.
-- A szinkron gyakorisága, az offline mentés és a több fájlt érintő mentés szabályai. A konfliktusfeloldás viselkedése jóváhagyva. Nyitott az eredeti változatok megőrzésének és visszaállításának tárolási megoldása. [UC-005](requirements/USE_CASES.md#uc-005)
+- A szinkron gyakorisága, az offline mentés és a több fájlt érintő mentés szabályai. A konfliktusfeloldás viselkedése jóváhagyva. A CORE helyi revízióban őrzi a feloldás előtti távoli pillanatképet és a helyi revízió hivatkozását. Nyitott a megőrzési idő és a felületi visszaállítás menete. [UC-005](requirements/USE_CASES.md#uc-005)
 - LLM szolgáltató, költség, opcionális működés.
 - Discord küldési hibák, ismételt publikáció.
 - Session- és kalandszintű összefoglalók eltérései.

@@ -23,6 +23,13 @@ final class LocalChronicleStore {
 
   LocalChronicleRevision readRevision() => _read(_latestRevision());
 
+  Chronicle openRevision(int revision) {
+    if (revision < 0 || revision > _latestRevision()) {
+      throw RangeError.value(revision, 'revision');
+    }
+    return _read(revision).chronicle;
+  }
+
   /// Applies an operation to the latest snapshot and commits it before returning.
   ///
   /// Use a synchronous callback. A second writer must acquire the file lock

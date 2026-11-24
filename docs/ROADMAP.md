@@ -4,7 +4,7 @@
 
 **Jelenleg** a helyi Dart CORE és a szintetikus platformpróbák a `main` ágon vannak. A GitHub-szinkron alapjai működnek, a Windows és Android meseválasztó előnézete kipróbálható. A teljes mesélői munkafolyamat még nyitott. [Projektállapot és futási előzmények](PROJECT_STATUS.md)
 
-**Következő mérföldkő** a két eszköz eltérő módosításainak mesélői feloldása az IMP-005-ben. A jóváhagyott viselkedés szerint a független módosítások automatikusan egyesülnek, a tényleges ütközéseket a mesélő oldja fel. A CORE egyesítését kétklienses teszt igazolja. A következő fejlesztési lépés az ütköző értékek feloldási művelete és az eredeti változatok visszaállítása. [Nyitott kérdések](OPEN_QUESTIONS.md) · [TST-004 futtatási menete](TEST_EXECUTION.md)
+**Következő mérföldkő** a két eszköz eltérő módosításainak mesélői feloldása az IMP-005-ben. A jóváhagyott viselkedés szerint a független módosítások automatikusan egyesülnek, a tényleges ütközéseket a mesélő oldja fel. A CORE egyesítését kétklienses teszt igazolja. A kézi feloldást, az elavult döntés elutasítását és az eredeti változatok visszaállítását CORE-teszt igazolja. A következő fejlesztési lépés a mesélői felület. [Nyitott kérdések](OPEN_QUESTIONS.md) · [TST-004 futtatási menete](TEST_EXECUTION.md)
 
 ## Mérföldkövek
 
