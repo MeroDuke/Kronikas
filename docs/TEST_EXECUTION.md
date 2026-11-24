@@ -31,6 +31,8 @@ A fizikai tableten minden ADB-műveletet vezeték nélküli hibakereséssel vég
 
 Fizikai próba: Wi-Fi-s ADB-n célzott, már telepített ARM64 platformpróbán lefutott a felületi mentés, teljes leállítás, újraindítás és visszaolvasás. A meglévő szintetikus kaland és a védett próbaérték ellenőrzése sikeres volt.
 
+A tabletes regressziót Codex futtatja Wi-Fi-s ADB-n. Minden érintett felületi ellenőrzés az aktuális fejlesztési commit ARM64-próbacsomagjával kezdődik. A [meseválasztó próbafuttató](https://github.com/MeroDuke/Kronikas/blob/feature/dart-core-foundation/platform_probe/README.md#fizikai-tabletpróba) igazolja a CI-melléklet commitját és a tabletbe telepített APK hashét. Ha a rátelepítés aláírás miatt nem lehetséges, a szintetikus próbaalkalmazás cseréje külön engedélyezhető. A felületi lépésekhez a futtató képernyőképet és naplót ment. A feloldás és az esetleges ADB-engedély megadása eszközoldali lépés.
+
 ## Windows E2E Codex Computer Use-zal
 
 Az első Windows-próbacsomagtól alkalmazható, a kész felületi folyamatokkal bővül. A Codex a telepített vagy kibontott alkalmazást a Windows felületén kezeli. A szintetikus tesztadat létrehozása lehet előkészítési művelet. Az elfogadási lépéseket a szokásos kezelőszerveken kell végrehajtani. Az infrastruktúra állapota, az automatizált futások és a Computer Use eredménye külön szerepel a jegyzőkönyvben.
