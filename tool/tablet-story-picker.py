@@ -40,7 +40,8 @@ def main():
     def adb(*command, text=True):
         return subprocess.check_output(
             [args.adb, "-s", args.device, *command],
-            text=text, stderr=subprocess.PIPE, timeout=90,
+            text=text, encoding="utf-8" if text else None,
+            stderr=subprocess.PIPE, timeout=90,
         )
 
     if adb("get-state").strip() != "device":
