@@ -63,11 +63,9 @@ jobs:
       - name: Set up pinned Flutter
         shell: bash
         run: |
+          version=$(jq -r .flutter tool/sdk.json)
           revision=$(jq -r .flutterCommit tool/sdk.json)
-          git init "$RUNNER_TEMP/flutter"
-          git -C "$RUNNER_TEMP/flutter" remote add origin https://github.com/flutter/flutter.git
-          git -C "$RUNNER_TEMP/flutter" fetch --depth 1 origin "$revision"
-          git -C "$RUNNER_TEMP/flutter" checkout --detach FETCH_HEAD
+          git clone --depth 1 --branch "$version" https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
           test "$(git -C "$RUNNER_TEMP/flutter" rev-parse HEAD)" = "$revision"
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
       - name: Build Android probe and inventory APK
