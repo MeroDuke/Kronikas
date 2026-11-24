@@ -1,0 +1,14 @@
+name: kronikas_platform_probe
+description: "Synthetic Windows and Android platform verification for Kronikas."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: 3.14.0
+  flutter: 3.50.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  kronikas_core:
+    path: ../core

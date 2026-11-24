@@ -1,0 +1,110 @@
+name: Platform probe
+
+on:
+  pull_request:
+    paths: ['platform_probe/**', 'core/lib/**', 'tool/android-probe.py', 'tool/sdk.json', '.github/workflows/platform-probe.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      FLUTTER_SUPPRESS_ANALYTICS: 'true'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Set up pinned Flutter
+        shell: pwsh
+        run: |
+          $sdk = Get-Content -Raw tool/sdk.json | ConvertFrom-Json
+          $directory = Join-Path $env:RUNNER_TEMP 'flutter'
+          git -c core.longpaths=true clone --depth 1 --branch $sdk.flutter https://github.com/flutter/flutter.git $directory
+          if ($LASTEXITCODE -or (git -C $directory rev-parse HEAD) -ne $sdk.flutterCommit) {
+              throw 'Flutter checkout mismatch.'
+          }
+          Join-Path $directory 'bin' | Out-File $env:GITHUB_PATH -Append -Encoding utf8
+      - name: Build Windows probe
+        working-directory: platform_probe
+        shell: pwsh
+        run: |
+          flutter pub get --enforce-lockfile
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          flutter analyze --no-pub
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          flutter build windows --release --no-pub
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          $source = 'build/windows/x64/runner/Release'
+          $evidence = '../build/windows-probe'
+          New-Item -ItemType Directory -Force $evidence | Out-Null
+          Copy-Item LICENSE.flutter "$source/LICENSE.flutter"
+          Get-ChildItem $source -Recurse -File | ForEach-Object {
+              [pscustomobject]@{
+                  path = [IO.Path]::GetRelativePath((Resolve-Path $source), $_.FullName)
+                  sha256 = (Get-FileHash -LiteralPath $_.FullName).Hash
+              }
+          } | ConvertTo-Json | Set-Content "$evidence/inventory.json"
+          Compress-Archive -Path "$source/*" -DestinationPath "$evidence/windows-probe.zip"
+          (Get-FileHash "$evidence/windows-probe.zip").Hash | Set-Content "$evidence/sha256.txt"
+      - name: Preserve Windows package
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: windows-platform-probe
+          path: build/windows-probe/
+  android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      FLUTTER_SUPPRESS_ANALYTICS: 'true'
+      DART_SUPPRESS_ANALYTICS: 'true'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Set up pinned Flutter
+        shell: bash
+        run: |
+          revision=$(jq -r .flutterCommit tool/sdk.json)
+          git init "$RUNNER_TEMP/flutter"
+          git -C "$RUNNER_TEMP/flutter" remote add origin https://github.com/flutter/flutter.git
+          git -C "$RUNNER_TEMP/flutter" fetch --depth 1 origin "$revision"
+          git -C "$RUNNER_TEMP/flutter" checkout --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/flutter" rev-parse HEAD)" = "$revision"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Build Android probe and inventory APK
+        working-directory: platform_probe
+        shell: bash
+        run: |
+          export JAVA_HOME="$JAVA_HOME_17_X64"
+          export PATH="$JAVA_HOME/bin:$PATH"
+          flutter --version
+          flutter pub get --enforce-lockfile
+          flutter analyze --no-pub
+          flutter build apk --release --target-platform android-x64 --no-pub
+          mkdir -p ../build/android-probe
+          cp build/app/outputs/flutter-apk/app-release.apk ../build/android-probe/
+          cd ../build/android-probe
+          sha256sum app-release.apk > sha256.txt
+          unzip -l app-release.apk > apk-inventory.txt
+          unzip -p app-release.apk assets/flutter_assets/NOTICES.Z > flutter-notices.z
+      - name: Check save and reopen on Android emulator
+        shell: bash
+        run: |
+          set -o pipefail
+          image='system-images;android-35;google_apis;x86_64'
+          sdkmanager --install "$image"
+          echo no | avdmanager create avd --name kronikas-probe --package "$image" --force
+          sudo chmod a+rw /dev/kvm
+          "$ANDROID_HOME/emulator/emulator" -avd kronikas-probe -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect +            > build/android-probe/emulator.log 2>&1 &
+          emulator_pid=$!
+          trap 'kill "$emulator_pid" 2>/dev/null || true' EXIT
+          timeout 180 adb wait-for-device
+          timeout 180 bash -c 'until [[ $(adb shell getprop sys.boot_completed | tr -d "\r") == 1 ]]; do sleep 3; done'
+          adb shell input keyevent 82
+          adb install build/android-probe/app-release.apk
+          python3 tool/android-probe.py | tee build/android-probe/ui-steps.txt
+      - name: Preserve Android evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: android-platform-probe
+          path: build/android-probe/

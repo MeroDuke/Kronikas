@@ -13,3 +13,5 @@ Jelenleg nincs kiválasztott vagy bevezetett termékfüggőség. Az alábbiak vi
 Rögzítendő továbbá: közvetlen/tranzitív jelleg, ellenőrzés dátuma, terjesztési feltételek, díjak, attribúció, kockázat, jóváhagyás. Lásd LICENSING_POLICY.md.
 
 Az ellenőrzött SDK-verziók és CI-eszközök az [IMP-001 eszköznyilvántartásában](CORE_DEVELOPMENT.md) szerepelnek.
+
+A Flutter-próba feloldott csomagjai, platformeszközei és csomagleltára az [IMP-004 jegyzőkönyvében](PLATFORM_PROBE.md) követhetők.
