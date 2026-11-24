@@ -89,13 +89,15 @@ def main():
             raise RuntimeError("ADB did not return a PNG screenshot.")
         (args.evidence / f"{name}.png").write_bytes(png)
 
-    def observe(label, *, scroll=False):
+    def observe(label, *, scroll=False, resource_id=None):
         for attempt in range(12 if scroll else 8):
             adb("shell", "uiautomator", "dump", "/sdcard/kronikas-story-picker.xml")
             root = ET.fromstring(adb("shell", "cat", "/sdcard/kronikas-story-picker.xml"))
             for node in root.iter("node"):
                 labels = (node.get("text", "") + "\n" + node.get("content-desc", "")).splitlines()
-                if label in labels and node.get("package") == PACKAGE:
+                matched = (node.get("resource-id") == resource_id
+                           if resource_id is not None else label in labels)
+                if matched and node.get("package") == PACKAGE:
                     record(f"Observed: {label}")
                     return node
             if scroll:
@@ -108,8 +110,8 @@ def main():
             time.sleep(1)
         raise RuntimeError(f"UI state not observed: {label}")
 
-    def tap(label, *, scroll=False):
-        node = observe(label, scroll=scroll)
+    def tap(label, *, scroll=False, resource_id=None):
+        node = observe(label, scroll=scroll, resource_id=resource_id)
         left, top, right, bottom = map(int, re.findall(r"\d+", node.get("bounds", "")))
         record(f"Tap: {label}")
         adb("shell", "input", "tap", str((left + right) // 2), str((top + bottom) // 2))
@@ -142,11 +144,13 @@ def main():
             tap("Feloldás mentése", scroll=True)
             observe("A változatok frissültek. Erősítsd meg újra.", scroll=True)
             observe("Távoli: Friss távoli átkelés", scroll=True)
-            tap("Új érték", scroll=True)
+            tap("Új érték", scroll=True, resource_id="conflict-value-adventures/synthetic/title")
             adb("shell", "input", "text", "Merged%stitle")
             adb("shell", "input", "keyevent", "4")
             observe("Kiválasztva: Merged title", scroll=True)
             tap("Feloldás mentése", scroll=True)
+            observe("A feloldás mentve.", scroll=True)
+            observe("Merged title", scroll=True)
             tap("Eredeti helyi változat megnyitása", scroll=True)
             observe("Visszaállított példány: Helyi átkelés", scroll=True)
             capture("07-original-local")

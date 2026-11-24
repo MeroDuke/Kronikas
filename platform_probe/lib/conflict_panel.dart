@@ -194,13 +194,17 @@ class _ConflictPanelState extends State<ConflictPanel> {
                     if ([field.local, field.remote].whereType<String>().every(
                       (value) => jsonDecode(value) is String,
                     ))
-                      TextField(
-                        enabled: !_busy,
-                        decoration: const InputDecoration(
-                          labelText: 'Új érték',
-                        ),
-                        onChanged: (value) => setState(
-                          () => _choices[_key(field)] = jsonEncode(value),
+                      Semantics(
+                        identifier:
+                            'conflict-value-${field.path.map(Uri.encodeComponent).join('/')}',
+                        child: TextField(
+                          enabled: !_busy,
+                          decoration: const InputDecoration(
+                            labelText: 'Új érték',
+                          ),
+                          onChanged: (value) => setState(
+                            () => _choices[_key(field)] = jsonEncode(value),
+                          ),
                         ),
                       ),
                     if (_choices.containsKey(_key(field)))
