@@ -1,6 +1,14 @@
-# Dart CORE fejlesztés – IMP-001 és IMP-002
+# Dart CORE fejlesztés – IMP-001–003
 
-A tiszta Dart csomag publikus belépési pontja a `core/lib/kronikas_core.dart`. A `Chronicle` memóriában kezeli a kampányt, az önálló vagy kampányhoz tartozó kalandot, a jeleneteket, a mérföldköveket, a mesélői jegyzeteket és a játékalkalmakat. A mérföldkő rögzítése együtt frissíti az aktuális állapotot és az eseménytörténetet. Egy kalandhoz egyszerre egy nyitott alkalom tartozhat. Az azonosítókat és időpontokat a hívó adja meg. A fájlséma és a tartós mentés az IMP-003 feladata.
+A tiszta Dart csomag publikus belépési pontja a `core/lib/kronikas_core.dart`. A `Chronicle` kezeli a kampányt, az önálló vagy kampányhoz tartozó kalandot, a jeleneteket, a mérföldköveket, a mesélői jegyzeteket és a játékalkalmakat. A mérföldkő rögzítése együtt frissíti az aktuális állapotot és az eseménytörténetet. Egy kalandhoz egyszerre egy nyitott alkalom tartozhat. Az azonosítókat és időpontokat a hívó adja meg.
+
+## Helyi mentés
+
+A `local_chronicle_store.dart` adapter `open()` művelete a legutóbbi mentést nyitja meg. A helyi alkalmazás a módosítást az `update((chronicle) { ... })` hívásban végzi. Az adapter betölti a legutóbbi mentést, lefuttatja a szinkron műveletet, és a tartós mentés után tér vissza. Egy folyamatban ugyanaz az isolate kezelje az adott mentési könyvtár írásait. A folyamatok között fájlzár védi a mentést, sikertelen zárfoglaláskor a művelet hibával tér vissza.
+
+A séma első verziója egy olvasható JSON-pillanatkép. A kampány és kaland azonosítója a tárolón, a jelenet, mérföldkő, alkalom és esemény azonosítója a kalandon belül értelmezett, saját entitástípusán belül. A tervezett kimenetel azonosítója a mérföldkőhöz tartozik. A hivatkozások stabil azonosítóra mutatnak. A mérföldkő aktuális állapota az eseménytörténet sorrendjéből áll helyre. A séma mintája a `core/test/fixtures/chronicle_v1.json`. Ismeretlen séma vagy hibás mentés olvasási hibát eredményez, és a fájl megmarad.
+
+A mentési commitpont az új, sorszámozott revízióra történő átnevezés ugyanazon a fájlrendszeren, a tartalom flusholása után. A félbemaradt átmeneti könyvtár nem része a mentési történetnek. A korábbi revíziók megmaradnak. A megőrzési szabály és a fizikai eszközön végzett megszakítási próba későbbi feladat.
 
 ## Futtatás
 

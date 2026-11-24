@@ -2,15 +2,31 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:kronikas_core/kronikas_core.dart';
+import 'package:kronikas_core/local_chronicle_store.dart';
 
 final start = DateTime.utc(2026, 11, 24, 18);
 final end = DateTime.utc(2026, 11, 24, 20);
 
 void main(List<String> args) {
+  if (args.length == 2 && args.first == '--interrupt-update') {
+    final store = LocalChronicleStore(Directory(args.last));
+    store.update((chronicle) {
+      chronicle.editAdventure('a', title: 'Uncommitted child', description: '');
+      // Leave representative incomplete staging data and bypass cleanup.
+      final pending = store.directory.createTempSync('.pending-');
+      File.fromUri(pending.uri.resolve('snapshot.json'))
+          .writeAsStringSync('{"schemaVersion":1', flush: true);
+      exit(73);
+    });
+    throw StateError('The interruption probe unexpectedly returned.');
+  }
   final checks = {
     'campaign and one-shot preparation': _preparation,
     'outcomes and continuity across sessions': _continuity,
     'invalid operations preserve state': _invalidOperations,
+    'versioned local snapshot and continued session': _localRoundTrip,
+    'interrupted update preserves committed state': _interruptedUpdate,
+    'unsupported schema preserves the original data': _unsupportedSchema,
   };
   final failures = <String, String>{};
   for (final MapEntry(:key, :value) in checks.entries) {
@@ -31,6 +47,147 @@ void main(List<String> args) {
       'failures': failures,
     }),
   );
+}
+
+void _localRoundTrip() {
+  _withStore((store) {
+    final fixture = File('test/fixtures/chronicle_v1.json');
+    fixture.copySync(
+      File.fromUri(store.directory.uri.resolve('revision-1.json')).path,
+    );
+    final initial = store.open().adventures['river']!;
+    _check(initial.campaignId == 'valley', 'Campaign reference');
+    _check(initial.notes['weather'] == 'High water', 'Adventure note');
+    _check(
+      initial.progress['cross']?.status == MilestoneStatus.failed,
+      'Restored status',
+    );
+    _check(
+      initial.sessions['first']?.notes['crew'] == 'Ferry crew helped',
+      'Session note',
+    );
+    store.update((chronicle) {
+      chronicle.createAdventure(id: 'solo', title: 'One-shot');
+      chronicle.startSession('river', id: 'second', startedAt: end);
+      chronicle.recordMilestoneOutcome(
+        'river',
+        'second',
+        eventId: 'success',
+        milestoneId: 'cross',
+        status: MilestoneStatus.completed,
+        outcome: 'The repaired ferry crossed.',
+        visibility: EventVisibility.publishable,
+      );
+      chronicle.recordImprovisedEvent(
+        'river',
+        'second',
+        id: 'traveller',
+        description: 'A traveller arrived.',
+      );
+    });
+    final reopened = LocalChronicleStore(store.directory).open();
+    final adventure = reopened.adventures['river']!;
+    final first = adventure.sessions['first']!;
+    final second = adventure.sessions['second']!;
+    _check(
+      reopened.adventures['solo']?.campaignId == null,
+      'One-shot retained',
+    );
+    _check(
+      first.endedAt == end &&
+          first.events.single.description == 'The ferry broke.',
+      'Prior history',
+    );
+    _check(
+      second.isOpen && second.events.last.sequence == 2,
+      'Open session and order',
+    );
+    _check(
+      second.events.first.visibility == EventVisibility.publishable,
+      'Visibility retained',
+    );
+    _check(
+      adventure.progress['cross']?.eventId == 'success',
+      'Progress points to new event',
+    );
+    _check(
+      adventure.progress['cross']?.status == MilestoneStatus.completed,
+      'Progress restored',
+    );
+    _check(
+      adventure.milestones['cross']?.plannedOutcomes.single.id == 'ferry',
+      'Original plan retained',
+    );
+  });
+}
+
+void _interruptedUpdate() {
+  _withStore((store) {
+    store.update((chronicle) {
+      chronicle.createAdventure(id: 'a', title: 'Original');
+    });
+    _throws<StateError>(
+      () => store.update((chronicle) {
+        chronicle.editAdventure('a', title: 'Uncommitted', description: '');
+        throw StateError('Interrupted operation');
+      }),
+    );
+    final child = Process.runSync(Platform.resolvedExecutable, [
+      'run',
+      'test/chronicle_check.dart',
+      '--interrupt-update',
+      store.directory.path,
+    ]);
+    _check(
+      child.exitCode == 73,
+      'Child did not reach interruption: ${child.stderr}',
+    );
+    final reopened = LocalChronicleStore(store.directory);
+    _check(
+      reopened.open().adventures['a']?.title == 'Original',
+      'Ignore incomplete staging',
+    );
+    reopened.update((chronicle) {
+      _throws<StateError>(() => store.update((_) {}));
+      chronicle.editAdventure('a', title: 'Committed', description: '');
+    });
+    _check(
+      store.open().adventures['a']?.title == 'Committed',
+      'Read new committed revision',
+    );
+  });
+}
+
+void _unsupportedSchema() {
+  _withStore((store) {
+    final revision = File.fromUri(
+      store.directory.uri.resolve('revision-1.json'),
+    );
+    const original = '{"schemaVersion":2,"campaigns":[],"adventures":[]}';
+    revision.writeAsStringSync(original);
+    _throws<FormatException>(store.open);
+    _throws<FormatException>(
+      () => store.update((_) => throw StateError('Must not run')),
+    );
+    _check(
+      revision.readAsStringSync() == original,
+      'Preserve unsupported snapshot',
+    );
+    _check(
+      !File.fromUri(store.directory.uri.resolve('revision-2.json'))
+          .existsSync(),
+      'No replacement snapshot',
+    );
+  });
+}
+
+void _withStore(void Function(LocalChronicleStore) test) {
+  final directory = Directory.systemTemp.createTempSync('kronikas-test-');
+  try {
+    test(LocalChronicleStore(directory));
+  } finally {
+    directory.deleteSync(recursive: true);
+  }
 }
 
 void _preparation() {

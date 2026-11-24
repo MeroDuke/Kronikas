@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "campaigns": [{"id": "valley", "name": "Valley tales"}],
+  "adventures": [{
+    "id": "river",
+    "campaignId": "valley",
+    "title": "River crossing",
+    "description": "A synthetic adventure",
+    "scenes": [{"id": "bank", "title": "Riverbank", "description": ""}],
+    "milestones": [{
+      "id": "cross",
+      "title": "Cross the river",
+      "sceneId": "bank",
+      "plannedOutcomes": [{"id": "ferry", "description": "Cross by ferry"}]
+    }],
+    "notes": {"weather": "High water"},
+    "sessions": [{
+      "id": "first",
+      "startedAt": "2026-11-24T18:00:00.000Z",
+      "endedAt": "2026-11-24T20:00:00.000Z",
+      "notes": {"crew": "Ferry crew helped"},
+      "events": [{
+        "id": "attempt",
+        "type": "milestoneUpdate",
+        "description": "The ferry broke.",
+        "visibility": "gmOnly",
+        "milestoneId": "cross",
+        "status": "failed",
+        "plannedOutcomeId": "ferry"
+      }]
+    }]
+  }]
+}
