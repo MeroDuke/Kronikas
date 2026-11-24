@@ -37,14 +37,20 @@ A [TST-004](#tst-004) forgatókönyveihez indíts két izolált klienst külön 
 4. A döntés előtt külön futásban módosítsd a helyi változatot és a távoli ágat. A korábbi döntés egyik esetben se írjon felül új adatot. Az aktuális értékek jelenjenek meg új megerősítésre.
 5. Zárd be és nyisd újra a klienst, majd állítsd vissza külön-külön a két megőrzött eredeti változatot. Ellenőrizd a tartalmat és a jóváhagyott eredmény megőrzését.
 
+## Gyors Flutter-ellenőrzés
+
+A Flutter felület módosításakor a `platform_probe` könyvtárban futtasd a rögzített SDK-val a `flutter pub get --enforce-lockfile`, `flutter analyze --no-pub` és `flutter test --no-pub` parancsot. A konfliktuspanel widgettesztje ugyanazt a szintetikus kétklienses forgatókönyvet és CORE-t használja, mint az emulátoros próba. Ellenőrzi a helyi és távoli érték mentését, az elavult döntést, a kézi értéket és a két eredeti példány címének előhívását.
+
+A **Flutter checks** workflow érintett fájl módosításakor pushra elindul. A `flutter-check-results` mellékletben található az elemző naplója és a géppel olvasható widgetriport. A CORE ellenőrzése külön fut. A gyors körhöz emulátor és APK-build nem szükséges.
+
 ## Android E2E GitHub Actionsben
 
-A rutinszerű Android-felületi regressziót a GitHub Actions futtatja, külön eszköz és Codex Computer Use nélkül. A **Platform probe** workflow az érintett platform-, CORE-könyvtár-, próbaszkript-, SDK- vagy workflow-fájlokat módosító pull requesteken indul.
+A csomagolt platformregressziót a GitHub Actions futtatja. Fejlesztés közben tartsd a PR-t draftban. A végleges commiton állítsd **Ready for review** állapotba, és merge előtt ellenőrizd a **Platform probe** eredményét. Az érintett fájlokat módosító, review-ra kész PR frissítése új platformfutást indít. A korábbi aktív futás leáll.
 
 1. A PR **Checks** lapján nyisd meg a **Platform probe** futást. A `android-build` a PR forráscommitjából elkészíti a mentési és meseválasztó APK-kat x86_64 és arm64-v8a ABI-ra. A futtatás eredményét a külön `android-ui` job adja.
 2. Az `android-ui` ellenőrzi az APK-k SHA-256 értékét és az Android által kiválasztott ABI-t. Az Ubuntu x64 runner Android 35 Google APIs emulátora egymás után futtatja a két változatot. Az ARM64 gépi kódot az emulátor natív fordítási rétege futtatja.
 3. Mindkét változatnál a mentési próbában mentsd a szintetikus kalandot és a védett próbaértéket, majd teljes újraindítás után olvasd vissza őket. A meseválasztó próba a szintetikus tárból megnyitja a **Teszt mese** történetet, lenyitja a lezárt alkalmat, ellenőrzi az eseményt és annak mesélői láthatóságát, majd a szintetikus szinkronütközésnél ellenőrzi az eltérő címeket, az elavult döntést, a kézi értéket és a két eredeti változat megnyitását. Végül visszalép a meselistára. A futtatók a végén bezárják a próbaalkalmazásokat.
-4. A futás **Summary** lapján az **Artifacts** részből töltsd le az `android-ui-evidence` mellékletet. Az `x64` és `arm64` könyvtárban ABI-nként ellenőrizd a csomagadatokat, a naplókat és a képernyőképeket. Mindkét ABI futása kötelező. Hiba esetén az első sikertelen ellenőrzést keresd a job naplójában és az addig elkészült bizonyítékokban. Átmeneti runnerhibánál egyszer futtasd újra a sikertelen jobokat a `gh run rerun <futásazonosító> --failed` paranccsal.
+4. A futás **Summary** lapján az **Artifacts** részből töltsd le az `android-ui-evidence` mellékletet. Az `x64` és `arm64` könyvtárban ABI-nként ellenőrizd a csomagadatokat, a naplókat és a képernyőképeket. Mindkét ABI futása kötelező. Hiba esetén az első sikertelen ellenőrzést keresd a job naplójában és az addig elkészült bizonyítékokban. A Maven 429 és a sérült NDK-letöltés külön CI-hibaüzenetként látszik. Átmeneti runnerhibánál egyszer futtasd újra a sikertelen jobokat a `gh run rerun <futásazonosító> --failed` paranccsal.
 
 Az első teljes futásban mindkét APK-architektúra végigment ezen az útvonalon. [GitHub Actions futás és bizonyítékok](https://github.com/MeroDuke/Kronikas/actions/runs/45446620447)
 

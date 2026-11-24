@@ -2,13 +2,19 @@ name: Platform probe
 
 on:
   pull_request:
-    paths: ['platform_probe/**', 'core/lib/**', 'tool/android-probe.py', 'tool/android_failure_evidence.py', 'tool/tablet-story-picker.py', 'tool/sdk.json', '.github/workflows/platform-probe.yml']
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+    paths: ['platform_probe/**', 'core/lib/**', 'tool/android-probe.py', 'tool/android-ci-build.sh', 'tool/android_failure_evidence.py', 'tool/tablet-story-picker.py', 'tool/sdk.json', '.github/workflows/platform-probe.yml']
 
 permissions:
   contents: read
 
+concurrency:
+  group: platform-probe-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   windows:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: windows-latest
     timeout-minutes: 30
     env:
@@ -53,6 +59,7 @@ jobs:
           name: windows-platform-probe
           path: build/windows-probe/
   android-build:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     env:
@@ -70,6 +77,13 @@ jobs:
           git clone --depth 1 --branch "$version" https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
           test "$(git -C "$RUNNER_TEMP/flutter" rev-parse HEAD)" = "$revision"
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Cache Gradle dependencies
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: android-gradle-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tool/sdk.json', 'platform_probe/android/**/*.gradle.kts', 'platform_probe/android/gradle.properties', 'platform_probe/android/gradle/wrapper/gradle-wrapper.properties', 'platform_probe/pubspec.lock') }}
       - name: Build Android probe and inventory APK
         working-directory: platform_probe
         shell: bash
@@ -79,7 +93,7 @@ jobs:
           flutter --version
           flutter pub get --enforce-lockfile
           flutter analyze --no-pub
-          flutter build apk --release --split-per-abi --target-platform android-x64,android-arm64 --no-pub
+          bash ../tool/android-ci-build.sh --release --split-per-abi --target-platform android-x64,android-arm64 --no-pub
           mkdir -p ../build/{android-probe,android-arm64-probe}
           cp build/app/outputs/flutter-apk/app-x86_64-release.apk ../build/android-probe/app-release.apk
           cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ../build/android-arm64-probe/
@@ -114,7 +128,7 @@ jobs:
         run: |
           export JAVA_HOME="$JAVA_HOME_17_X64"
           export PATH="$JAVA_HOME/bin:$PATH"
-          flutter build apk --release --split-per-abi --target-platform android-x64,android-arm64 --target tool/story_picker_walkthrough.dart --no-pub
+          bash ../tool/android-ci-build.sh --release --split-per-abi --target-platform android-x64,android-arm64 --target tool/story_picker_walkthrough.dart --no-pub
           for abi in x86_64 arm64-v8a; do
             variant=x64
             if [[ "$abi" == arm64-v8a ]]; then variant=arm64; fi

@@ -6,10 +6,13 @@ import 'package:kronikas_core/kronikas_core.dart';
 import 'package:kronikas_core/local_chronicle_store.dart';
 import 'package:kronikas_platform_probe/story_picker.dart';
 
-void main() {
-  final directory = Directory.systemTemp.createTempSync(
-    'kronikas-walkthrough-',
-  );
+void main() => runApp(
+  buildWalkthroughApp(
+    Directory.systemTemp.createTempSync('kronikas-walkthrough-'),
+  ),
+);
+
+Widget buildWalkthroughApp(Directory directory) {
   final local = LocalChronicleStore(
     Directory.fromUri(directory.uri.resolve('local/')),
   );
@@ -20,76 +23,72 @@ void main() {
   final sync = ChronicleSync(local, remote);
   final publisherSync = ChronicleSync(publisher, remote);
   Future<Chronicle>? seed;
-  runApp(
-    StoryPickerApp(
-      testRemoteEdit: () async {
-        publisher.update(
-          (draft) => draft.editAdventure(
-            'synthetic',
-            title: 'Friss távoli átkelés',
-            description: 'Szintetikus próbatörténet.',
-          ),
-        );
-        await publisherSync.synchronize();
-      },
-      testForm: (address: 'example/stories', token: 'github_pat_synthetic'),
-      load: (address, branch, token) async {
-        if (address != 'example/stories' ||
-            branch != null ||
-            token != 'github_pat_synthetic') {
-          throw const FormatException('Unexpected walkthrough input.');
-        }
-        return (
-          branch: 'main',
-          stories: const [
-            (title: 'Teszt mese', directory: 'stories/test-mese'),
-          ],
-          openSync: (_) async => (sync: sync, close: () {}),
-          open: (story) => seed ??= () async {
-            final start = DateTime.utc(2026, 11, 24, 18);
-            publisher.update(
-              (draft) => draft
-                ..createAdventure(
-                  id: 'synthetic',
-                  title: story.title,
-                  description: 'Szintetikus próbatörténet.',
-                )
-                ..startSession('synthetic', id: 'first', startedAt: start)
-                ..recordImprovisedEvent(
-                  'synthetic',
-                  'first',
-                  id: 'river',
-                  description: 'A csapat átkelt a folyón.',
-                )
-                ..closeSession(
-                  'synthetic',
-                  'first',
-                  start.add(const Duration(hours: 2)),
-                ),
-            );
-            await publisherSync.synchronize();
-            await sync.synchronize();
-            final initial = local.open();
-            publisher.update(
-              (draft) => draft.editAdventure(
-                'synthetic',
-                title: 'Távoli átkelés',
+  return StoryPickerApp(
+    testRemoteEdit: () async {
+      publisher.update(
+        (draft) => draft.editAdventure(
+          'synthetic',
+          title: 'Friss távoli átkelés',
+          description: 'Szintetikus próbatörténet.',
+        ),
+      );
+      await publisherSync.synchronize();
+    },
+    testForm: (address: 'example/stories', token: 'github_pat_synthetic'),
+    load: (address, branch, token) async {
+      if (address != 'example/stories' ||
+          branch != null ||
+          token != 'github_pat_synthetic') {
+        throw const FormatException('Unexpected walkthrough input.');
+      }
+      return (
+        branch: 'main',
+        stories: const [(title: 'Teszt mese', directory: 'stories/test-mese')],
+        openSync: (_) async => (sync: sync, close: () {}),
+        open: (story) => seed ??= () async {
+          final start = DateTime.utc(2026, 11, 24, 18);
+          publisher.update(
+            (draft) => draft
+              ..createAdventure(
+                id: 'synthetic',
+                title: story.title,
                 description: 'Szintetikus próbatörténet.',
-              ),
-            );
-            await publisherSync.synchronize();
-            local.update(
-              (draft) => draft.editAdventure(
+              )
+              ..startSession('synthetic', id: 'first', startedAt: start)
+              ..recordImprovisedEvent(
                 'synthetic',
-                title: 'Helyi átkelés',
-                description: 'Szintetikus próbatörténet.',
+                'first',
+                id: 'river',
+                description: 'A csapat átkelt a folyón.',
+              )
+              ..closeSession(
+                'synthetic',
+                'first',
+                start.add(const Duration(hours: 2)),
               ),
-            );
-            return initial;
-          }(),
-        );
-      },
-    ),
+          );
+          await publisherSync.synchronize();
+          await sync.synchronize();
+          final initial = local.open();
+          publisher.update(
+            (draft) => draft.editAdventure(
+              'synthetic',
+              title: 'Távoli átkelés',
+              description: 'Szintetikus próbatörténet.',
+            ),
+          );
+          await publisherSync.synchronize();
+          local.update(
+            (draft) => draft.editAdventure(
+              'synthetic',
+              title: 'Helyi átkelés',
+              description: 'Szintetikus próbatörténet.',
+            ),
+          );
+          return initial;
+        }(),
+      );
+    },
   );
 }
 
