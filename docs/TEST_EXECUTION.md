@@ -25,6 +25,12 @@ Tulajdonos által jóváhagyott útmutató. A [tesztstratégia](ARCHITECTURE_AND
 | TST-010 | Előre szabályozott helyettesítő futtatóval állíts elő sikert, assertion-hibát, hiányzó vagy korábbi eredményt, érvénytelen konfigurációt és időtúllépést. Ellenőrizd a kilépési állapotot, a naplót és az újrapróbálások számát. |
 | TST-011 | Tiszta profillal indítsd ismételten a csomagot. Ellenőrizd a normál belépési pontot, a függő vagy mentett állapot visszaolvasását és a diagnosztikát. A célzott megszakítást elkülönített próbában végezd el. |
 
+## Android E2E GitHub Actionsben
+
+A felületi regresszió alapértelmezett futtatási helye a GitHub Actions. Az Ubuntu x64 runner egy Android 35 Google APIs emulátorban egymás után futtatja az x86_64 és arm64-v8a ABI-ra épített APK-kat. Az ARM64 kódot az Android native bridge fordítja. ABI-nként ellenőrzi a mentést és újraindítást, a mese megnyitását, a játékalkalom előzményeit és az app lezárását. A runner ellenőrzi az Android által kiválasztott ABI-t, és külön menti a naplókat és a képernyőképeket. A rutinfuttatásnak nincs Codex- vagy tabletkapcsolat-igénye. [Első sikeres két ABI-s futás](https://github.com/MeroDuke/Kronikas/actions/runs/45446620447)
+
+A fizikai tabletet az olyan célzott próbákhoz használjuk, amelyekhez valódi eszköz vagy két eszköz közötti kapcsolat szükséges.
+
 ## Fizikai Android-tablet – ADB Wi-Fi-n
 
 A fizikai tableten minden ADB-műveletet vezeték nélküli hibakereséssel végzünk, beleértve a telepítést, az indítást, a tesztelést és az engedélyezett eltávolítást. A futás előtt az aktuális hálózati végpontot az adb mdns services kimenetéből vagy a tablet Vezeték nélküli hibakeresés képernyőjéről ellenőrizzük. Az adb connect után az adb devices -l listában a hálózati eszköznek device állapotban kell lennie. A parancsokat az adb -s IP:PORT kapcsolóval célozzuk. Ha a kapcsolat offline, megkeressük az új portot és újracsatlakozunk. Az első kábel nélküli kapcsolatot a tablet modelljének lekérdezésével igazoltuk.
