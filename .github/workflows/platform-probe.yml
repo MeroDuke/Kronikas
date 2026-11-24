@@ -77,19 +77,33 @@ jobs:
           flutter --version
           flutter pub get --enforce-lockfile
           flutter analyze --no-pub
-          flutter build apk --release --target-platform android-x64 --no-pub
-          mkdir -p ../build/android-probe
-          cp build/app/outputs/flutter-apk/app-release.apk ../build/android-probe/
+          flutter build apk --release --split-per-abi --target-platform android-x64,android-arm64 --no-pub
+          mkdir -p ../build/{android-probe,android-arm64-probe}
+          cp build/app/outputs/flutter-apk/app-x86_64-release.apk ../build/android-probe/app-release.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ../build/android-arm64-probe/
           android/gradlew -p android :app:dependencies --configuration releaseRuntimeClasspath --console=plain > ../build/android-probe/gradle-runtime-dependencies.txt
           cd ../build/android-probe
           sha256sum app-release.apk > sha256.txt
           unzip -l app-release.apk > apk-inventory.txt
           unzip -p app-release.apk assets/flutter_assets/NOTICES.Z > flutter-notices.z
+          cd ../android-arm64-probe
+          apk=app-arm64-v8a-release.apk
+          sha256sum "$apk" > sha256.txt
+          unzip -l "$apk" > apk-inventory.txt
+          unzip -p "$apk" assets/flutter_assets/NOTICES.Z > flutter-notices.z
+          unzip -Z1 "$apk" | awk -F/ '$1 == "lib" && $3 != "" {print $2}' | sort -u > native-abis.txt
+          test "$(cat native-abis.txt)" = arm64-v8a
+          cp ../android-probe/gradle-runtime-dependencies.txt .
       - name: Preserve the Android APK and inventory
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: android-platform-probe
           path: build/android-probe/
+      - name: Preserve the ARM64 APK and inventory
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: android-arm64-platform-probe
+          path: build/android-arm64-probe/
   android-ui:
     needs: android-build
     runs-on: ubuntu-24.04
