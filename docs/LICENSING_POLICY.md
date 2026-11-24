@@ -14,3 +14,5 @@ A publikus repository nem automatikusan open source. A Krónikás saját licence
 
 ## Ellenőrzés
 A DEPENDENCY_REGISTER.md a nyilvántartás. Később automatizált licencellenőrzés és SBOM tervezett.
+
+A Score auditjából levezetett csomagolási, szolgáltatási és eredetvizsgálati szempontokat a [licencelési átvilágítás](LICENSING_FEASIBILITY.md) rögzíti.
