@@ -223,7 +223,7 @@ jobs:
               echo 'Storage test app is still running.'
               exit 1
             fi
-            python3 -X utf8 tool/tablet-story-picker.py "$artifacts/android-$variant-story-picker" --commit "$commit" --device "$ANDROID_SERIAL" --abi "$abi" --evidence "$evidence/$variant/story-picker"
+            python3 -X utf8 tool/tablet-story-picker.py "$artifacts/android-$variant-story-picker" --commit "$commit" --device "$ANDROID_SERIAL" --abi "$abi" --evidence "$evidence/$variant/story-picker" --conflict
             if ! adb shell pidof "$picker" >/dev/null; then
               adb uninstall "$picker"
             else
