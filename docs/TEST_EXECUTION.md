@@ -1,6 +1,6 @@
 # Tesztfuttatási útmutató – TASK-006
 
-Tervezet. A [tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md) ellenőrzéseinek végrehajtási menete. A repóparancs, a tesztadatok és a platformcsomagok az érintett fázisban készülnek el.
+Tulajdonos által jóváhagyott útmutató. A [tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md) ellenőrzéseinek végrehajtási menete. A repóparancs, a tesztadatok és a platformcsomagok az érintett fázisban készülnek el.
 
 ## Futtatási sorrend
 

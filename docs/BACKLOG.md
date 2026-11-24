@@ -7,8 +7,8 @@
 | TASK-003 | [FR](requirements/FUNCTIONAL_REQUIREMENTS.md)/[NFR](requirements/NON_FUNCTIONAL_REQUIREMENTS.md) pontosítása és elfogadási kritériumok | Jóváhagyva |
 | TASK-004 | [Domain- és adatmodell](requirements/DOMAIN_MODEL.md) | Jóváhagyva |
 | TASK-005 | [Technológiai megvalósíthatóság](TECHNOLOGY_FEASIBILITY.md) | Technológiai irány jóváhagyva, próbák függőben |
-| TASK-006 | [Architektúra és tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md) | Tervezet elkészült, jóváhagyásra vár |
-| TASK-007 | Implementációs terv | Tervezett |
+| TASK-006 | [Architektúra és tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md) | Jóváhagyva |
+| TASK-007 | [Implementációs terv](IMPLEMENTATION_PLAN.md) | Tervezet elkészült, jóváhagyásra vár |
 
 Az implementációs feladatok még nem jóváhagyottak. Követelmény–feladat–teszt kapcsolatokat a specifikáció kialakításakor rögzítjük.
 

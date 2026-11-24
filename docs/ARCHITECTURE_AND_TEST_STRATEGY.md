@@ -1,6 +1,6 @@
 # Architektúra és tesztstratégia – TASK-006
 
-Tulajdonosi jóváhagyásra váró tervezet. Alapja a jóváhagyott [domainmodell](requirements/DOMAIN_MODEL.md), a [technológiai irány](TECHNOLOGY_FEASIBILITY.md) és a [licencelési átvilágítás](LICENSING_FEASIBILITY.md).
+Tulajdonos által jóváhagyott terv. Alapja a jóváhagyott [domainmodell](requirements/DOMAIN_MODEL.md), a [technológiai irány](TECHNOLOGY_FEASIBILITY.md) és a [licencelési átvilágítás](LICENSING_FEASIBILITY.md).
 
 ## Függőségi irány
 
@@ -59,4 +59,4 @@ A [tesztfuttatási útmutató](TEST_EXECUTION.md) rögzíti a tesztcsoportok vé
 - A próbacsomag leltára tartalmazza a pontos feloldott függőségeket, csomagolt natív fájlokat és eszközöket, továbbá a szükséges teljes licencszövegeket és notice-okat. Eltérés vagy tisztázatlan tétel esetén az adott csomag ellenőrzése függőben marad. A tényleges terjesztési csatorna feltételeit a csatorna kiválasztásakor kell ellenőrizni.
 - A PR kapcsolja össze a feladatot, az érintett követelmény- és tesztazonosítókat, a futtatott ellenőrzéseket és a tényleges eredményeket. A CI és a kézi próbák bizonyítékai az adott commitra és ahol releváns, a csomag hashére hivatkozzanak. AI-val készült változtatásnál a review a követelményekhez, szélső esetekhez, teszteredményekhez és a függőségi változásokhoz igazodik.
 
-A [nyitott kérdések](OPEN_QUESTIONS.md) és a szükséges próbák ütemezése a TASK-007 implementációs terv bemenetei. A fenti ellenőrzések tervezett ellenőrzések.
+A [nyitott kérdések](OPEN_QUESTIONS.md) és a szükséges próbák ütemezése a [TASK-007 implementációs terv](IMPLEMENTATION_PLAN.md) bemenetei. A fenti ellenőrzések tervezett ellenőrzések.
