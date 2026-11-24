@@ -1,5 +1,7 @@
 # Krónikás roadmap
 
+[Funkciók nyomon követése](TRACEABILITY.md)
+
 **Jelenleg** a helyi Dart CORE és a szintetikus platformpróbák a `main` ágon vannak. A GitHub-szinkron alapjai működnek, a Windows és Android meseválasztó előnézete kipróbálható. A teljes mesélői munkafolyamat még nyitott. [Projektállapot és futási előzmények](PROJECT_STATUS.md)
 
 **Következő mérföldkő** a két eszköz eltérő módosításainak mesélői feloldása az IMP-005-ben. Először az MVP feloldási útjáról kell dönteni. Az elfogadási próba két elkülönített klienssel igazolja a változatok megőrzését és a feloldott eredmény visszaolvasását. [Nyitott kérdések](OPEN_QUESTIONS.md) · [TST-004 futtatási menete](TEST_EXECUTION.md)

@@ -1,5 +1,7 @@
 # Architektúra és tesztstratégia – TASK-006
 
+[Funkciók nyomon követése](TRACEABILITY.md)
+
 Tulajdonos által jóváhagyott terv. Alapja a jóváhagyott [domainmodell](requirements/DOMAIN_MODEL.md), a [technológiai irány](TECHNOLOGY_FEASIBILITY.md) és a [licencelési átvilágítás](LICENSING_FEASIBILITY.md).
 
 ## Függőségi irány

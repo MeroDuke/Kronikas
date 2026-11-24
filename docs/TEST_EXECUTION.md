@@ -1,5 +1,7 @@
 # Tesztfuttatási útmutató – TASK-006
 
+[Funkciók nyomon követése](TRACEABILITY.md)
+
 Tulajdonos által jóváhagyott útmutató. A [tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md) ellenőrzéseinek végrehajtási menete. A CORE helyi futtatásához a repó gyökeréből indítsd a `pwsh -NoProfile -File tool/test.ps1` parancsot a [rögzített Dart SDK-val](CORE_DEVELOPMENT.md).
 
 ## Futtatási sorrend
@@ -13,17 +15,17 @@ Tulajdonos által jóváhagyott útmutató. A [tesztstratégia](ARCHITECTURE_AND
 
 | Teszt | Előkészítés, művelet és ellenőrzés |
 |---|---|
-| TST-001 | Adj be kis szintetikus kalandot a publikus Dart alkalmazási műveleteken keresztül. Futtass sikertelen, majd sikeres mérföldkövet kötött sorrend nélkül. Az aktuális státuszt és a két megmaradt eseményt érték szerint ellenőrizd. |
-| TST-002 | Valódi ideiglenes könyvtárat és új adapterpéldányt használj minden újranyitásnál. A megszakítást a mentési pont előtt és után idézd elő. Nyisd újra az adatot, hasonlítsd össze az állapotot az eseménytörténettel. A folyamatmegszakítást külön platformpróbán is ellenőrizd. |
-| TST-003 | Verzióhoz rögzített, ismert tartalmú mintát olvass be. Hasonlítsd össze a stabil azonosítókat és a történetet migrálás után. Hibás bemenetnél az eredeti másolat hashének egyezése igazolja a megőrzést. |
-| TST-004 | Két izolált profillal indulj ugyanabból a commitból. A szimulált adapterrel vezéreld a válaszvesztés és az írás közbeni helyi módosítás sorrendjét. Külön privát tesztrepóban ellenőrizd a tényleges branch fejet, a több fájlt módosító commitot, az ütközésjelzést és mindkét változat megőrzését. |
-| TST-005 | A Windows-próbához kövesd az alábbi felületi menetet. Androidon emulátorban vagy teszteszközön a tényleges kezelőszervekkel ismételd a megfelelő lépéseket. Kétplatformos elfogadáshoz az Android módosítását Windowson is olvasd vissza. |
-| TST-006 | Adj a lezárt alkalomhoz egy publikálható, egy titkos és egy elmaradt esetet. Ellenőrizd a helyi összefoglalót és a próbaadapterhez átadott bemenetet. Ments, hagyd jóvá, szerkessz és ellenőrizd, hogy az új revízió ismét jóváhagyást kér. |
-| TST-007 | Helyettesítő végponttal válts ki sikert, elutasítást és válaszvesztést. Ellenőrizd a kérések számát, a küldött revíziót és a három eltérő állapotot. Élő próbában csak szintetikus szöveg mehet a tesztcsatornára. |
-| TST-008 | Próbaértéket ments a platform védett tárolójába, majd újraindítás után olvasd vissza. Keress rá a próbaértékre a kampányfájlban és naplóban. A CORE-t külön futtasd Flutter és hálózat nélkül, és ellenőrizd a függőségi irányt. |
-| TST-009 | Bontsd ki ugyanazt a Windows-csomagot és Android APK/AAB-t, amelyet a futási próbán használsz vagy abból telepítesz. Vess össze fájl-, natívkomponens- és függőségi leltárt, SBOM-ot, licencszövegeket és notice-okat. |
-| TST-010 | Előre szabályozott helyettesítő futtatóval állíts elő sikert, assertion-hibát, hiányzó vagy korábbi eredményt, érvénytelen konfigurációt és időtúllépést. Ellenőrizd a kilépési állapotot, a naplót és az újrapróbálások számát. |
-| TST-011 | Tiszta profillal indítsd ismételten a csomagot. Ellenőrizd a normál belépési pontot, a függő vagy mentett állapot visszaolvasását és a diagnosztikát. A célzott megszakítást elkülönített próbában végezd el. |
+| <a name="tst-001"></a>TST-001<br>[UC-001](TRACEABILITY.md#uc-001) · [UC-003](TRACEABILITY.md#uc-003) · [UC-004](TRACEABILITY.md#uc-004) | Adj be kis szintetikus kalandot a publikus Dart alkalmazási műveleteken keresztül. Futtass sikertelen, majd sikeres mérföldkövet kötött sorrend nélkül. Az aktuális státuszt és a két megmaradt eseményt érték szerint ellenőrizd. |
+| <a name="tst-002"></a>TST-002<br>[UC-003](TRACEABILITY.md#uc-003) · [UC-004](TRACEABILITY.md#uc-004) | Valódi ideiglenes könyvtárat és új adapterpéldányt használj minden újranyitásnál. A megszakítást a mentési pont előtt és után idézd elő. Nyisd újra az adatot, hasonlítsd össze az állapotot az eseménytörténettel. A folyamatmegszakítást külön platformpróbán is ellenőrizd. |
+| <a name="tst-003"></a>TST-003<br>[UC-004](TRACEABILITY.md#uc-004) | Verzióhoz rögzített, ismert tartalmú mintát olvass be. Hasonlítsd össze a stabil azonosítókat és a történetet migrálás után. Hibás bemenetnél az eredeti másolat hashének egyezése igazolja a megőrzést. |
+| <a name="tst-004"></a>TST-004<br>[UC-002](TRACEABILITY.md#uc-002) · [UC-004](TRACEABILITY.md#uc-004) · [UC-005](TRACEABILITY.md#uc-005) | Két izolált profillal indulj ugyanabból a commitból. A szimulált adapterrel vezéreld a válaszvesztés és az írás közbeni helyi módosítás sorrendjét. Külön privát tesztrepóban ellenőrizd a tényleges branch fejet, a több fájlt módosító commitot, az ütközésjelzést és mindkét változat megőrzését. |
+| <a name="tst-005"></a>TST-005<br>[UC-001](TRACEABILITY.md#uc-001) · [UC-002](TRACEABILITY.md#uc-002) · [UC-003](TRACEABILITY.md#uc-003) · [UC-004](TRACEABILITY.md#uc-004) · [UC-005](TRACEABILITY.md#uc-005) | A Windows-próbához kövesd az alábbi felületi menetet. Androidon emulátorban vagy teszteszközön a tényleges kezelőszervekkel ismételd a megfelelő lépéseket. Kétplatformos elfogadáshoz az Android módosítását Windowson is olvasd vissza. |
+| <a name="tst-006"></a>TST-006<br>[UC-006](TRACEABILITY.md#uc-006) · [UC-007](TRACEABILITY.md#uc-007) | Adj a lezárt alkalomhoz egy publikálható, egy titkos és egy elmaradt esetet. Ellenőrizd a helyi összefoglalót és a próbaadapterhez átadott bemenetet. Ments, hagyd jóvá, szerkessz és ellenőrizd, hogy az új revízió ismét jóváhagyást kér. |
+| <a name="tst-007"></a>TST-007<br>[UC-007](TRACEABILITY.md#uc-007) | Helyettesítő végponttal válts ki sikert, elutasítást és válaszvesztést. Ellenőrizd a kérések számát, a küldött revíziót és a három eltérő állapotot. Élő próbában csak szintetikus szöveg mehet a tesztcsatornára. |
+| <a name="tst-008"></a>TST-008<br>[UC-002](TRACEABILITY.md#uc-002) | Próbaértéket ments a platform védett tárolójába, majd újraindítás után olvasd vissza. Keress rá a próbaértékre a kampányfájlban és naplóban. A CORE-t külön futtasd Flutter és hálózat nélkül, és ellenőrizd a függőségi irányt. |
+| <a name="tst-009"></a>TST-009 | Bontsd ki ugyanazt a Windows-csomagot és Android APK/AAB-t, amelyet a futási próbán használsz vagy abból telepítesz. Vess össze fájl-, natívkomponens- és függőségi leltárt, SBOM-ot, licencszövegeket és notice-okat. |
+| <a name="tst-010"></a>TST-010 | Előre szabályozott helyettesítő futtatóval állíts elő sikert, assertion-hibát, hiányzó vagy korábbi eredményt, érvénytelen konfigurációt és időtúllépést. Ellenőrizd a kilépési állapotot, a naplót és az újrapróbálások számát. |
+| <a name="tst-011"></a>TST-011 | Tiszta profillal indítsd ismételten a csomagot. Ellenőrizd a normál belépési pontot, a függő vagy mentett állapot visszaolvasását és a diagnosztikát. A célzott megszakítást elkülönített próbában végezd el. |
 
 ## Android E2E GitHub Actionsben
 
