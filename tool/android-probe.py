@@ -31,12 +31,16 @@ def tap(label):
     adb("shell", "input", "tap", str((left + right) // 2), str((top + bottom) // 2))
 
 
-adb("shell", "am", "start", "-W", "-n", ACTIVITY)
-observe("Ready for synthetic probe.")
-tap("Save test data")
-observe("Synthetic chronicle and protected value saved.")
-adb("shell", "am", "force-stop", PACKAGE)
-adb("shell", "am", "start", "-W", "-n", ACTIVITY)
-observe("Ready for synthetic probe.")
-tap("Verify saved data")
-observe("Chronicle and protected value verified.")
+try:
+    adb("shell", "am", "start", "-W", "-n", ACTIVITY)
+    observe("Ready for synthetic probe.")
+    tap("Save test data")
+    observe("Synthetic chronicle and protected value saved.")
+    adb("shell", "am", "force-stop", PACKAGE)
+    adb("shell", "am", "start", "-W", "-n", ACTIVITY)
+    observe("Ready for synthetic probe.")
+    tap("Verify saved data")
+    observe("Chronicle and protected value verified.")
+finally:
+    adb("shell", "am", "force-stop", PACKAGE)
+    print("Closed the platform probe app.", flush=True)

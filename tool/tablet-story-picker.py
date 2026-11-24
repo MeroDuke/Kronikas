@@ -102,18 +102,22 @@ def main():
 
     record(f"Installed commit {args.commit}, APK SHA-256 {expected}")
     adb("shell", "am", "force-stop", PACKAGE)
-    adb("shell", "am", "start", "-W", "-n", ACTIVITY)
-    observe("Repó csatlakoztatása")
-    capture("01-connect")
-    tap("Repó csatlakoztatása")
-    observe("Teszt mese")
-    capture("02-story-list")
-    tap("Teszt mese")
-    observe("Szintetikus próbatörténet.")
-    capture("03-story-open")
-    tap("Vissza a mesékhez")
-    observe("Mesék · main")
-    capture("04-story-list-return")
+    try:
+        adb("shell", "am", "start", "-W", "-n", ACTIVITY)
+        observe("Repó csatlakoztatása")
+        capture("01-connect")
+        tap("Repó csatlakoztatása")
+        observe("Teszt mese")
+        capture("02-story-list")
+        tap("Teszt mese")
+        observe("Szintetikus próbatörténet.")
+        capture("03-story-open")
+        tap("Vissza a mesékhez")
+        observe("Mesék · main")
+        capture("04-story-list-return")
+    finally:
+        adb("shell", "am", "force-stop", PACKAGE)
+        record("Closed the story picker app.")
 
 
 def file_sha(path):

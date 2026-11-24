@@ -23,3 +23,5 @@ python tool/tablet-story-picker.py <kibontott-melléklet> --commit <teljes-SHA> 
 ```
 
 A futtató a commitot, az ARM64-architektúrát és a csomag SHA-256 értékét telepítés előtt ellenőrzi. A telepített APK visszaolvasott hashének is egyeznie kell. A próba a repó csatlakoztatásáról, a meselistáról, a megnyitott meséről és a visszalépésről képernyőképet ment. Eltérő CI-aláírásnál a `--replace-test-app` kapcsolóval engedélyezhető a szintetikus meseválasztó eltávolítása és újratelepítése.
+
+Az Androidos futtatók a képernyőképek és a felületi ellenőrzés után bezárják a tesztalkalmazást. A bezárás hibás futásnál is megtörténik, amíg a készülék ADB-n elérhető.
