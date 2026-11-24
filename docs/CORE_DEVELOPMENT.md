@@ -10,6 +10,14 @@ A séma első verziója egy olvasható JSON-pillanatkép. A kampány és kaland 
 
 A mentési commitpont az új, sorszámozott revízióra történő átnevezés ugyanazon a fájlrendszeren, a tartalom flusholása után. A félbemaradt átmeneti könyvtár nem része a mentési történetnek. A korábbi revíziók megmaradnak. A megőrzési szabály és a fizikai eszközön végzett megszakítási próba későbbi feladat.
 
+## GitHub-szinkron – IMP-005
+
+A `ChronicleSync.synchronize()` explicit hívásra dolgozik. A `GitHubChronicleRemote` bemenete az owner, privát repo, már létező ág és opcionális könyvtár. A rövid életű vagy korlátozott token a hívó hitelesítőadat-szolgáltatójától érkezik. Az adapter nem menti a tokent. A nyilvános repo elutasításra kerül. A teljes helyi krónika, beleértve a mesélői adatokat, a konfigurált privát repóba kerül.
+
+A távoli `chronicle.json` és a tartalom blobazonosítójára mutató `manifest.json` egyetlen Git-commitban készül. Az adapter force nélkül lépteti az ágat. Az előkészített commit azonosítója és az ahhoz tartozó adatrevízió a helyi mentéshez tartozik, a távoli fájlokba ezek nem kerülnek. A következő futás hálózati válasz elvesztése után ellenőrzi, bekerült-e a commit a távoli történetbe. A közben készült helyi módosítás függőben marad. Ütközésnél a szinkron megáll és mindkét változat olvasható marad. Az ágváltozás kezelése konzervatív: egyidejű helyi változásnál az idegen távoli commit is ütközést okozhat.
+
+A rutin teszt helyettesítő tárolóval ellenőrzi az offline mentést, két kliens eltérő módosításait és a válaszvesztés utáni újranyitást. Az élő privát repós próba, az alkalmazás hitelesítőadat-kezeléséhez kötés és a mesélő által használható konfliktusfeloldás külön ellenőrzést igényel.
+
 ## Futtatás
 
 A repó gyökerében, PowerShell 7.2 vagy újabb környezetben futtasd az alábbi parancsot. A Dart SDK elérhető lehet a PATH-on vagy a `-Dart` paraméterrel megadott helyen.

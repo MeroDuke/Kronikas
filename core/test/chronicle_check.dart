@@ -1,13 +1,16 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:kronikas_core/kronikas_core.dart';
 import 'package:kronikas_core/local_chronicle_store.dart';
 
+import 'sync_check.dart';
+
 final start = DateTime.utc(2026, 11, 24, 18);
 final end = DateTime.utc(2026, 11, 24, 20);
 
-void main(List<String> args) {
+Future<void> main(List<String> args) async {
   if (args.length == 2 && args.first == '--interrupt-update') {
     final store = LocalChronicleStore(Directory(args.last));
     store.update((chronicle) {
@@ -20,18 +23,19 @@ void main(List<String> args) {
     });
     throw StateError('The interruption probe unexpectedly returned.');
   }
-  final checks = {
+  final checks = <String, FutureOr<void> Function()>{
     'campaign and one-shot preparation': _preparation,
     'outcomes and continuity across sessions': _continuity,
     'invalid operations preserve state': _invalidOperations,
     'versioned local snapshot and continued session': _localRoundTrip,
     'interrupted update preserves committed state': _interruptedUpdate,
     'unsupported schema preserves the original data': _unsupportedSchema,
+    ...syncChecks,
   };
   final failures = <String, String>{};
   for (final MapEntry(:key, :value) in checks.entries) {
     try {
-      value();
+      await value();
       stdout.writeln('PASS $key');
     } catch (error, stack) {
       failures[key] = error.toString();
