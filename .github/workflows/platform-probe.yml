@@ -79,6 +79,7 @@ jobs:
           flutter analyze --no-pub
           flutter build apk --release --target-platform android-x64 --no-pub
           mkdir -p ../build/android-probe
+          (cd android && ./gradlew :app:dependencies --configuration releaseRuntimeClasspath --console=plain) +            > ../build/android-probe/gradle-runtime-dependencies.txt
           cp build/app/outputs/flutter-apk/app-release.apk ../build/android-probe/
           cd ../build/android-probe
           sha256sum app-release.apk > sha256.txt
@@ -89,8 +90,12 @@ jobs:
         run: |
           set -o pipefail
           image='system-images;android-35;google_apis;x86_64'
-          sdkmanager --install "$image"
-          echo no | avdmanager create avd --name kronikas-probe --package "$image" --force
+          tools="$ANDROID_HOME/cmdline-tools/latest/bin"
+          if [[ ! -x "$tools/sdkmanager" ]]; then
+            tools=$(dirname "$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)")
+          fi
+          "$tools/sdkmanager" --install "$image"
+          echo no | "$tools/avdmanager" create avd --name kronikas-probe --package "$image" --force
           sudo chmod a+rw /dev/kvm
           "$ANDROID_HOME/emulator/emulator" -avd kronikas-probe -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect +            > build/android-probe/emulator.log 2>&1 &
           emulator_pid=$!
