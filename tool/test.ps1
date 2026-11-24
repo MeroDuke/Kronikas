@@ -61,7 +61,7 @@ try {
     foreach ($check in @(
         @{ Name = 'format'; Arguments = @('format', '--output=none', '--set-exit-if-changed', '.') },
         @{ Name = 'analyze'; Arguments = @('analyze', '--fatal-infos', '.') },
-        @{ Name = 'core'; Arguments = @('run', 'test/foundation_check.dart', $resultPath) }
+        @{ Name = 'core'; Arguments = @('run', 'test/chronicle_check.dart', $resultPath) }
     )) {
         if ((Invoke-DartCheck $check.Name $check.Arguments).Code -ne 0) {
             $report.status = 'failed'

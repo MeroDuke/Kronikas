@@ -1,6 +1,6 @@
-# Dart CORE fejlesztés – IMP-001
+# Dart CORE fejlesztés – IMP-001 és IMP-002
 
-A tiszta Dart csomag publikus belépési pontja a `core/lib/kronikas_core.dart`. Az első ellenőrzés önálló Dart SDK-val betölti a könyvtárat. Az üzleti műveletek és azok tesztjei az IMP-002-ben kerülnek ide.
+A tiszta Dart csomag publikus belépési pontja a `core/lib/kronikas_core.dart`. A `Chronicle` memóriában kezeli a kampányt, az önálló vagy kampányhoz tartozó kalandot, a jeleneteket, a mérföldköveket, a mesélői jegyzeteket és a játékalkalmakat. A mérföldkő rögzítése együtt frissíti az aktuális állapotot és az eseménytörténetet. Egy kalandhoz egyszerre egy nyitott alkalom tartozhat. Az azonosítókat és időpontokat a hívó adja meg. A fájlséma és a tartós mentés az IMP-003 feladata.
 
 ## Futtatás
 
@@ -10,7 +10,7 @@ A repó gyökerében, PowerShell 7.2 vagy újabb környezetben futtasd az alább
 pwsh -NoProfile -File tool/test.ps1
 ```
 
-A futtató ellenőrzi a Dart verzióját, a lockfile-t, a formázást és a statikus elemzést, majd futtatja a CORE alapellenőrzését. A függőségek feloldása offline történik. Minden futás külön JSON-jelentést és lépésnaplókat ír a `build/test-results` könyvtárba. A kilépési kód 0 siker, 1 teszt- vagy kódellenőrzési hiba, 2 infrastruktúra- vagy eredményhiba, 3 érvénytelen konfiguráció. A Windows CI ugyanezt a parancsot futtatja, és hiba esetén is megőrzi a létrejött jelentéseket.
+A futtató ellenőrzi a Dart verzióját, a lockfile-t, a formázást és a statikus elemzést. A CORE tesztek a publikus belépési ponton ellenőrzik a kampány és a one-shot előkészítését, a nemlineáris kimeneteleket és a játékalkalmak közti folytonosságot, valamint a hibás műveletek hatását. A függőségek feloldása offline történik. Minden futás külön JSON-jelentést és lépésnaplókat ír a `build/test-results` könyvtárba. A kilépési kód 0 siker, 1 teszt- vagy kódellenőrzési hiba, 2 infrastruktúra- vagy eredményhiba, 3 érvénytelen konfiguráció. A Windows CI ugyanezt a parancsot futtatja, és hiba esetén is megőrzi a létrejött jelentéseket.
 
 ## Ellenőrzött eszközkészlet
 
