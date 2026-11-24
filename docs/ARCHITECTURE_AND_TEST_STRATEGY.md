@@ -51,6 +51,8 @@ A hivatkozások az elfogadott [funkcionális](requirements/FUNCTIONAL_REQUIREMEN
 
 Score-források: [tesztelési szabályok](https://github.com/MeroDuke/Akihabarai-Score/blob/0503239b03fdea2d5c1f3926bf6143f9f3312de4/AGENTS.md), [Windows build és tesztek](https://github.com/MeroDuke/Akihabarai-Score/blob/0503239b03fdea2d5c1f3926bf6143f9f3312de4/.github/workflows/build-windows-exe.yml), [előzetes validáció](https://github.com/MeroDuke/Akihabarai-Score/blob/0503239b03fdea2d5c1f3926bf6143f9f3312de4/docs/validation/preproduction_validation.md). Az Aldrod áttekintése a hozzáférés-köteles repó tesztfuttatási dokumentációjára, futtatóira és kézi ellenőrzési gyakorlatára épült. Az itt szereplő alkalmazási példák a Krónikás nyilvános követelményeiből származnak.
 
+A [tesztfuttatási útmutató](TEST_EXECUTION.md) rögzíti a tesztcsoportok végrehajtását és az Aldrod módszerére épülő Windowsos Codex Computer Use E2E jegyzőkönyvet.
+
 ## CI és ellenőrizhető bizonyítékok
 
 - A funkció megjelenésével együtt kerüljön CI-be a formázás, statikus elemzés és a hozzá tartozó automatizált ellenőrzés. A Phase 1 első kapuja a tiszta Dart CORE és a helyi perzisztencia. A platform build, csomagolt smoke teszt és licencellenőrzés az első Windows/Android próbacsomagtól kapcsolódik be.
