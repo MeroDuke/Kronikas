@@ -8,9 +8,9 @@
 - Saját használat az első cél, későbbi nyilvános termék lehetőségével.
 
 ## Következő lépés
-A [felhasználási esetek](requirements/USE_CASES.md) jóváhagyva (TASK-002). A TASK-003 [funkcionális](requirements/FUNCTIONAL_REQUIREMENTS.md) és [nem funkcionális követelményeinek](requirements/NON_FUNCTIONAL_REQUIREMENTS.md) v0.2 tervezete elkészült. A következő lépés a kritériumok jóváhagyása, utána a domain- és adatmodell (TASK-004).
+A [felhasználási esetek](requirements/USE_CASES.md) és a v0.2 [funkcionális](requirements/FUNCTIONAL_REQUIREMENTS.md) és [nem funkcionális követelmények](requirements/NON_FUNCTIONAL_REQUIREMENTS.md) jóváhagyva (TASK-002 és TASK-003). A [domain- és adatmodell v0.1 tervezete](requirements/DOMAIN_MODEL.md) elkészült (TASK-004). A modell jóváhagyása után a technológiai megvalósíthatóság vizsgálata következik (TASK-005).
 
-Dokumentációs ellenőrzés: 26 FR és 12 NFR rendelkezik elfogadási kritériummal és hivatkozott felhasználási esettel. Termékteszt még nem futott.
+Dokumentációs ellenőrzés: 26 FR és 12 NFR rendelkezik elfogadási kritériummal és hivatkozott felhasználási esettel. A domainmodell mind a hét felhasználási esetre hivatkozik, hat egyedi üzleti szabályazonosítót tartalmaz, és az érintett Markdown-fájlok relatív dokumentumhivatkozásai feloldhatók. Termékteszt még nem futott.
 
 ## Tájékozódás
 [Backlog](BACKLOG.md) · [Roadmap](ROADMAP.md) · [Nyitott kérdések](OPEN_QUESTIONS.md) · [Koncepció](concept/PROJECT_CONCEPT.md) · [Döntések](decisions/ADR-0001-project-foundations.md)

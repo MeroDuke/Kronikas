@@ -1,4 +1,4 @@
-# Funkcionális követelmények – v0.2 tervezet
+# Funkcionális követelmények – v0.2
 
 | ID | Követelmény | Felhasználási eset | Elfogadási kritérium |
 |---|---|---|---|
@@ -29,4 +29,4 @@
 | FR-025 | Discord publikáció | UC-007 | Sikeres küldéskor a jóváhagyott szöveg megjelenik a beállított csatornán; sikertelen vagy bizonytalan küldéskor látható az eltérő állapot, és a mentett szöveg megmarad. |
 | FR-026 | Mesélői és publikálható információk elkülönítése | UC-006 | Egy publikálható esemény bekerülhet az összefoglaló bemenetébe; egy titkos esemény és egy kihagyott jelenet kimarad, az opcionális LLM bemenetéből is. |
 
-A felhasználási esetek leírása az [UC-dokumentumban](USE_CASES.md) található. A kritériumok jóváhagyásra várnak.
+A felhasználási esetek leírása az [UC-dokumentumban](USE_CASES.md) található. A kritériumokat a tulajdonos jóváhagyta (TASK-003).

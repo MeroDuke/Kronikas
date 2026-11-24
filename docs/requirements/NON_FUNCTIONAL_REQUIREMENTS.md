@@ -1,4 +1,4 @@
-# Nem funkcionális követelmények – v0.2 tervezet
+# Nem funkcionális követelmények – v0.2
 
 | ID | Követelmény | Felhasználási eset | Elfogadási kritérium |
 |---|---|---|---|
@@ -15,4 +15,4 @@
 | NFR-011 | Kalandadatok alkalmazástól független hozzáférhetősége | UC-001, UC-004 | A mintakaland és eseménytörténete közvetlenül a fájlokból olvasható az alkalmazás telepítése és futtatása nélkül. |
 | NFR-012 | Visszafelé kompatibilis vagy migrálható adatformátum | UC-002, UC-004 | Korábbi támogatott sémájú mintakaland megnyílik vagy migrálható; az ellenőrzés összeveti a migrálás előtti és utáni kalandállapotot és eseménytörténetet. |
 
-A felhasználási esetek leírása az [UC-dokumentumban](USE_CASES.md) található. A kritériumok jóváhagyásra várnak.
+A felhasználási esetek leírása az [UC-dokumentumban](USE_CASES.md) található. A kritériumokat a tulajdonos jóváhagyta (TASK-003).
