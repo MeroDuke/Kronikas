@@ -68,3 +68,8 @@ Az első Windows-próbacsomagtól alkalmazható, a kész felületi folyamatokkal
 | Zárd le az alkalmat, majd indíts egy következőt. | A korábbi alkalom visszanézhető, az új alkalom ugyanabból a mentett kalandállapotból indul. |
 
 Az útvonal az elérhető funkciókkal bővül. A szinkron esetén a képernyőn jelzett állapot mellé a másik eszközön történő visszaolvasás ad bizonyítékot. A Discord-publikációhoz a tesztcsatorna visszaigazolása is kell. A Windowsos Computer Use futás a Windows felület eredményét igazolja. Az Androidos felület és a kétplatformos folyamat saját végrehajtást igényel.
+
+## Hibadiagnosztika a CI-mellékletekből
+
+- A `dart-core-results` melléklet `core.json` és `core.log` fájlja a szinkronellenőrzés nevét, az elvárt és a tényleges értéket mutatja. A veremkivonat a `core.log` fájlban olvasható.
+- Az `android-ui-evidence` mellékletben a hibás ABI könyvtárán belül a `storage-failure` vagy `story-picker` mappát nyisd meg. A futtató a hibaüzenetet, az aktuális képernyőképet, a UI-fát és a szintetikus app UID-jára szűrt logcat-részletet próbálja menteni a bezárás előtt. A gyűjtés hibái a job naplójában látszanak. Eszközkapcsolat elvesztésekor a már mentett bizonyítékok érhetők el.

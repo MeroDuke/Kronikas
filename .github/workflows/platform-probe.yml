@@ -2,7 +2,7 @@ name: Platform probe
 
 on:
   pull_request:
-    paths: ['platform_probe/**', 'core/lib/**', 'tool/android-probe.py', 'tool/tablet-story-picker.py', 'tool/sdk.json', '.github/workflows/platform-probe.yml']
+    paths: ['platform_probe/**', 'core/lib/**', 'tool/android-probe.py', 'tool/android_failure_evidence.py', 'tool/tablet-story-picker.py', 'tool/sdk.json', '.github/workflows/platform-probe.yml']
 
 permissions:
   contents: read
@@ -216,7 +216,7 @@ jobs:
             adb install "$artifacts/$probe/$apk"
             adb shell dumpsys package "$storage" | tr -d '\r' > "$evidence/$variant/storage-package.txt"
             grep -Eq "^[[:space:]]*primaryCpuAbi=$abi[[:space:]]*$" "$evidence/$variant/storage-package.txt"
-            python3 -X utf8 tool/android-probe.py | tee "$evidence/$variant/storage-steps.txt"
+            python3 -X utf8 tool/android-probe.py --evidence "$evidence/$variant/storage-failure" | tee "$evidence/$variant/storage-steps.txt"
             if ! adb shell pidof "$storage" >/dev/null; then
               adb uninstall "$storage"
             else

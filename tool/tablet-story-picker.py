@@ -9,6 +9,8 @@ import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
 
+from android_failure_evidence import collect_failure
+
 PACKAGE = "hu.akihabarai.kronikas_story_picker_probe"
 ACTIVITY = f"{PACKAGE}/hu.akihabarai.kronikas_platform_probe.MainActivity"
 
@@ -96,7 +98,6 @@ def main():
                     record(f"Observed: {label}")
                     return node
             time.sleep(1)
-        capture("unexpected")
         raise RuntimeError(f"UI state not observed: {label}")
 
     def tap(label):
@@ -124,6 +125,9 @@ def main():
         tap("Vissza a mesékhez")
         observe("Mesék · main")
         capture("05-story-list-return")
+    except Exception as error:
+        collect_failure(adb, PACKAGE, args.evidence, "/sdcard/kronikas-story-picker.xml", error)
+        raise
     finally:
         adb("shell", "am", "force-stop", PACKAGE)
         record("Closed the story picker app.")

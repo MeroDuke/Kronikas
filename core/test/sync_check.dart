@@ -18,7 +18,8 @@ Future<void> _addresses() async {
     'https://github.com/SampleOwner/sample-stories.git/',
   ]) {
     final repo = parseGitHubRepository(address);
-    _check(repo.owner == 'SampleOwner' && repo.repository == 'sample-stories');
+    _expect('Repository owner', repo.owner, 'SampleOwner');
+    _expect('Repository name', repo.repository, 'sample-stories');
   }
   for (final address in [
     'http://github.com/owner/repo',
@@ -46,28 +47,47 @@ Future<void> _conflict() async {
       await ChronicleSync(first, remote).synchronize();
       throw StateError('Expected offline error.');
     } on SocketException {
-      _check(first.open().adventures['a']?.title == 'Original');
+      _expect(
+        'Local title after offline sync',
+        first.open().adventures['a']?.title,
+        'Original',
+      );
     }
     remote.offline = false;
-    _check(
-      await ChronicleSync(first, remote).synchronize() == SyncOutcome.uploaded,
+    _expect(
+      'First client initial sync',
+      await ChronicleSync(first, remote).synchronize(),
+      SyncOutcome.uploaded,
     );
-    _check(
-      await ChronicleSync(second, remote).synchronize() ==
-          SyncOutcome.downloaded,
+    _expect(
+      'Second client initial sync',
+      await ChronicleSync(second, remote).synchronize(),
+      SyncOutcome.downloaded,
     );
     _rename(first, 'First edit');
     _rename(second, 'Second edit');
-    _check(
-      await ChronicleSync(first, remote).synchronize() == SyncOutcome.uploaded,
+    _expect(
+      'First client publishes edit',
+      await ChronicleSync(first, remote).synchronize(),
+      SyncOutcome.uploaded,
     );
     final head = remote.current;
-    _check(
-      await ChronicleSync(second, remote).synchronize() == SyncOutcome.conflict,
+    _expect(
+      'Second client detects conflict',
+      await ChronicleSync(second, remote).synchronize(),
+      SyncOutcome.conflict,
     );
-    _check(remote.current == head);
-    _check(second.open().adventures['a']?.title == 'Second edit');
-    _check(first.open().adventures['a']?.title == 'First edit');
+    _expect('Remote head after conflict', remote.current, head);
+    _expect(
+      'Second client retains local edit',
+      second.open().adventures['a']?.title,
+      'Second edit',
+    );
+    _expect(
+      'First client retains published edit',
+      first.open().adventures['a']?.title,
+      'First edit',
+    );
   });
 }
 
@@ -84,27 +104,43 @@ Future<void> _lostResponse() async {
       await ChronicleSync(first, remote).synchronize();
       throw StateError('Expected a lost response.');
     } on TimeoutException {
-      _check(first.readRevision().sync['pending'] == remote.current);
+      _expect(
+        'Pending commit after lost response',
+        first.readRevision().sync['pending'],
+        remote.current,
+      );
     }
     final reopened = LocalChronicleStore(first.directory);
-    _check(
-      await ChronicleSync(reopened, remote).synchronize() ==
-          SyncOutcome.uploaded,
+    _expect(
+      'First recovery sync',
+      await ChronicleSync(reopened, remote).synchronize(),
+      SyncOutcome.uploaded,
     );
-    _check(remote.advances == 1);
-    _check(
-      await ChronicleSync(reopened, remote).synchronize() ==
-          SyncOutcome.uploaded,
+    _expect('Remote writes after recovering lost response', remote.advances, 1);
+    _expect(
+      'Second recovery sync',
+      await ChronicleSync(reopened, remote).synchronize(),
+      SyncOutcome.uploaded,
     );
-    _check(remote.advances == 2);
-    _check(
-      await ChronicleSync(second, remote).synchronize() ==
-          SyncOutcome.downloaded,
+    _expect(
+      'Remote writes after publishing concurrent edit',
+      remote.advances,
+      2,
     );
-    _check(second.open().adventures['a']?.title == 'Edit during upload');
-    _check(
-      await ChronicleSync(reopened, remote).synchronize() ==
-          SyncOutcome.upToDate,
+    _expect(
+      'Second client downloads concurrent edit',
+      await ChronicleSync(second, remote).synchronize(),
+      SyncOutcome.downloaded,
+    );
+    _expect(
+      'Downloaded title',
+      second.open().adventures['a']?.title,
+      'Edit during upload',
+    );
+    _expect(
+      'First client final sync',
+      await ChronicleSync(reopened, remote).synchronize(),
+      SyncOutcome.upToDate,
     );
   });
 }
@@ -129,8 +165,10 @@ Future<void> _withStores(
   }
 }
 
-void _check(bool success) {
-  if (!success) throw StateError('Sync expectation failed.');
+void _expect(String context, Object? actual, Object? expected) {
+  if (actual != expected) {
+    throw StateError('$context: expected <$expected>, got <$actual>.');
+  }
 }
 
 final class _Remote implements ChronicleRemote {
