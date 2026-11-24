@@ -29,6 +29,8 @@ Tulajdonos által jóváhagyott útmutató. A [tesztstratégia](ARCHITECTURE_AND
 
 A fizikai tableten minden ADB-műveletet vezeték nélküli hibakereséssel végzünk, beleértve a telepítést, az indítást, a tesztelést és az engedélyezett eltávolítást. A futás előtt az aktuális hálózati végpontot az adb mdns services kimenetéből vagy a tablet Vezeték nélküli hibakeresés képernyőjéről ellenőrizzük. Az adb connect után az adb devices -l listában a hálózati eszköznek device állapotban kell lennie. A parancsokat az adb -s IP:PORT kapcsolóval célozzuk. Ha a kapcsolat offline, megkeressük az új portot és újracsatlakozunk. Az első kábel nélküli kapcsolatot a tablet modelljének lekérdezésével igazoltuk.
 
+Fizikai próba: Wi-Fi-s ADB-n célzott, már telepített ARM64 platformpróbán lefutott a felületi mentés, teljes leállítás, újraindítás és visszaolvasás. A meglévő szintetikus kaland és a védett próbaérték ellenőrzése sikeres volt.
+
 ## Windows E2E Codex Computer Use-zal
 
 Az első Windows-próbacsomagtól alkalmazható, a kész felületi folyamatokkal bővül. A Codex a telepített vagy kibontott alkalmazást a Windows felületén kezeli. A szintetikus tesztadat létrehozása lehet előkészítési művelet. Az elfogadási lépéseket a szokásos kezelőszerveken kell végrehajtani. Az infrastruktúra állapota, az automatizált futások és a Computer Use eredménye külön szerepel a jegyzőkönyvben.
