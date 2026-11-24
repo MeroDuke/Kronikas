@@ -18,6 +18,12 @@ A távoli `chronicle.json` és a tartalom blobazonosítójára mutató `manifest
 
 A rutin teszt helyettesítő tárolóval ellenőrzi az offline mentést, két kliens eltérő módosításait és a válaszvesztés utáni újranyitást. Az élő privát repós próba, az alkalmazás hitelesítőadat-kezeléséhez kötés és a mesélő által használható konfliktusfeloldás külön ellenőrzést igényel.
 
+## A repó- és meseválasztás alapja
+
+A `GitHubChronicleRemote.connect` felhasználótól kapott GitHub URL-t vagy `owner/repo` címet fogad. A repó alapértelmezett ágát használja, ha a hívó nem választ másik ágat. A `listStories()` a `stories/<mese>/manifest.json` és `chronicle.json` párokat keresi a kiválasztott ág egyetlen revíziójában. A katalógus gyökere konfigurálható. A mese címe az adatfájlból származik, a manifest pedig a hozzá tartozó blobot ellenőrzi. Hiányos vagy hibás párnál az adapter hibát jelez.
+
+A `forStory(story)` a kiválasztott könyvtárra szűkíti az adaptert. A hívó mesénként külön helyi tárolót ad a `ChronicleSync` műveletnek. Az élő, csak olvasó próbán az üres alapértelmezett ág üres listát adott, a külön tesztág a szintetikus mesét cím szerint listázta, a kiválasztott mese pedig új helyi tárolóba betöltődött. A tesztrepót és a tesztágat a próbafuttató adta meg.
+
 ## Futtatás
 
 A repó gyökerében, PowerShell 7.2 vagy újabb környezetben futtasd az alábbi parancsot. A Dart SDK elérhető lehet a PATH-on vagy a `-Dart` paraméterrel megadott helyen.

@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'chronicle_sync.dart';
+import 'src/chronicle_json.dart';
 
 typedef _Json = Map<String, dynamic>;
+
+typedef GitHubStory = ({String directory, String title});
 
 final class GitHubSyncException implements Exception {
   const GitHubSyncException(this.statusCode);
@@ -17,6 +20,33 @@ final class GitHubSyncException implements Exception {
 
 /// Stores one Chronicle document and its manifest on an existing private branch.
 final class GitHubChronicleRemote implements ChronicleRemote {
+  /// Resolves a user-entered repository address and its default or chosen branch.
+  static Future<GitHubChronicleRemote> connect({
+    required String address,
+    String? branch,
+    required Future<String> Function() token,
+    required HttpClient client,
+  }) async {
+    final location = parseGitHubRepository(address);
+    final connection = GitHubChronicleRemote(
+      owner: location.owner,
+      repository: location.repository,
+      branch: branch ?? 'HEAD',
+      directory: '',
+      token: token,
+      client: client,
+    );
+    final info = await connection._privateRepository();
+    return GitHubChronicleRemote(
+      owner: location.owner,
+      repository: location.repository,
+      branch: branch ?? (info['default_branch'] as String),
+      directory: '',
+      token: token,
+      client: client,
+    );
+  }
+
   GitHubChronicleRemote({
     required this.owner,
     required this.repository,
@@ -60,21 +90,64 @@ final class GitHubChronicleRemote implements ChronicleRemote {
     directory,
   ]);
 
+  GitHubChronicleRemote forStory(GitHubStory story) => GitHubChronicleRemote(
+    owner: owner,
+    repository: repository,
+    branch: branch,
+    directory: story.directory,
+    token: token,
+    client: client,
+  );
+
   String _file(String name) => directory.isEmpty ? name : '$directory/$name';
   List<String> get _branch => ['heads', ...branch.split('/')];
 
   @override
   Future<String> head() async {
-    final repo = await _request('GET', const []);
-    if (repo['private'] != true) {
-      throw StateError('Chronicle sync requires a private GitHub repository.');
-    }
+    await _privateRepository();
     final ref = await _request('GET', ['git', 'ref', ..._branch]);
     return _sha((ref['object'] as _Json)['sha']);
   }
 
-  @override
-  Future<String?> readSnapshot(String commit) async {
+  Future<_Json> _privateRepository() async {
+    final repo = await _request('GET', const []);
+    if (repo['private'] != true) {
+      throw StateError('Chronicle sync requires a private GitHub repository.');
+    }
+    return repo;
+  }
+
+  /// Lists complete stories directly under the configured catalog directory.
+  Future<List<GitHubStory>> listStories({String catalog = 'stories'}) async {
+    if (!_validParts(catalog.split('/'))) {
+      throw ArgumentError('Invalid story catalog directory.');
+    }
+    final files = await _snapshotFiles(await head());
+    final stories = <GitHubStory>[];
+    final prefix = '$catalog/';
+    for (final path in files.keys) {
+      if (!path.startsWith(prefix)) continue;
+      final relative = path.substring(prefix.length).split('/');
+      if (relative.length != 2 || relative.last != 'manifest.json') continue;
+      final name = relative.first;
+      if (!_validParts([name])) continue;
+      final directory = '$prefix$name';
+      final snapshot = await _readSnapshot(files, directory);
+      if (snapshot == null) continue;
+      final chronicle = decodeChronicle(snapshot);
+      stories.add((
+        directory: directory,
+        title: chronicle.adventures.values.firstOrNull?.title ?? name,
+      ));
+    }
+    stories.sort((a, b) {
+      final titleOrder = a.title.toLowerCase().compareTo(b.title.toLowerCase());
+      return titleOrder == 0 ? a.directory.compareTo(b.directory) : titleOrder;
+    });
+    return List.unmodifiable(stories);
+  }
+
+  Future<Map<String, String>> _snapshotFiles(String commit) async {
     final treeSha = await _treeSha(commit);
     final tree = await _request(
       'GET',
@@ -86,18 +159,33 @@ final class GitHubChronicleRemote implements ChronicleRemote {
     }
     final files = <String, String>{};
     for (final entry in (tree['tree'] as List).cast<_Json>()) {
-      final path = entry['path'];
-      if (path == _file('chronicle.json') || path == _file('manifest.json')) {
-        if (entry['type'] != 'blob' || entry['mode'] != '100644') {
-          throw const FormatException('Unexpected GitHub snapshot entry.');
-        }
-        files[path as String] = _sha(entry['sha']);
+      final path = entry['path'] as String;
+      final filename = path.split('/').last;
+      if (filename == 'chronicle.json' || filename == 'manifest.json') {
+        files[path] = entry['type'] == 'blob' && entry['mode'] == '100644'
+            ? _sha(entry['sha'])
+            : '';
       }
     }
-    if (files.isEmpty) return null;
-    final data = files[_file('chronicle.json')];
-    final manifestSha = files[_file('manifest.json')];
-    if (data == null || manifestSha == null) {
+    return files;
+  }
+
+  @override
+  Future<String?> readSnapshot(String commit) async =>
+      _readSnapshot(await _snapshotFiles(commit), directory);
+
+  Future<String?> _readSnapshot(
+    Map<String, String> files,
+    String directory,
+  ) async {
+    final prefix = directory.isEmpty ? '' : '$directory/';
+    final data = files['${prefix}chronicle.json'];
+    final manifestSha = files['${prefix}manifest.json'];
+    if (data == null && manifestSha == null) return null;
+    if (data == null ||
+        manifestSha == null ||
+        data.isEmpty ||
+        manifestSha.isEmpty) {
       throw const FormatException('Incomplete GitHub snapshot.');
     }
     final manifest = jsonDecode(await _readBlob(manifestSha)) as _Json;
@@ -249,4 +337,34 @@ final class GitHubChronicleRemote implements ChronicleRemote {
       await response.transform(utf8.decoder).join().timeout(_deadline),
     ) as _Json;
   }
+}
+
+({String owner, String repository}) parseGitHubRepository(String address) {
+  final text = address.trim();
+  final uri = Uri.tryParse(
+    text.contains('://') ? text : 'https://github.com/$text',
+  );
+  if (uri == null ||
+      uri.scheme != 'https' ||
+      uri.host.toLowerCase() != 'github.com' ||
+      uri.hasPort ||
+      uri.userInfo.isNotEmpty ||
+      uri.hasQuery ||
+      uri.hasFragment) {
+    throw const FormatException('Expected a GitHub repository address.');
+  }
+  final parts = uri.pathSegments;
+  final normalized = parts.isNotEmpty && parts.last.isEmpty
+      ? parts.take(parts.length - 1).toList()
+      : parts;
+  if (normalized.length != 2)
+    throw const FormatException('Expected owner/repository.');
+  final repository = normalized[1].endsWith('.git')
+      ? normalized[1].substring(0, normalized[1].length - 4)
+      : normalized[1];
+  if (!GitHubChronicleRemote._repoName.hasMatch(normalized[0]) ||
+      !GitHubChronicleRemote._repoName.hasMatch(repository)) {
+    throw const FormatException('Invalid repository owner or name.');
+  }
+  return (owner: normalized[0], repository: repository);
 }
