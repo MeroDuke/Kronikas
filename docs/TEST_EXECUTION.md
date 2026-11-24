@@ -25,6 +25,10 @@ Tulajdonos által jóváhagyott útmutató. A [tesztstratégia](ARCHITECTURE_AND
 | TST-010 | Előre szabályozott helyettesítő futtatóval állíts elő sikert, assertion-hibát, hiányzó vagy korábbi eredményt, érvénytelen konfigurációt és időtúllépést. Ellenőrizd a kilépési állapotot, a naplót és az újrapróbálások számát. |
 | TST-011 | Tiszta profillal indítsd ismételten a csomagot. Ellenőrizd a normál belépési pontot, a függő vagy mentett állapot visszaolvasását és a diagnosztikát. A célzott megszakítást elkülönített próbában végezd el. |
 
+## Fizikai Android-tablet – ADB Wi-Fi-n
+
+A fizikai tableten minden ADB-műveletet vezeték nélküli hibakereséssel végzünk, beleértve a telepítést, az indítást, a tesztelést és az engedélyezett eltávolítást. A futás előtt az aktuális hálózati végpontot az adb mdns services kimenetéből vagy a tablet Vezeték nélküli hibakeresés képernyőjéről ellenőrizzük. Az adb connect után az adb devices -l listában a hálózati eszköznek device állapotban kell lennie. A parancsokat az adb -s IP:PORT kapcsolóval célozzuk. Ha a kapcsolat offline, megkeressük az új portot és újracsatlakozunk. Az első kábel nélküli kapcsolatot a tablet modelljének lekérdezésével igazoltuk.
+
 ## Windows E2E Codex Computer Use-zal
 
 Az első Windows-próbacsomagtól alkalmazható, a kész felületi folyamatokkal bővül. A Codex a telepített vagy kibontott alkalmazást a Windows felületén kezeli. A szintetikus tesztadat létrehozása lehet előkészítési művelet. Az elfogadási lépéseket a szokásos kezelőszerveken kell végrehajtani. Az infrastruktúra állapota, az automatizált futások és a Computer Use eredménye külön szerepel a jegyzőkönyvben.
