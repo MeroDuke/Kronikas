@@ -124,7 +124,7 @@ class _ConflictPanelState extends State<ConflictPanel> {
         ),
         if (_busy) const LinearProgressIndicator(),
         if (_status case final String status)
-          Semantics(liveRegion: true, child: Text(status)),
+          Semantics(container: true, liveRegion: true, child: Text(status)),
         if (review != null) ...[
           if (widget.testRemoteEdit case final edit?)
             TextButton(
@@ -162,8 +162,14 @@ class _ConflictPanelState extends State<ConflictPanel> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(field.path.join(' / ')),
-                    Text('Helyi: ${_display(field.local)}'),
-                    Text('Távoli: ${_display(field.remote)}'),
+                    Semantics(
+                      container: true,
+                      child: Text('Helyi: ${_display(field.local)}'),
+                    ),
+                    Semantics(
+                      container: true,
+                      child: Text('Távoli: ${_display(field.remote)}'),
+                    ),
                     Wrap(
                       spacing: 8,
                       children: [
@@ -198,7 +204,12 @@ class _ConflictPanelState extends State<ConflictPanel> {
                         ),
                       ),
                     if (_choices.containsKey(_key(field)))
-                      Text('Kiválasztva: ${_display(_choices[_key(field)])}'),
+                      Semantics(
+                        container: true,
+                        child: Text(
+                          'Kiválasztva: ${_display(_choices[_key(field)])}',
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -230,7 +241,10 @@ class _ConflictPanelState extends State<ConflictPanel> {
           ),
         ],
         if (_backup case final String backup)
-          Text('Visszaállított példány: $backup'),
+          Semantics(
+            container: true,
+            child: Text('Visszaállított példány: $backup'),
+          ),
       ],
     );
   }
