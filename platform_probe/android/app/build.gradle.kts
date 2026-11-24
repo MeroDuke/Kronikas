@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    val storyPickerProbe = providers.gradleProperty("kronikasStoryPickerProbe").orNull == "true"
     namespace = "hu.akihabarai.kronikas_platform_probe"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -16,7 +17,13 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "hu.akihabarai.kronikas_platform_probe"
+        applicationId = if (storyPickerProbe) {
+            "hu.akihabarai.kronikas_story_picker_probe"
+        } else {
+            "hu.akihabarai.kronikas_platform_probe"
+        }
+        manifestPlaceholders["kronikasAppLabel"] =
+            if (storyPickerProbe) "Krónikás meseválasztó próba" else "Kronikas Platform Probe"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
