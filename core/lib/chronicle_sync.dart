@@ -1,5 +1,7 @@
+import 'kronikas_core.dart';
 import 'local_chronicle_store.dart';
 import 'src/chronicle_json.dart';
+import 'src/chronicle_merge.dart';
 
 enum SyncOutcome { upToDate, downloaded, uploaded, conflict, localChanged }
 
@@ -56,7 +58,20 @@ final class ChronicleSync {
       if (remoteText != null) {
         final incoming = decodeChronicle(remoteText);
         final same = encodeChronicle(incoming) == localText;
-        if (dirty && !same) return SyncOutcome.conflict;
+        if (dirty && !same) {
+          if (base == null || !await remote.containsCommit(head, base)) {
+            return SyncOutcome.conflict;
+          }
+          final baseText = await remote.readSnapshot(base);
+          if (baseText == null) return SyncOutcome.conflict;
+          final merged = mergeChronicles(
+            decodeChronicle(baseText),
+            current.chronicle,
+            incoming,
+          );
+          if (merged == null) return SyncOutcome.conflict;
+          return _upload(current, head, clean, merged: merged);
+        }
         final acceptedRevision = same
             ? current.dataRevision
             : current.revision + 1;
@@ -73,18 +88,34 @@ final class ChronicleSync {
     }
 
     if (!dirty) return SyncOutcome.upToDate;
-    final commit = await remote.prepareCommit(head, localText);
+    return _upload(current, head, clean);
+  }
+
+  Future<SyncOutcome> _upload(
+    LocalChronicleRevision current,
+    String head,
+    int clean, {
+    Chronicle? merged,
+  }) async {
+    final commit = await remote.prepareCommit(
+      head,
+      encodeChronicle(merged ?? current.chronicle),
+    );
+    final pendingRevision = merged == null
+        ? current.dataRevision
+        : current.revision + 1;
     if (!local.replaceIfCurrent(
       current.revision,
       sync: {
         ..._metadata(head, clean),
         'pending': commit,
-        'pendingRevision': current.dataRevision,
+        'pendingRevision': pendingRevision,
       },
+      snapshot: merged,
     )) {
       return SyncOutcome.localChanged;
     }
-    return _advance(commit, current.dataRevision, head);
+    return _advance(commit, pendingRevision, head);
   }
 
   Future<SyncOutcome> _advance(

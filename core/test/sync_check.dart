@@ -8,6 +8,8 @@ import 'package:kronikas_core/local_chronicle_store.dart';
 final syncChecks = <String, Future<void> Function()>{
   'repository address accepts user input and rejects other origins': _addresses,
   'offline edits persist and competing clients keep both versions': _conflict,
+  'incompatible sessions preserve both client states': _incompatibleSessions,
+  'independent edits survive synchronization on both clients': _independent,
   'lost write response and concurrent edit recover across reopen':
       _lostResponse,
 };
@@ -87,6 +89,106 @@ Future<void> _conflict() async {
       'First client retains published edit',
       first.open().adventures['a']?.title,
       'First edit',
+    );
+  });
+}
+
+Future<void> _independent() async {
+  await _withStores((first, second) async {
+    final remote = _Remote();
+    final firstSync = ChronicleSync(first, remote);
+    final secondSync = ChronicleSync(second, remote);
+    first.update((data) {
+      data.createAdventure(id: 'a', title: 'Original');
+      data.startSession('a', id: 's', startedAt: DateTime.utc(2026, 1, 1));
+    });
+    _expect(
+      'Publish common base',
+      await firstSync.synchronize(),
+      SyncOutcome.uploaded,
+    );
+    _expect(
+      'Read common base',
+      await secondSync.synchronize(),
+      SyncOutcome.downloaded,
+    );
+    _rename(first, 'Revised title');
+    second.update((data) {
+      data.recordImprovisedEvent(
+        'a',
+        's',
+        id: 'e',
+        description: 'Crossed the river',
+      );
+    });
+    _expect(
+      'Publish title',
+      await firstSync.synchronize(),
+      SyncOutcome.uploaded,
+    );
+    _expect(
+      'Publish merged state',
+      await secondSync.synchronize(),
+      SyncOutcome.uploaded,
+    );
+    _expect(
+      'Download merged state',
+      await firstSync.synchronize(),
+      SyncOutcome.downloaded,
+    );
+    for (final store in [first, second]) {
+      final adventure = LocalChronicleStore(store.directory)
+          .open()
+          .adventures['a']!;
+      _expect('Merged title', adventure.title, 'Revised title');
+      _expect(
+        'Merged event',
+        adventure.sessions['s']!.events.single.description,
+        'Crossed the river',
+      );
+    }
+  });
+}
+
+Future<void> _incompatibleSessions() async {
+  await _withStores((first, second) async {
+    final remote = _Remote();
+    final firstSync = ChronicleSync(first, remote);
+    final secondSync = ChronicleSync(second, remote);
+    first.update((data) => data.createAdventure(id: 'a', title: 'Original'));
+    await firstSync.synchronize();
+    await secondSync.synchronize();
+    first.update(
+      (data) => data.startSession(
+        'a',
+        id: 'first',
+        startedAt: DateTime.utc(2026, 1, 1),
+      ),
+    );
+    second.update(
+      (data) => data.startSession(
+        'a',
+        id: 'second',
+        startedAt: DateTime.utc(2026, 1, 1),
+      ),
+    );
+    await firstSync.synchronize();
+    final head = remote.current;
+    _expect(
+      'Two open sessions conflict',
+      await secondSync.synchronize(),
+      SyncOutcome.conflict,
+    );
+    _expect('Remote head after invalid combination', remote.current, head);
+    _expect(
+      'Local session after conflict',
+      second.open().adventures['a']!.sessions.keys.single,
+      'second',
+    );
+    _expect(
+      'Published session after conflict',
+      first.open().adventures['a']!.sessions.keys.single,
+      'first',
     );
   });
 }
