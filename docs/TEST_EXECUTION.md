@@ -66,7 +66,7 @@ Az első Windows-próbacsomagtól alkalmazható, a kész felületi folyamatokkal
 2. **Lépés kezdete.** Minden érdemi bevitel előtt írj bejegyzést a vezérlőtől független jegyzőkönyvbe. Legyen benne a futás és a lépés azonosítója, célablak, művelet, előfeltétel, várt látható jel és függő állapot.
 3. **Művelet és megfigyelés.** Küldj egy érdemi műveletet, majd kérj friss képernyőképet vagy ellenőrizhető vizuális állapotot. Írd fel a tényleges visszajelzést és a bizonyíték helyét. Ha a vezérlő válasza elvész, az új megfigyelés előzze meg az esetleges ismétlést. Ez mentésnél, szinkronnál és küldésnél különösen fontos.
 4. **Lépés lezárása.** A státusz legyen igazolt, eltérő vagy nem igazolható. Rögzítsd az első eltérést és az esetleges vezérlőhibát akkor is, ha a művelet megtörtént. Bizonytalan lépésnél csak ellenőrzött kiinduló állapotból folytasd. A kötelező, nem igazolt lépés blokkolja az E2E elfogadást.
-5. **Futás lezárása.** Zárd le a tesztablakot és a vezérlést. Őrizd meg a kiválasztott képeket, lépésjelentést, eredményt és diagnosztikát az adott futáshoz. Képen, jelentésben és CI-mellékletben kizárólag szintetikus adatok jelenhetnek meg.
+5. **Futás lezárása.** Az utolsó ellenőrzés után zárd be a próbaablakot, fejezd be a vezérlést, és reseteld a dedikált Computer Use munkamenetet, mielőtt buildre vagy CI-ra vársz. Jelezd a vezérlés végét. Őrizd meg a kiválasztott képeket, lépésjelentést, eredményt és diagnosztikát az adott futáshoz. Képen, jelentésben és CI-mellékletben kizárólag szintetikus adatok jelenhetnek meg.
 
 ### Első végigjárható felületi út
 
