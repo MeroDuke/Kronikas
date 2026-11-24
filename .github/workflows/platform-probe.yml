@@ -98,14 +98,26 @@ jobs:
           export PATH="$ANDROID_HOME/platform-tools:$PATH"
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends libpulse0
+          export ANDROID_USER_HOME="$RUNNER_TEMP/kronikas-android"
+          export ANDROID_AVD_HOME="$ANDROID_USER_HOME/avd"
+          mkdir -p "$ANDROID_AVD_HOME"
           "$ANDROID_HOME/emulator/emulator" -version > build/android-probe/emulator-version.txt 2>&1
           echo no | "$tools/avdmanager" create avd --name kronikas-probe --package "$image" --force
+          "$ANDROID_HOME/emulator/emulator" -list-avds | grep -Fx kronikas-probe
           sudo chmod a+rw /dev/kvm
           emulator_args=(-avd kronikas-probe -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect)
           "$ANDROID_HOME/emulator/emulator" "${emulator_args[@]}" > build/android-probe/emulator.log 2>&1 &
           emulator_pid=$!
           trap 'kill "$emulator_pid" 2>/dev/null || true' EXIT
-          timeout 180 adb wait-for-device
+          for attempt in {1..60}; do
+            if ! kill -0 "$emulator_pid"; then
+              cat build/android-probe/emulator.log
+              exit 1
+            fi
+            if adb get-state 2>/dev/null | grep -Fxq device; then break; fi
+            sleep 3
+          done
+          adb get-state | grep -Fx device
           timeout 180 bash -c 'until [[ $(adb shell getprop sys.boot_completed | tr -d "\r") == 1 ]]; do sleep 3; done'
           adb shell input keyevent 82
           adb install build/android-probe/app-release.apk
