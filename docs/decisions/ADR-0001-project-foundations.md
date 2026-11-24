@@ -11,3 +11,14 @@
 - DEC-007: Magyar elsődleges fejlesztési dokumentáció; angol publikus dokumentáció; eltérés esetén a magyar mérvadó.
 
 Indoklás: megőrizhető projektismeret, adatvédelem, egyszerű karbantartás és későbbi nyilvános termék lehetősége. A technológia és licenc még nem végleges.
+
+## 2026-11-24 – jóváhagyott kiegészítés
+- DEC-008: A Krónikás szakmai portfólióprojektként is szolgál.
+- DEC-009: Az AI-támogatott fejlesztés dokumentált és visszakövethető.
+- DEC-010: A jövőbeli kereskedelmi hasznosítás lehetőségét meg kell őrizni.
+- DEC-011: Minden külső függőség licencét használat előtt ellenőrizni kell.
+- DEC-012: Bevételarányos jogdíjat és kötelező kereskedelmi licencváltást előíró technológiák kerülendők.
+- DEC-013: A külső szolgáltatóktól való függőség minimalizálandó.
+- DEC-014: A Krónikás saját licencéről külön döntés születik.
+
+Részletek: [AI munkafolyamat](../AI_DEVELOPMENT_WORKFLOW.md), [Licencpolitika](../LICENSING_POLICY.md).
