@@ -1,6 +1,6 @@
 # Technológiai megvalósíthatóság – TASK-005
 
-Állapot: dokumentációs vizsgálat és ajánlás, tulajdonosi jóváhagyásra vár. Ellenőrzés dátuma: 2026-11-24. Alap: a jóváhagyott [domainmodell](requirements/DOMAIN_MODEL.md) és [nem funkcionális követelmények](requirements/NON_FUNCTIONAL_REQUIREMENTS.md).
+Állapot: a technológiai irány tulajdonos által jóváhagyva, a konkrét verziók és próbák függőben. Ellenőrzés dátuma: 2026-11-24. Alap: a jóváhagyott [domainmodell](requirements/DOMAIN_MODEL.md) és [nem funkcionális követelmények](requirements/NON_FUNCTIONAL_REQUIREMENTS.md).
 
 A Score tapasztalataiból levezetett előszűrés és a tényleges csomag ellenőrzése a [licencelési átvilágításban](LICENSING_FEASIBILITY.md) szerepel.
 

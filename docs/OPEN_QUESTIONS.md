@@ -1,7 +1,7 @@
 # Nyitott kérdések
 
-- A Flutter/Dart ajánlás jóváhagyása, pontos SDK-verzió és platformintegrációs próba.
-- A [technológiai vizsgálat](TECHNOLOGY_FEASIBILITY.md) a GitHub REST adaptert ajánlja. Nyitott a kiválasztás jóváhagyása, az éles belépési mód és az adapter próbája.
+- Pontos Flutter/Dart SDK-verzió és platformintegrációs próba.
+- A [technológiai vizsgálat](TECHNOLOGY_FEASIBILITY.md) alapján a GitHub REST az első adapter iránya. Nyitott az éles belépési mód és az adapter próbája.
 - A [logikai modell](requirements/DOMAIN_MODEL.md) jóváhagyott. Nyitott a végleges fájlséma, a séma verziózása és migrációja, az azonosítók konkrét formátuma és a történeti hivatkozások kezelése tervmódosításkor.
 - A jelenethez rendelhető, kötetlen sorrendű mérföldkövek javasoltak a logikai modellben. Nyitott, hogy az MVP-ben kell-e előfeltételeket kezelni.
 - Sync gyakoriság, offline mentés, több fájl konzisztens mentése és a mesélő számára elérhető MVP feloldási út két eszköz eltérő módosításai esetén (UC-005).
