@@ -1,6 +1,6 @@
 # Tesztfuttatási útmutató – TASK-006
 
-Tulajdonos által jóváhagyott útmutató. A [tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md) ellenőrzéseinek végrehajtási menete. A repóparancs, a tesztadatok és a platformcsomagok az érintett fázisban készülnek el.
+Tulajdonos által jóváhagyott útmutató. A [tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md) ellenőrzéseinek végrehajtási menete. A CORE helyi futtatásához a repó gyökeréből indítsd a `pwsh -NoProfile -File tool/test.ps1` parancsot a [rögzített Dart SDK-val](CORE_DEVELOPMENT.md).
 
 ## Futtatási sorrend
 
@@ -27,9 +27,16 @@ Tulajdonos által jóváhagyott útmutató. A [tesztstratégia](ARCHITECTURE_AND
 
 ## Android E2E GitHub Actionsben
 
-A felületi regresszió alapértelmezett futtatási helye a GitHub Actions. Az Ubuntu x64 runner egy Android 35 Google APIs emulátorban egymás után futtatja az x86_64 és arm64-v8a ABI-ra épített APK-kat. Az ARM64 kódot az Android native bridge fordítja. ABI-nként ellenőrzi a mentést és újraindítást, a mese megnyitását, a játékalkalom előzményeit és az app lezárását. A runner ellenőrzi az Android által kiválasztott ABI-t, és külön menti a naplókat és a képernyőképeket. A rutinfuttatásnak nincs Codex- vagy tabletkapcsolat-igénye. [Első sikeres két ABI-s futás](https://github.com/MeroDuke/Kronikas/actions/runs/45446620447)
+A rutinszerű Android-felületi regressziót a GitHub Actions futtatja, külön eszköz és Codex Computer Use nélkül. A **Platform probe** workflow az érintett platform-, CORE-könyvtár-, próbaszkript-, SDK- vagy workflow-fájlokat módosító pull requesteken indul.
 
-A fizikai tabletet az olyan célzott próbákhoz használjuk, amelyekhez valódi eszköz vagy két eszköz közötti kapcsolat szükséges.
+1. A PR **Checks** lapján nyisd meg a **Platform probe** futást. A `android-build` a PR forráscommitjából elkészíti a mentési és meseválasztó APK-kat x86_64 és arm64-v8a ABI-ra. A futtatás eredményét a külön `android-ui` job adja.
+2. Az `android-ui` ellenőrzi az APK-k SHA-256 értékét és az Android által kiválasztott ABI-t. Az Ubuntu x64 runner Android 35 Google APIs emulátora egymás után futtatja a két változatot. Az ARM64 gépi kódot az emulátor natív fordítási rétege futtatja.
+3. Mindkét változatnál a mentési próbában mentsd a szintetikus kalandot és a védett próbaértéket, majd teljes újraindítás után olvasd vissza őket. A meseválasztó próba a szintetikus tárból megnyitja a **Teszt mese** történetet, lenyitja a lezárt alkalmat, ellenőrzi az eseményt és annak mesélői láthatóságát, majd visszalép. A futtatók a végén bezárják a próbaalkalmazásokat.
+4. A futás **Summary** lapján az **Artifacts** részből töltsd le az `android-ui-evidence` mellékletet. Az `x64` és `arm64` könyvtárban ABI-nként ellenőrizd a csomagadatokat, a naplókat és a képernyőképeket. Mindkét ABI futása kötelező. Hiba esetén az első sikertelen ellenőrzést keresd a job naplójában és az addig elkészült bizonyítékokban. Átmeneti runnerhibánál egyszer futtasd újra a sikertelen jobokat a `gh run rerun <futásazonosító> --failed` paranccsal.
+
+Az első teljes futásban mindkét APK-architektúra végigment ezen az útvonalon. [GitHub Actions futás és bizonyítékok](https://github.com/MeroDuke/Kronikas/actions/runs/45446620447)
+
+A fizikai tabletet valódi eszközt vagy két eszköz közötti kapcsolatot igénylő célzott próbákhoz használjuk. A Windows-csomag a `windows` jobban készül. A Windows kezelőfelületének végigjárására az alábbi Computer Use menet szolgál.
 
 ## Fizikai Android-tablet – ADB Wi-Fi-n
 
@@ -37,7 +44,7 @@ A fizikai tableten minden ADB-műveletet vezeték nélküli hibakereséssel vég
 
 Fizikai próba: Wi-Fi-s ADB-n célzott, már telepített ARM64 platformpróbán lefutott a felületi mentés, teljes leállítás, újraindítás és visszaolvasás. A meglévő szintetikus kaland és a védett próbaérték ellenőrzése sikeres volt.
 
-A tabletes regressziót Codex futtatja Wi-Fi-s ADB-n. Minden érintett felületi ellenőrzés az aktuális fejlesztési commit ARM64-próbacsomagjával kezdődik. A [meseválasztó próbafuttató](https://github.com/MeroDuke/Kronikas/blob/feature/dart-core-foundation/platform_probe/README.md#fizikai-tabletpróba) igazolja a CI-melléklet commitját és a tabletbe telepített APK hashét. Ha a rátelepítés aláírás miatt nem lehetséges, a szintetikus próbaalkalmazás cseréje külön engedélyezhető. A felületi lépésekhez a futtató képernyőképet és naplót ment. A feloldás és az esetleges ADB-engedély megadása eszközoldali lépés.
+A tabletes regressziót Codex futtatja Wi-Fi-s ADB-n. Minden fizikai futás az ellenőrizendő fejlesztési commit friss ARM64-próbacsomagjával kezdődik, a korábban telepített tesztapp frissítésével. A [meseválasztó próbafuttató](../platform_probe/README.md#fizikai-tabletpróba) igazolja a CI-melléklet commitját és a tabletbe telepített APK hashét. Ha a rátelepítés aláírás miatt nem lehetséges, a szintetikus próbaalkalmazás cseréje külön engedélyezhető. A felületi lépésekhez a futtató képernyőképet és naplót ment. A futtató a végén bezárja a tesztappot, amíg a tablet ADB-n elérhető. A feloldás és az esetleges ADB-engedély megadása eszközoldali lépés.
 
 ## Windows E2E Codex Computer Use-zal
 
