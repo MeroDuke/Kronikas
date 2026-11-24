@@ -10,7 +10,7 @@ ARM64 telefonhoz a Platform probe CI-futás `android-arm64-platform-probe` mell�
 
 A `flutter run -d windows --target lib/story_picker.dart` az alkalmazás felületén kéri a privát GitHub-repó címét, az opcionális ágat és az adott repóra korlátozott, olvasási jogú fine-grained PAT-ot. A token az aktív kapcsolat memóriájában marad. A kiválasztott történet előnézete csak olvasható. A makettől független platformpróba továbbra is a `lib/main.dart` belépési pontból indul.
 
-A `flutter run -d windows --target tool/story_picker_walkthrough.dart` ugyanazt a felületet nyitja szintetikus tárolóval és előre kitöltött tesztbemenettel. Csatlakozás után megjelenik a Teszt mese. Kiválasztás után a szintetikus leírás látható, majd a meselistára vissza lehet lépni.
+A `flutter run -d windows --target tool/story_picker_walkthrough.dart` ugyanazt a felületet nyitja szintetikus tárolóval és előre kitöltött tesztbemenettel. Csatlakozás után megjelenik a Teszt mese. A mesében a lezárt játékalkalmat lenyitva látható a rögzített esemény és annak mesélői láthatósága. Ezután vissza lehet lépni a meselistára.
 
 ### Fizikai tabletpróba
 

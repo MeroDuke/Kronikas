@@ -17,12 +17,27 @@ void main() {
           stories: const [
             (title: 'Teszt mese', directory: 'stories/test-mese'),
           ],
-          open: (story) async => Chronicle()
-            ..createAdventure(
-              id: 'synthetic',
-              title: story.title,
-              description: 'Szintetikus próbatörténet.',
-            ),
+          open: (story) async {
+            final start = DateTime.utc(2026, 11, 24, 18);
+            return Chronicle()
+              ..createAdventure(
+                id: 'synthetic',
+                title: story.title,
+                description: 'Szintetikus próbatörténet.',
+              )
+              ..startSession('synthetic', id: 'first', startedAt: start)
+              ..recordImprovisedEvent(
+                'synthetic',
+                'first',
+                id: 'river',
+                description: 'A csapat átkelt a folyón.',
+              )
+              ..closeSession(
+                'synthetic',
+                'first',
+                start.add(const Duration(hours: 2)),
+              );
+          },
         );
       },
     ),

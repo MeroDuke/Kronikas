@@ -195,11 +195,9 @@ class _StoryPickerState extends State<_StoryPicker> {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 for (final adventure in story.adventures.values)
-                  ListTile(
-                    title: adventure.title == _storyTitle
-                        ? null
-                        : Text(adventure.title),
-                    subtitle: Text(adventure.description),
+                  _AdventureHistory(
+                    adventure: adventure,
+                    showTitle: adventure.title != _storyTitle,
                   ),
                 TextButton(
                   onPressed: () => setState(() => _story = null),
@@ -265,6 +263,58 @@ class _StoryPickerState extends State<_StoryPicker> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AdventureHistory extends StatelessWidget {
+  const _AdventureHistory({required this.adventure, required this.showTitle});
+
+  final Adventure adventure;
+  final bool showTitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final sessions = adventure.sessions.values;
+    final dates = MaterialLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (showTitle || adventure.description.isNotEmpty)
+          ListTile(
+            title: showTitle ? Text(adventure.title) : null,
+            subtitle: adventure.description.isEmpty
+                ? null
+                : Text(adventure.description),
+          ),
+        if (sessions.isEmpty)
+          const ListTile(title: Text('Még nincs rögzített játékalkalom.')),
+        for (final session in sessions)
+          ExpansionTile(
+            key: ValueKey((adventure.id, session.id)),
+            title: Text(
+              session.isOpen ? 'Nyitott játékalkalom' : 'Lezárt játékalkalom',
+            ),
+            subtitle: Text(
+              dates.formatCompactDate(session.startedAt.toLocal()),
+            ),
+            children: [
+              if (session.events.isEmpty)
+                const ListTile(
+                  title: Text('Ehhez az alkalomhoz nincs esemény.'),
+                ),
+              for (final event in session.events)
+                ListTile(
+                  title: Text(event.description),
+                  subtitle: Text(
+                    event.visibility == EventVisibility.gmOnly
+                        ? 'Csak a mesélőnek'
+                        : 'Publikálható',
+                  ),
+                ),
+            ],
+          ),
+      ],
     );
   }
 }
