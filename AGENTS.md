@@ -20,3 +20,8 @@ A repository a projekt hiteles információforrása. A ChatGPT WebUI és a Codex
 - Rögzítsd a tényleges teszteredményeket, hibákat, blokkoló tényezőket és következő lépést. Nem futtatott tesztet ne jelölj sikeresnek.
 - Ellenőrizd a diffet és a titkok hiányát; commitolj és publikálj a jóváhagyott munkafolyamat szerint.
 - A chatben született döntés csak repositoryba rögzítve válik tartós projektinformációvá.
+
+## Portfólió és licencelés
+- Kövesd a docs/AI_DEVELOPMENT_WORKFLOW.md és docs/LICENSING_POLICY.md előírásait.
+- Új függőség vagy verzióváltás előtt ellenőrizd a pontos licencet és feltételeket, dokumentáld a docs/DEPENDENCY_REGISTER.md fájlban; kivételhez tulajdonosi jóváhagyás kell.
+- Őrizd meg az AI-támogatott fejlesztés ellenőrizhető szakmai bizonyítékait; ne állíts nem igazolt eredményt.
