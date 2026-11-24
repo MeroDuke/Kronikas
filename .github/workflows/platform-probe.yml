@@ -79,8 +79,8 @@ jobs:
           flutter analyze --no-pub
           flutter build apk --release --target-platform android-x64 --no-pub
           mkdir -p ../build/android-probe
-          (cd android && ./gradlew :app:dependencies --configuration releaseRuntimeClasspath --console=plain) +            > ../build/android-probe/gradle-runtime-dependencies.txt
           cp build/app/outputs/flutter-apk/app-release.apk ../build/android-probe/
+          android/gradlew -p android :app:dependencies --configuration releaseRuntimeClasspath --console=plain > ../build/android-probe/gradle-runtime-dependencies.txt
           cd ../build/android-probe
           sha256sum app-release.apk > sha256.txt
           unzip -l app-release.apk > apk-inventory.txt
@@ -97,7 +97,8 @@ jobs:
           "$tools/sdkmanager" --install "$image"
           echo no | "$tools/avdmanager" create avd --name kronikas-probe --package "$image" --force
           sudo chmod a+rw /dev/kvm
-          "$ANDROID_HOME/emulator/emulator" -avd kronikas-probe -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect +            > build/android-probe/emulator.log 2>&1 &
+          emulator_args=(-avd kronikas-probe -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect)
+          "$ANDROID_HOME/emulator/emulator" "${emulator_args[@]}" > build/android-probe/emulator.log 2>&1 &
           emulator_pid=$!
           trap 'kill "$emulator_pid" 2>/dev/null || true' EXIT
           timeout 180 adb wait-for-device
