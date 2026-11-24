@@ -10,3 +10,4 @@
 - Session- és kalandszintű összefoglalók eltérései.
 - Licenc, üzleti modell, nyilvános kiadás feltételei.
 - Pontos lokalizációs követelmények.
+- Támogatott Windows- és Android-verziók, valamint a játékközbeni műveletek esetleges mérhető használhatósági célértékei (NFR-001, NFR-002, NFR-004).

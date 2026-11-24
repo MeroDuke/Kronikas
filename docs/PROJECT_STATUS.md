@@ -8,7 +8,9 @@
 - Saját használat az első cél, későbbi nyilvános termék lehetőségével.
 
 ## Következő lépés
-A [felhasználási esetek v0.1 tervezete](requirements/USE_CASES.md) elkészült a TASK-002 keretében. A következő lépés a tulajdonosi jóváhagyás, majd a követelmények és elfogadási kritériumok pontosítása a TASK-003-ban. Az implementáció jóváhagyása továbbra is függőben van.
+A [felhasználási esetek](requirements/USE_CASES.md) jóváhagyva (TASK-002). A TASK-003 [funkcionális](requirements/FUNCTIONAL_REQUIREMENTS.md) és [nem funkcionális követelményeinek](requirements/NON_FUNCTIONAL_REQUIREMENTS.md) v0.2 tervezete elkészült. A következő lépés a kritériumok jóváhagyása, utána a domain- és adatmodell (TASK-004).
+
+Dokumentációs ellenőrzés: 26 FR és 12 NFR rendelkezik elfogadási kritériummal és hivatkozott felhasználási esettel. Termékteszt még nem futott.
 
 ## Tájékozódás
 [Backlog](BACKLOG.md) · [Roadmap](ROADMAP.md) · [Nyitott kérdések](OPEN_QUESTIONS.md) · [Koncepció](concept/PROJECT_CONCEPT.md) · [Döntések](decisions/ADR-0001-project-foundations.md)

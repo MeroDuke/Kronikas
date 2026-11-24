@@ -1,8 +1,8 @@
-# Felhasználási esetek – v0.1 tervezet
+# Felhasználási esetek – v0.1
 
-Állapot: tulajdonosi jóváhagyásra vár (TASK-002).
+Állapot: tulajdonos által jóváhagyva (TASK-002).
 
-Elsődleges szereplő: mesélő (GM). A forgatókönyvek a felhasználó számára megfigyelhető eredményt írják le. A tárolási séma, szinkronizációs mechanizmus és szolgáltatók kiválasztása későbbi tervezési feladat.
+Elsődleges szereplő: mesélő (GM). A követelmények részletes kapcsolatai a [funkcionális követelményekben](FUNCTIONAL_REQUIREMENTS.md) találhatók. A forgatókönyvek a felhasználó számára megfigyelhető eredményt írják le. A tárolási séma, szinkronizációs mechanizmus és szolgáltatók kiválasztása későbbi tervezési feladat.
 
 | ID | Felhasználási eset | Kapcsolódó követelmények |
 |---|---|---|
