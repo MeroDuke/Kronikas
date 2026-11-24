@@ -12,3 +12,8 @@ A felhasználási esetek kidolgozása és jóváhagyása, majd követelmények p
 
 ## Tájékozódás
 [Backlog](BACKLOG.md) · [Roadmap](ROADMAP.md) · [Nyitott kérdések](OPEN_QUESTIONS.md) · [Koncepció](concept/PROJECT_CONCEPT.md) · [Döntések](decisions/ADR-0001-project-foundations.md)
+
+## Jóváhagyott kiegészítő célok
+A projekt szakmai portfólióként is szolgál; a jövőbeli kereskedelmi hasznosítás szabadsága megőrzendő. A technológiai vizsgálat kötelező része a licenc- és szolgáltatói feltételek ellenőrzése. Saját licenc továbbra sincs kiválasztva.
+
+[AI fejlesztési munkafolyamat](AI_DEVELOPMENT_WORKFLOW.md) · [Licencpolitika](LICENSING_POLICY.md) · [Függőségi nyilvántartás](DEPENDENCY_REGISTER.md)
