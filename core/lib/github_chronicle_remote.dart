@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'chronicle_sync.dart';
+import 'kronikas_core.dart';
 import 'src/chronicle_json.dart';
 
 typedef _Json = Map<String, dynamic>;
@@ -98,6 +99,14 @@ final class GitHubChronicleRemote implements ChronicleRemote {
     token: token,
     client: client,
   );
+
+  Future<Chronicle> openStory(GitHubStory story) async {
+    final selected = forStory(story);
+    final snapshot = await selected.readSnapshot(await selected.head());
+    if (snapshot == null)
+      throw StateError('The selected story is unavailable.');
+    return decodeChronicle(snapshot);
+  }
 
   String _file(String name) => directory.isEmpty ? name : '$directory/$name';
   List<String> get _branch => ['heads', ...branch.split('/')];
