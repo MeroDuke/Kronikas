@@ -3,7 +3,7 @@
 | ID | Feladat | Állapot |
 |---|---|---|
 | TASK-001 | Projektalapok dokumentálása | Elkészült |
-| TASK-002 | Use case-ek kidolgozása | Következő, tervezés |
+| TASK-002 | [Felhasználási esetek kidolgozása](requirements/USE_CASES.md) | Tervezet elkészült, jóváhagyásra vár |
 | TASK-003 | FR/NFR pontosítása és elfogadási kritériumok | Tervezett |
 | TASK-004 | Domain- és adatmodell | Tervezett |
 | TASK-005 | Technológiai megvalósíthatóság | Tervezett |

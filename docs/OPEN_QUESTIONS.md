@@ -4,7 +4,7 @@
 - Natív Git vagy GitHub REST API; hitelesítés és szolgáltatófüggetlenség.
 - Pontos adatmodell, fájlformátum, séma verziózás és migráció, stabil azonosítók.
 - Jelenet–mérföldkő kapcsolatok, nemlinearitás, előfeltételek.
-- Sync gyakoriság, offline mentés, konfliktuskezelés, több fájl konzisztens mentése.
+- Sync gyakoriság, offline mentés, több fájl konzisztens mentése és a mesélő számára elérhető MVP feloldási út két eszköz eltérő módosításai esetén (UC-005).
 - LLM szolgáltató, költség, opcionális működés.
 - Discord küldési hibák, ismételt publikáció.
 - Session- és kalandszintű összefoglalók eltérései.

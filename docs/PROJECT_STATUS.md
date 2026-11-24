@@ -8,7 +8,7 @@
 - Saját használat az első cél, későbbi nyilvános termék lehetőségével.
 
 ## Következő lépés
-A felhasználási esetek kidolgozása és jóváhagyása, majd követelmények pontosítása, domain model és technológiai vizsgálat. A Codex első feladata a dokumentáció áttekintése, hiányok és ellentmondások jelzése; implementáció még nem jóváhagyott.
+A [felhasználási esetek v0.1 tervezete](requirements/USE_CASES.md) elkészült a TASK-002 keretében. A következő lépés a tulajdonosi jóváhagyás, majd a követelmények és elfogadási kritériumok pontosítása a TASK-003-ban. Az implementáció jóváhagyása továbbra is függőben van.
 
 ## Tájékozódás
 [Backlog](BACKLOG.md) · [Roadmap](ROADMAP.md) · [Nyitott kérdések](OPEN_QUESTIONS.md) · [Koncepció](concept/PROJECT_CONCEPT.md) · [Döntések](decisions/ADR-0001-project-foundations.md)
