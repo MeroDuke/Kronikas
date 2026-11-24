@@ -1,0 +1,34 @@
+name: Dart CORE
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install pinned Dart SDK
+        shell: pwsh
+        run: |
+          $sdk = Get-Content -Raw tool/sdk.json | ConvertFrom-Json
+          $archive = Join-Path $env:RUNNER_TEMP 'dart-sdk.zip'
+          $url = "https://storage.googleapis.com/dart-archive/channels/stable/release/$($sdk.dart)/sdk/dartsdk-windows-x64-release.zip"
+          Invoke-WebRequest $url -OutFile $archive
+          if ((Get-FileHash $archive).Hash -ne $sdk.windowsX64DartSha256) {
+              throw 'Dart SDK checksum mismatch.'
+          }
+          Expand-Archive $archive -DestinationPath $env:RUNNER_TEMP
+          Join-Path $env:RUNNER_TEMP 'dart-sdk/bin' | Out-File $env:GITHUB_PATH -Append -Encoding utf8
+      - name: Verify CORE
+        shell: pwsh
+        run: pwsh -NoProfile -File tool/test.ps1
+      - name: Preserve test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: dart-core-results
+          path: build/test-results/

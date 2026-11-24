@@ -1,0 +1,6 @@
+name: kronikas_core
+description: Platform-independent core of Kronikas.
+publish_to: none
+version: 0.0.0
+environment:
+  sdk: 3.14.0
