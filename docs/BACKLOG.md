@@ -11,3 +11,6 @@
 | TASK-007 | Implementációs terv | Tervezett |
 
 Az implementációs feladatok még nem jóváhagyottak. Követelmény–feladat–teszt kapcsolatokat a specifikáció kialakításakor rögzítjük.
+
+TASK-005 kiegészítése: a technológiai alternatívák licenc-, költség- és vendor lock-in vizsgálata, a függőségi nyilvántartás feltöltése a kiválasztás előtt.
+TASK-006 kiegészítése: AI-output ellenőrzés, CI/minőségi kapuk, követelménykövetés és szakmai bizonyítékok megőrzésének tervezése.
