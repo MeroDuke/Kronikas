@@ -2,6 +2,8 @@
 
 Állapot: dokumentációs vizsgálat és ajánlás, tulajdonosi jóváhagyásra vár. Ellenőrzés dátuma: 2026-11-24. Alap: a jóváhagyott [domainmodell](requirements/DOMAIN_MODEL.md) és [nem funkcionális követelmények](requirements/NON_FUNCTIONAL_REQUIREMENTS.md).
 
+A Score tapasztalataiból levezetett előszűrés és a tényleges csomag ellenőrzése a [licencelési átvilágításban](LICENSING_FEASIBILITY.md) szerepel.
+
 ## Windows és Android
 
 | Jelölt | Illeszkedés | Költség, kötöttség és nyitott kockázat |
@@ -32,6 +34,6 @@ Az alapfolyamat helyben előállított, szerkeszthető összefoglalóval működ
 | SDK és csomagolás | A kiválasztott stabil Flutter/Dart verzióval telepíthető próbaalkalmazás készül Windowson és Androidon, és mindkettő védett tárolóból visszaolvassa a szintetikus próbaértéket. |
 | Helyi mentés | Offline mentés és kényszerített megszakítás után az utolsó sikeres változat visszaolvasható, állapot és eseménytörténet egyezik. |
 | Két kliens, egy privát tesztrepó | Egy feltöltés több fájlt egy commitban módosít. Az elavult kliens nem ír felül, és megtartja saját változásait. Elveszett válasz után az állapot lekérdezhető. |
-| Függőségek és terjesztés | A kiválasztott pontos verziók, tranzitív licencek, fejlesztőeszköz-feltételek, alkalmazásaláírás és terjesztési díjak szerepelnek a nyilvántartásban. |
+| Függőségek és terjesztés | A Windows- és Android-próbacsomagok tényleges tartalma egyezik a platformonkénti leltárral. A pontos verziók, tranzitív és natív licencek, licencek és notice-ok, eszközfeltételek, alkalmazásaláírás és terjesztési díjak ellenőrzöttek. |
 
 A források alapján a saját backend nélküli út megvalósíthatónak látszik az első, saját használatú változathoz. A fenti futtatási próbák még függőben vannak.

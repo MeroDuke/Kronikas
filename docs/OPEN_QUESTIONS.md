@@ -8,6 +8,6 @@
 - LLM szolgáltató, költség, opcionális működés.
 - Discord küldési hibák, ismételt publikáció.
 - Session- és kalandszintű összefoglalók eltérései.
-- Licenc, üzleti modell, nyilvános kiadás feltételei.
+- Saját licenc és üzleti modell. A nyilvános terjesztési csatorna, a pontos buildeszközök feltételei és a tényleges platformcsomagok licencleltára a [licencelési átvilágítás](LICENSING_FEASIBILITY.md) alapján ellenőrzendő.
 - Pontos lokalizációs követelmények.
 - Támogatott Windows- és Android-verziók, valamint a játékközbeni műveletek esetleges mérhető használhatósági célértékei (NFR-001, NFR-002, NFR-004).
