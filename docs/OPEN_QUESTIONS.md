@@ -1,8 +1,8 @@
 # Nyitott kérdések
 
-- Technológiai stack: Flutter, .NET MAUI, PWA vagy más; Flutter csak kiinduló preferencia.
-- Natív Git vagy GitHub REST API; hitelesítés és szolgáltatófüggetlenség.
-- A [logikai modell javaslata](requirements/DOMAIN_MODEL.md) jóváhagyásra vár. Nyitott a végleges fájlséma, a séma verziózása és migrációja, az azonosítók konkrét formátuma és a történeti hivatkozások kezelése tervmódosításkor.
+- A Flutter/Dart ajánlás jóváhagyása, pontos SDK-verzió és platformintegrációs próba.
+- A [technológiai vizsgálat](TECHNOLOGY_FEASIBILITY.md) a GitHub REST adaptert ajánlja. Nyitott a kiválasztás jóváhagyása, az éles belépési mód és az adapter próbája.
+- A [logikai modell](requirements/DOMAIN_MODEL.md) jóváhagyott. Nyitott a végleges fájlséma, a séma verziózása és migrációja, az azonosítók konkrét formátuma és a történeti hivatkozások kezelése tervmódosításkor.
 - A jelenethez rendelhető, kötetlen sorrendű mérföldkövek javasoltak a logikai modellben. Nyitott, hogy az MVP-ben kell-e előfeltételeket kezelni.
 - Sync gyakoriság, offline mentés, több fájl konzisztens mentése és a mesélő számára elérhető MVP feloldási út két eszköz eltérő módosításai esetén (UC-005).
 - LLM szolgáltató, költség, opcionális működés.

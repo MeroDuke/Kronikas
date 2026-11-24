@@ -1,6 +1,6 @@
-# Domain- és adatmodell – v0.1 tervezet
+# Domain- és adatmodell – v0.1
 
-A TASK-004 tervezete az elfogadott [felhasználási esetekből](USE_CASES.md), [funkcionális](FUNCTIONAL_REQUIREMENTS.md) és [nem funkcionális követelményekből](NON_FUNCTIONAL_REQUIREMENTS.md) indul ki. A modell jóváhagyásra vár. Az angol nevek logikai fogalmak; a technológia és a végleges fájlséma későbbi döntés.
+A TASK-004 modellje az elfogadott [felhasználási esetekből](USE_CASES.md), [funkcionális](FUNCTIONAL_REQUIREMENTS.md) és [nem funkcionális követelményekből](NON_FUNCTIONAL_REQUIREMENTS.md) indul ki. A modellt a tulajdonos jóváhagyta. Az angol nevek logikai fogalmak; a technológia és a végleges fájlséma későbbi döntés.
 
 ## Entitások és kapcsolatok
 
