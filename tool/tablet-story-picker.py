@@ -1,4 +1,4 @@
-"""Install a commit-pinned ARM64 picker and verify its UI over Wi-Fi ADB."""
+"""Install a commit-pinned picker and verify its UI on an explicit ADB device."""
 
 import argparse
 import hashlib
@@ -17,14 +17,16 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("artifact", type=Path, help="extracted CI artifact")
     parser.add_argument("--commit", required=True)
-    parser.add_argument("--device", required=True, help="ADB Wi-Fi endpoint")
+    parser.add_argument("--device", required=True, help="ADB Wi-Fi endpoint or emulator serial")
+    parser.add_argument("--abi", choices=("arm64-v8a", "x86_64"), default="arm64-v8a")
     parser.add_argument("--adb", default="adb")
     parser.add_argument("--evidence", required=True, type=Path)
     parser.add_argument("--replace-test-app", action="store_true",
                         help="allow uninstall of this synthetic app if its signature differs")
     args = parser.parse_args()
-    if not re.fullmatch(r"[0-9a-f]{40}", args.commit) or ":" not in args.device:
-        parser.error("expected the full commit SHA and an explicit Wi-Fi endpoint")
+    if (not re.fullmatch(r"[0-9a-f]{40}", args.commit) or
+            (":" not in args.device and not re.fullmatch(r"emulator-\d+", args.device))):
+        parser.error("expected the full commit SHA and an explicit Wi-Fi or emulator endpoint")
     apk = args.artifact / "story-picker.apk"
     if (args.artifact / "source-commit.txt").read_text().strip() != args.commit:
         raise RuntimeError("APK source commit does not match the requested commit.")
@@ -34,7 +36,7 @@ def main():
     with zipfile.ZipFile(apk) as archive:
         abi = {name.split("/")[1] for name in archive.namelist()
                if name.startswith("lib/") and name.endswith(".so")}
-        if abi != {"arm64-v8a"}:
+        if abi != {args.abi}:
             raise RuntimeError(f"Unexpected APK architecture: {abi}")
 
     def adb(*command, text=True):
@@ -45,9 +47,9 @@ def main():
         )
 
     if adb("get-state").strip() != "device":
-        raise RuntimeError("Selected Wi-Fi device is unavailable.")
-    if "arm64-v8a" not in adb("shell", "getprop", "ro.product.cpu.abilist").strip().split(","):
-        raise RuntimeError("Selected device does not support ARM64.")
+        raise RuntimeError("Selected ADB device is unavailable.")
+    if args.abi not in adb("shell", "getprop", "ro.product.cpu.abilist").strip().split(","):
+        raise RuntimeError(f"Selected device does not support {args.abi}.")
     args.evidence.mkdir(parents=True, exist_ok=False)
     try:
         adb("install", "-r", str(apk.resolve()))
@@ -60,6 +62,9 @@ def main():
     package_paths = adb("shell", "pm", "path", PACKAGE).strip().splitlines()
     if len(package_paths) != 1 or not package_paths[0].startswith("package:"):
         raise RuntimeError("Expected one installed base APK for the story picker.")
+    package = adb("shell", "dumpsys", "package", PACKAGE)
+    if not re.search(rf"(?m)^\s*primaryCpuAbi={re.escape(args.abi)}\s*$", package):
+        raise RuntimeError(f"Android did not select the expected ABI: {args.abi}.")
     installed = args.evidence / "installed.apk"
     try:
         adb("pull", package_paths[0].removeprefix("package:"), str(installed.resolve()))
@@ -100,7 +105,7 @@ def main():
         record(f"Tap: {label}")
         adb("shell", "input", "tap", str((left + right) // 2), str((top + bottom) // 2))
 
-    record(f"Installed commit {args.commit}, APK SHA-256 {expected}")
+    record(f"Installed commit {args.commit}, ABI {args.abi}, APK SHA-256 {expected}")
     adb("shell", "am", "force-stop", PACKAGE)
     try:
         adb("shell", "am", "start", "-W", "-n", ACTIVITY)
