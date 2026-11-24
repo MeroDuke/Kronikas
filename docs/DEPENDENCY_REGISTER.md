@@ -1,6 +1,6 @@
 # Függőségi nyilvántartás
 
-Jelenleg nincs kiválasztott vagy bevezetett termékfüggőség. Az alábbiak vizsgálandó kategóriák, nem jóváhagyott technológiák.
+A Dart CORE csomaglistája üres. Az ellenőrzött SDK-verziók és CI-eszközök az [IMP-001 eszköznyilvántartásában](CORE_DEVELOPMENT.md) szerepelnek. Az alábbiak vizsgálandó kategóriák, nem jóváhagyott technológiák.
 
 | Kategória | Név/verzió | Licenc | Kereskedelmi jogok és kötelezettségek | Forrás | Státusz |
 |---|---|---|---|---|---|
