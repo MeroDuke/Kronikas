@@ -1,6 +1,15 @@
 name: Platform probe
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/platform-probe.yml'
+      - 'platform_probe/android/**/*.gradle.kts'
+      - 'platform_probe/android/gradle.properties'
+      - 'platform_probe/android/gradle/wrapper/gradle-wrapper.properties'
+      - 'platform_probe/pubspec.lock'
+      - 'tool/sdk.json'
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
     paths: ['platform_probe/**', 'core/lib/**', 'tool/android-probe.py', 'tool/windows-probe.ps1', 'tool/windows-probe-accessible.cs', 'tool/android-ci-build.sh', 'tool/android-ci-preflight.py', 'tool/android_failure_evidence.py', 'tool/tablet-story-picker.py', 'tool/sdk.json', '.github/workflows/platform-probe.yml']
@@ -9,12 +18,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: platform-probe-${{ github.event.pull_request.number }}
+  group: platform-probe-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   windows:
-    if: ${{ !github.event.pull_request.draft }}
+    if: ${{ github.event_name == 'pull_request' && !github.event.pull_request.draft }}
     runs-on: windows-latest
     timeout-minutes: 30
     env:
@@ -90,7 +99,7 @@ jobs:
           name: windows-ui-evidence
           path: build/windows-ui-evidence/
   android-build:
-    if: ${{ !github.event.pull_request.draft }}
+    if: ${{ github.event_name == 'push' || !github.event.pull_request.draft }}
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     env:
@@ -99,7 +108,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Set up pinned Flutter
         shell: bash
         run: |
@@ -115,6 +124,8 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: android-gradle-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tool/sdk.json', 'platform_probe/android/**/*.gradle.kts', 'platform_probe/android/gradle.properties', 'platform_probe/android/gradle/wrapper/gradle-wrapper.properties', 'platform_probe/pubspec.lock') }}
+          restore-keys: |
+            android-gradle-v1-${{ runner.os }}-${{ runner.arch }}-
       - name: Build Android probe and inventory APK
         working-directory: platform_probe
         shell: bash
@@ -137,11 +148,13 @@ jobs:
           unzip -Z1 "$apk" | awk -F/ '$1 == "lib" && $3 != "" {print $2}' | sort -u > native-abis.txt
           test "$(cat native-abis.txt)" = arm64-v8a
       - name: Preserve the ARM64 APK and inventory
+        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android-arm64-platform-probe
           path: build/android-arm64-probe/
       - name: Build ARM64 story picker
+        if: github.event_name == 'pull_request'
         working-directory: platform_probe
         shell: bash
         env:
@@ -159,12 +172,13 @@ jobs:
           unzip -l story-picker.apk > apk-inventory.txt
           unzip -p story-picker.apk assets/flutter_assets/NOTICES.Z > flutter-notices.z
       - name: Preserve the ARM64 story picker
+        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android-arm64-story-picker
           path: build/android-arm64-story-picker/
   android-ui:
-    if: ${{ !github.event.pull_request.draft }}
+    if: ${{ github.event_name == 'pull_request' && !github.event.pull_request.draft }}
     permissions:
       contents: read
       actions: read
