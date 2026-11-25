@@ -2,7 +2,7 @@
 
 ## Aktuális állapot
 
-A böngészős GitHub App-belépés jóváhagyva. A tokenváltó és a repóválasztó szintetikus tesztje átment. Az élő konfigurációhoz GitHub App regisztráció és HTTPS tokenváltó szükséges. [UC-002](TRACEABILITY.md#uc-002) · [Beállítás](../auth_backend/README.md)
+Szerver nélküli, egyszeri kódos GitHub-belépés készült. A helyi demó szintetikus jóváhagyással mutatja be a felületet. Az élő próba GitHub App-regisztrációra vár. [UC-002](TRACEABILITY.md#uc-002) · [Beállítás](../platform_probe/README.md)
 
 A konfliktusfeloldás, a gyors Flutter CI és a csomagolt Windows x64 és Android ARM64 felületi próbák a `main` ágon vannak. [Platform-CI](https://github.com/MeroDuke/Kronikas/actions/runs/45563300860)
 

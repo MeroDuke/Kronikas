@@ -16,7 +16,11 @@ A megnyitott helyi kalandban a **Játékalkalom indítása** megnyit egy alkalma
 
 ## Repó- és meseválasztó előnézet
 
-A **Belépés GitHubbal** megnyitja a GitHub engedélyezési oldalát a böngészőben. Jóváhagyás után térj vissza a Krónikásba, ahol megjelennek a meséid. Több elérhető mesetár esetén előbb választasz közülük. A meseválasztó az alapértelmezett ágat nyitja meg. A token a kapcsolat idejére memóriában marad, és a **Kijelentkezés** művelet törli a kliensből. A belépéshez konfigurált GitHub App és HTTPS tokenváltó szükséges. [Beállítás](../auth_backend/README.md)
+A **Belépés GitHubbal** megmutat egy egyszeri kódot. A gomb vágólapra másolja a kódot és megnyitja a GitHub jóváhagyási oldalát. Illeszd be a kódot a GitHubon, majd a jóváhagyás után válaszd a **Jóváhagytam** gombot a Krónikásban. Egyetlen elérhető mesetárnál közvetlenül a meselista jelenik meg. A token a kapcsolat idejére memóriában marad.
+
+Élő belépéshez a GitHub Appban egyszer engedélyezni kell a device flow-t, és az appot telepíteni kell a kiválasztott privát mesetárakra. A szinkronhoz **Contents: Read and write** jog szükséges. Az élő build a nyilvános GitHub App kliensazonosítót a `--dart-define=KRONIKAS_GITHUB_CLIENT_ID=<azonosító>` opcióból kapja. [GitHub App device flow](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app#using-the-device-flow-to-generate-a-user-access-token)
+
+A Windowsos demó buildhez futtasd a `flutter build windows --release --target tool/story_picker_walkthrough.dart --dart-define=KRONIKAS_LOGIN_DEMO=true` parancsot. A **DEMO-MESE** kód és a jóváhagyás szintetikus, a demó a Teszt mesét nyitja meg.
 
 A `flutter run -d windows --target tool/story_picker_walkthrough.dart` ugyanazt a felületet nyitja szintetikus tárolóval és előre kitöltött tesztbemenettel. Csatlakozás után megjelenik a Teszt mese. A mesében a lezárt játékalkalmat lenyitva látható a rögzített esemény és annak mesélői láthatósága. A szinkron gombbal szintetikus címütközés jelenik meg. A CI rövid emulátoros próbája ellenőrzi a két értéket és az egyedi cím mentését. A teljes `--conflict` mód az elavult döntés elutasítását és az eredeti példányok megnyitását is végigjárja. Ezután vissza lehet lépni a meselistára.
 

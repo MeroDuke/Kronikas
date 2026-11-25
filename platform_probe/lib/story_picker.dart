@@ -32,9 +32,92 @@ typedef CatalogLoader = Future<StoryCatalog> Function(
 void main() => runApp(
   StoryPickerApp(
     load: _loadGitHub,
-    signIn: githubSignInConfigured ? connectGitHub : null,
+    signIn: githubSignInConfigured ? _deviceSignIn : null,
   ),
 );
+
+Future<GitHubConnection?> _deviceSignIn(BuildContext context) => connectGitHub(
+  (code, openGitHub) => context.mounted
+      ? showGitHubCode(context, code: code, openGitHub: openGitHub)
+      : Future.value(false),
+);
+
+Future<bool> showGitHubCode(
+  BuildContext context, {
+  required String code,
+  Future<void> Function()? openGitHub,
+}) async {
+  var browserOpened = false;
+  var opening = false;
+  var failed = false;
+  return await showDialog<bool>(
+        context: context,
+        builder: (context) => StatefulBuilder(
+          builder: (context, update) => AlertDialog(
+            title: Text(
+              openGitHub == null
+                  ? 'GitHub-belépés · demó'
+                  : 'Belépés GitHubbal',
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  openGitHub == null
+                      ? 'Így jelenik meg az egyszeri kód. Ebben a demóban a jóváhagyást szimuláljuk.'
+                      : 'Nyisd meg a GitHubot, illeszd be az egyszeri kódot, majd hagyd jóvá a belépést.',
+                ),
+                const SizedBox(height: 12),
+                SelectableText(
+                  code,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                if (failed)
+                  const Text('A böngésző megnyitása sikertelen. Próbáld újra.'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Mégse'),
+              ),
+              if (openGitHub != null && !browserOpened)
+                FilledButton(
+                  onPressed: opening
+                      ? null
+                      : () async {
+                          update(() {
+                            opening = true;
+                            failed = false;
+                          });
+                          try {
+                            await openGitHub();
+                            if (context.mounted)
+                              update(() => browserOpened = true);
+                          } catch (_) {
+                            if (context.mounted) update(() => failed = true);
+                          } finally {
+                            if (context.mounted) update(() => opening = false);
+                          }
+                        },
+                  child: const Text('Kód másolása és GitHub megnyitása'),
+                )
+              else
+                FilledButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: Text(
+                    openGitHub == null
+                        ? 'Jóváhagyás szimulálása'
+                        : 'Jóváhagytam',
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ) ??
+      false;
+}
 
 Future<Uri> _storyStorageRoot() async {
   final directory = Platform.isWindows
@@ -120,7 +203,7 @@ class StoryPickerApp extends StatelessWidget {
   });
 
   final CatalogLoader load;
-  final Future<GitHubConnection> Function()? signIn;
+  final Future<GitHubConnection?> Function(BuildContext)? signIn;
   final ({String address, String token})? testForm;
   final Future<void> Function()? testRemoteEdit;
 
@@ -146,7 +229,7 @@ class _StoryPicker extends StatefulWidget {
   });
 
   final CatalogLoader load;
-  final Future<GitHubConnection> Function()? signIn;
+  final Future<GitHubConnection?> Function(BuildContext)? signIn;
   final ({String address, String token})? testForm;
   final Future<void> Function()? testRemoteEdit;
 
@@ -232,8 +315,8 @@ class _StoryPickerState extends State<_StoryPicker> {
       if (mounted) setState(() => _catalog = catalog);
       return;
     }
-    final connection = await widget.signIn!();
-    if (!mounted) return;
+    final connection = await widget.signIn!(context);
+    if (!mounted || connection == null) return;
     setState(() => _connection = connection);
     if (connection.repositories.length == 1) {
       await _loadRepository(connection.repositories.single);

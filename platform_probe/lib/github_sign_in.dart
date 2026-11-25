@@ -5,9 +5,9 @@ import 'package:flutter/services.dart';
 
 typedef GitHubConnection = ({String token, List<String> repositories});
 
-const _authEndpoint = String.fromEnvironment('KRONIKAS_AUTH_URL');
+const _clientId = String.fromEnvironment('KRONIKAS_GITHUB_CLIENT_ID');
 
-bool get githubSignInConfigured => _authEndpoint.isNotEmpty;
+bool get githubSignInConfigured => _clientId.isNotEmpty;
 
 Future<void> _openBrowser(Uri url) async {
   if (url.scheme != 'https' ||
@@ -27,44 +27,60 @@ Future<void> _openBrowser(Uri url) async {
   }
 }
 
-Future<GitHubConnection> connectGitHub() async {
-  final endpoint = Uri.parse(_authEndpoint);
-  if (endpoint.scheme != 'https' ||
-      endpoint.host.isEmpty ||
-      endpoint.userInfo.isNotEmpty) {
-    throw StateError('An HTTPS GitHub login endpoint is required.');
-  }
+typedef DevicePrompt = Future<bool> Function(
+  String code,
+  Future<void> Function() openGitHub,
+);
+
+Future<GitHubConnection?> connectGitHub(DevicePrompt prompt) async {
   final client = HttpClient()..connectionTimeout = const Duration(seconds: 15);
   try {
     final (_, start) = await _request(
       client,
-      endpoint.resolve('/github/start'),
-      post: true,
+      Uri.https('github.com', '/login/device/code'),
+      form: {'client_id': _clientId, 'scope': 'offline_access'},
     );
-    final ticket = start['ticket'] as String;
-    final authorize = Uri.parse(start['authorizeUrl'] as String);
-    if (authorize.path != '/login/oauth/authorize') {
-      throw StateError('Unexpected GitHub authorization URL.');
+    final deviceCode = start['device_code'] as String;
+    final userCode = start['user_code'] as String;
+    final verification = Uri.parse(start['verification_uri'] as String);
+    if (verification.path != '/login/device') {
+      throw StateError('Unexpected GitHub device verification URL.');
     }
-    await _openBrowser(authorize);
-
+    var interval = Duration(seconds: start['interval'] as int);
+    final expires = Duration(seconds: start['expires_in'] as int);
+    if (interval <= Duration.zero || expires <= Duration.zero) {
+      throw StateError('Invalid GitHub device authorization timing.');
+    }
     final elapsed = Stopwatch()..start();
-    while (elapsed.elapsed < const Duration(minutes: 5)) {
-      await Future<void>.delayed(const Duration(seconds: 3));
-      final (status, result) = await _request(
+    if (!await prompt(userCode, () async {
+      await Clipboard.setData(ClipboardData(text: userCode));
+      await _openBrowser(verification);
+    }))
+      return null;
+
+    while (elapsed.elapsed + interval < expires) {
+      await Future<void>.delayed(interval);
+      final (_, result) = await _request(
         client,
-        endpoint.resolve('/github/result'),
-        post: true,
-        token: ticket,
+        Uri.https('github.com', '/login/oauth/access_token'),
+        form: {
+          'client_id': _clientId,
+          'device_code': deviceCode,
+          'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
+        },
       );
-      if (status == 202) continue;
-      final token = result['token'];
-      if (result['status'] != 'authorized' ||
-          token is! String ||
-          !token.startsWith('ghu_')) {
-        throw StateError('GitHub login did not complete.');
+      final token = result['access_token'];
+      if (token is String && token.startsWith('ghu_')) {
+        return (token: token, repositories: await _repositories(client, token));
       }
-      return (token: token, repositories: await _repositories(client, token));
+      switch (result['error']) {
+        case 'authorization_pending':
+          continue;
+        case 'slow_down':
+          interval += const Duration(seconds: 5);
+        default:
+          throw StateError('GitHub login did not complete.');
+      }
     }
     throw StateError('GitHub login expired.');
   } finally {
@@ -120,15 +136,23 @@ Future<List<String>> _repositories(HttpClient client, String token) async {
 Future<(int, Map<String, Object?>)> _request(
   HttpClient client,
   Uri url, {
-  bool post = false,
+  Map<String, String>? form,
   String? token,
 }) async {
-  final request = await client.openUrl(post ? 'POST' : 'GET', url);
+  final request = await client.openUrl(form == null ? 'GET' : 'POST', url);
   request.followRedirects = false;
   request.headers.set(HttpHeaders.acceptHeader, 'application/json');
   request.headers.set(HttpHeaders.userAgentHeader, 'Kronikas');
   if (token != null)
     request.headers.set(HttpHeaders.authorizationHeader, 'Bearer $token');
+  if (form != null) {
+    request.headers.contentType = ContentType(
+      'application',
+      'x-www-form-urlencoded',
+      charset: 'utf-8',
+    );
+    request.write(Uri(queryParameters: form).query);
+  }
   final result = await request.close().timeout(const Duration(seconds: 20));
   final body = await utf8.decoder
       .bind(result)
