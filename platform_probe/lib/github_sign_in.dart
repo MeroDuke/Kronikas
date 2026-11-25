@@ -11,6 +11,13 @@ const _appSlug = String.fromEnvironment('KRONIKAS_GITHUB_APP_SLUG');
 bool get githubSignInConfigured => _authEndpoint.isNotEmpty;
 bool get githubInstallConfigured => RegExp(r'^[a-z0-9-]+$').hasMatch(_appSlug);
 
+Future<void> openGitHubSetupGuide() => _openBrowser(
+  Uri.https(
+    'github.com',
+    '/MeroDuke/Kronikas/blob/bcdbd424e3cdd81211573468fd211d30822c5601/auth_backend/README.md',
+  ),
+);
+
 Future<void> openGitHubInstallation() =>
     _openBrowser(Uri.https('github.com', '/apps/$_appSlug/installations/new'));
 

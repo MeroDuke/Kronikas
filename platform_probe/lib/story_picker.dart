@@ -363,22 +363,25 @@ class _StoryPickerState extends State<_StoryPicker> {
                   child: const Text('GitHub leválasztása'),
                 ),
               ] else ...[
-                if (widget.testForm == null && widget.signIn == null)
+                if (widget.testForm == null && widget.signIn == null) ...[
                   const Text(
-                    'A GitHub-belépés ehhez a buildhez még nincs beállítva.',
+                    'A GitHub-belépéshez a Krónikás üzemeltetőjének be kell állítania a GitHub Appot és a HTTPS tokenváltót. Addig a helyi kalandok használhatók.',
                   ),
-                FilledButton(
-                  onPressed:
-                      _busy ||
-                          (widget.testForm == null && widget.signIn == null)
-                      ? null
-                      : _connect,
-                  child: Text(
-                    widget.testForm == null
-                        ? 'GitHub csatlakoztatása'
-                        : 'Repó csatlakoztatása',
+                  TextButton(
+                    onPressed: _busy
+                        ? null
+                        : () => _perform(openGitHubSetupGuide),
+                    child: const Text('GitHub-belépés beállítási útmutatója'),
                   ),
-                ),
+                ] else
+                  FilledButton(
+                    onPressed: _busy ? null : _connect,
+                    child: Text(
+                      widget.testForm == null
+                          ? 'GitHub csatlakoztatása'
+                          : 'Repó csatlakoztatása',
+                    ),
+                  ),
                 if (_busy && widget.testForm == null)
                   const Text(
                     'Hagyd jóvá a belépést a böngészőben, majd térj vissza ide.',
