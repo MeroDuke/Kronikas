@@ -12,7 +12,7 @@ A meseválasztó kezdőlapján a **Helyi kalandok** gomb GitHub-hozzáférés n�
 
 ## Helyi játékalkalom
 
-A megnyitott helyi kalandban a **Játékalkalom indítása** megnyit egy alkalmat. Az egyes mérföldkövek **Kimenetel rögzítése** műveleténél válassz állapotot, és írd le, mi történt. A mentés egyszerre frissíti a mérföldkő állapotát és az alkalom mesélői előzményeit. Az alkalom lezárható, az aktív és lezárt előzmények újranyitás után is olvashatók. [UC-003](../docs/TRACEABILITY.md#uc-003) · [UC-004](../docs/TRACEABILITY.md#uc-004)
+A megnyitott helyi kalandban a **Játékalkalom indítása** megnyit egy alkalmat. Az egyes mérföldkövek **Kimenetel rögzítése** műveleténél válassz állapotot, és írd le, mi történt. A mentés egyszerre frissíti a mérföldkő állapotát és az alkalom mesélői előzményeit. Aktív alkalomban az **Új improvizált esemény** és az **Új mesélői jegyzet** művelettel gyorsan felvehetsz új bejegyzést. Az improvizált eseményt külön jelölheted publikálhatónak. Az alkalom lezárható, az aktív és lezárt előzmények újranyitás után is olvashatók. [UC-003](../docs/TRACEABILITY.md#uc-003) · [UC-004](../docs/TRACEABILITY.md#uc-004)
 
 ## Repó- és meseválasztó előnézet
 

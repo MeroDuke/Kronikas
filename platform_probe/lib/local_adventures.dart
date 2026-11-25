@@ -171,6 +171,75 @@ class _LocalAdventuresState extends State<LocalAdventures> {
     );
   }
 
+  Future<void> _recordSessionText(
+    Adventure adventure,
+    Session session, {
+    required bool note,
+  }) async {
+    var text = '';
+    var publishable = false;
+    final result = await showDialog<({String text, bool publishable})>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, update) => AlertDialog(
+          title: Text(note ? 'Új mesélői jegyzet' : 'Improvizált esemény'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  onChanged: (value) => update(() => text = value.trim()),
+                  decoration: InputDecoration(
+                    labelText: note ? 'Jegyzet szövege' : 'Esemény leírása',
+                  ),
+                  maxLines: 3,
+                ),
+                if (!note)
+                  CheckboxListTile(
+                    title: const Text('Publikálható'),
+                    value: publishable,
+                    onChanged: (value) =>
+                        update(() => publishable = value ?? false),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Mégse'),
+            ),
+            FilledButton(
+              onPressed: text.isEmpty
+                  ? null
+                  : () =>
+                        Navigator.of(context)
+                            .pop((text: text, publishable: publishable)),
+              child: Text(note ? 'Jegyzet mentése' : 'Esemény mentése'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || result == null) return;
+    final id = _newId();
+    _updateSession((chronicle) {
+      if (note) {
+        chronicle.saveSessionNote(adventure.id, session.id, id, result.text);
+      } else {
+        chronicle.recordImprovisedEvent(
+          adventure.id,
+          session.id,
+          id: id,
+          description: result.text,
+          visibility: result.publishable
+              ? EventVisibility.publishable
+              : EventVisibility.gmOnly,
+        );
+      }
+    });
+  }
+
   String _milestoneStatus(MilestoneStatus status) => switch (status) {
     MilestoneStatus.pending => 'Függőben',
     MilestoneStatus.completed => 'Teljesítve',
@@ -304,6 +373,22 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                     ),
                     child: const Text('Játékalkalom lezárása'),
                   ),
+                if (active != null)
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () =>
+                            _recordSessionText(adventure, active, note: false),
+                        child: const Text('Új improvizált esemény'),
+                      ),
+                      OutlinedButton(
+                        onPressed: () =>
+                            _recordSessionText(adventure, active, note: true),
+                        child: const Text('Új mesélői jegyzet'),
+                      ),
+                    ],
+                  ),
                 for (final session in adventure.sessions.values)
                   ExpansionTile(
                     key: ValueKey((session.id, session.isOpen)),
@@ -315,7 +400,18 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                     ),
                     children: [
                       for (final event in session.events)
-                        ListTile(title: Text(event.description)),
+                        ListTile(
+                          title: Text(event.description),
+                          subtitle: Text(
+                            event.visibility == EventVisibility.publishable
+                                ? 'Publikálható'
+                                : 'Csak a mesélőnek',
+                          ),
+                        ),
+                      if (session.notes.isNotEmpty)
+                        const ListTile(title: Text('Mesélői jegyzetek')),
+                      for (final note in session.notes.values)
+                        ListTile(title: Text(note)),
                     ],
                   ),
                 TextButton(
