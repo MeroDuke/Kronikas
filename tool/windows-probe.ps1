@@ -4,7 +4,10 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes
+Add-Type -AssemblyName Accessibility
+Add-Type -ReferencedAssemblies Accessibility -TypeDefinition (
+    Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'windows-probe-accessible.cs')
+)
 
 $package = (Resolve-Path -LiteralPath $PackageDirectory).Path
 $evidence = (New-Item -ItemType Directory -Force -Path $EvidenceDirectory).FullName
@@ -24,24 +27,19 @@ function Write-Step([string] $message) {
     Add-Content -LiteralPath $journal -Value $message -Encoding utf8
 }
 
-function Get-ProbeWindow {
+function Get-ProbeElements {
     $app.Refresh()
     if ($app.HasExited) { throw "Windows probe exited with code $($app.ExitCode)." }
     if ($app.MainWindowHandle -ne [IntPtr]::Zero) {
-        [Windows.Automation.AutomationElement]::FromHandle($app.MainWindowHandle)
+        [ProbeAccessible]::Read($app.MainWindowHandle)
     }
 }
 
 function Wait-Label([string] $label) {
-    $condition = New-Object Windows.Automation.PropertyCondition(
-        [Windows.Automation.AutomationElement]::NameProperty, $label
-    )
     $deadline = [Diagnostics.Stopwatch]::StartNew()
     while ($deadline.Elapsed.TotalSeconds -lt 30) {
-        $window = Get-ProbeWindow
-        if ($null -ne $window) {
-            $element = $window.FindFirst([Windows.Automation.TreeScope]::Descendants, $condition)
-            if ($null -ne $element) {
+        foreach ($element in Get-ProbeElements) {
+            if ($element.Name -ceq $label) {
                 Write-Step "Observed: $label"
                 return $element
             }
@@ -53,9 +51,8 @@ function Wait-Label([string] $label) {
 
 function Invoke-ProbeButton([string] $label) {
     $element = Wait-Label $label
-    $pattern = $element.GetCurrentPattern([Windows.Automation.InvokePattern]::Pattern)
     Write-Step "Invoke: $label"
-    $pattern.Invoke()
+    $element.Invoke()
 }
 
 function Start-Probe {
@@ -87,15 +84,9 @@ try {
     Write-Step "Failed: $($_.Exception.Message)"
     if ($null -ne $app -and !$app.HasExited) {
         try {
-            $window = Get-ProbeWindow
-            if ($null -ne $window) {
-                $window.FindAll(
-                    [Windows.Automation.TreeScope]::Descendants,
-                    [Windows.Automation.Condition]::TrueCondition
-                ) | ForEach-Object {
-                    '{0} {1}' -f $_.Current.ControlType.ProgrammaticName, $_.Current.Name
-                } | Set-Content -LiteralPath (Join-Path $evidence 'failure-ui.txt') -Encoding utf8
-            }
+            Get-ProbeElements |
+                ForEach-Object { $_.Name } |
+                Set-Content -LiteralPath (Join-Path $evidence 'failure-ui.txt') -Encoding utf8
         } catch {
             Write-Step "Could not collect the UI tree: $($_.Exception.Message)"
         }

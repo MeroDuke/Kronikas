@@ -66,7 +66,7 @@ A tabletes regressziót Codex futtatja Wi-Fi-s ADB-n. Minden fizikai futás az e
 
 ## Windows x64 csomagpróba a CI-ban
 
-A `windows` job ellenőrzi a csomag ZIP-fájljának SHA-256 értékét, majd külön könyvtárba bontja és onnan indítja a tényleges EXE-t. A `tool/windows-probe.ps1` a Windows UI Automation API-val megkeresi a felület elemeit. Egy üres szintetikus profilban a **Save test data** gombbal ment, bezárja és újraindítja a programot, majd a **Verify saved data** gombbal ellenőrzi a krónikát és a DPAPI-védett értéket. A végén bezárja a próbát.
+A `windows` job ellenőrzi a csomag ZIP-fájljának SHA-256 értékét, majd külön könyvtárba bontja és onnan indítja a tényleges EXE-t. A `tool/windows-probe.ps1` a Windows MSAA akadálymentességi API-val megkeresi a felület elemeit. Egy üres szintetikus profilban a **Save test data** gombbal ment, bezárja és újraindítja a programot, majd a **Verify saved data** gombbal ellenőrzi a krónikát és a DPAPI-védett értéket. A végén bezárja a próbát.
 
 A `windows-ui-evidence` melléklet a csomag hashét és a lépések naplóját tartalmazza. Hiba esetén a még elérhető alkalmazás UI-fája is bekerül. A helyi Computer Use a további felületi forgatókönyvek célzott próbájára használható.
 

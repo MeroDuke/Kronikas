@@ -3,7 +3,7 @@ name: Platform probe
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
-    paths: ['platform_probe/**', 'core/lib/**', 'tool/android-probe.py', 'tool/windows-probe.ps1', 'tool/android-ci-build.sh', 'tool/android_failure_evidence.py', 'tool/tablet-story-picker.py', 'tool/sdk.json', '.github/workflows/platform-probe.yml']
+    paths: ['platform_probe/**', 'core/lib/**', 'tool/android-probe.py', 'tool/windows-probe.ps1', 'tool/windows-probe-accessible.cs', 'tool/android-ci-build.sh', 'tool/android_failure_evidence.py', 'tool/tablet-story-picker.py', 'tool/sdk.json', '.github/workflows/platform-probe.yml']
 
 permissions:
   contents: read
@@ -60,7 +60,7 @@ jobs:
         with:
           name: windows-platform-probe
           path: build/windows-probe/
-      - name: Verify packaged Windows x64 app through UI Automation
+      - name: Verify packaged Windows x64 app through Windows accessibility
         shell: powershell
         run: .\tool\windows-probe.ps1 -PackageDirectory build/windows-probe -EvidenceDirectory build/windows-ui-evidence
       - name: Preserve Windows UI evidence
