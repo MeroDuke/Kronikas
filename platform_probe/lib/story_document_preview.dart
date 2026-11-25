@@ -53,6 +53,13 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
         (name, bytes),
       );
       if (mounted) setState(() => _document = document);
+    } on NotStoryDocument {
+      if (mounted) {
+        setState(() {
+          _document = null;
+          _error = 'Ez a fájl nem Krónikás-mese.';
+        });
+      }
     } catch (_) {
       if (mounted) {
         setState(
