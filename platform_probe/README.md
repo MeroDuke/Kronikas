@@ -10,6 +10,10 @@ ARM64 telefonhoz a Platform probe CI-futás `android-arm64-platform-probe` mell�
 
 A meseválasztó kezdőlapján a **Helyi kalandok** gomb GitHub-hozzáférés nélkül nyitja meg a helyi listát. Az **Új önálló kaland** művelethez cím kell, a leírás opcionális. A **Kaland mentése** után a kaland megnyílik, és az alkalmazás újraindítása után a listából ismét megnyitható. A helyi lista saját mentési könyvtárat használ. A megnyitott kalandban az **Új mérföldkő** címet és opcionális tervezett kimenetelt kér. Az új mérföldkő függő státusszal kerül a listára, és újranyitás után is látható. [UC-001](../docs/TRACEABILITY.md#uc-001)
 
+## Helyi játékalkalom
+
+A megnyitott helyi kalandban a **Játékalkalom indítása** megnyit egy alkalmat. Az egyes mérföldkövek **Kimenetel rögzítése** műveleténél válassz állapotot, és írd le, mi történt. A mentés egyszerre frissíti a mérföldkő állapotát és az alkalom mesélői előzményeit. Az alkalom lezárható, az aktív és lezárt előzmények újranyitás után is olvashatók. [UC-003](../docs/TRACEABILITY.md#uc-003) · [UC-004](../docs/TRACEABILITY.md#uc-004)
+
 ## Repó- és meseválasztó előnézet
 
 A `flutter run -d windows --target lib/story_picker.dart` az alkalmazás felületén kéri a privát GitHub-repó címét, az opcionális ágat és az adott repóra korlátozott, fine-grained PAT-ot. A token az aktív kapcsolat memóriájában marad. A megnyitáshoz olvasási jog, a távoli feloldás mentéséhez tartalomírási jog kell. A **Mese szinkronizálása** művelet mesénként elkülönített helyi mentést használ. Ütközéskor a panel megmutatja az eltérő értékeket, kezeli az elavult döntést, és megnyithatóvá teszi a feloldás előtti példányokat. A makettől független platformpróba továbbra is a `lib/main.dart` belépési pontból indul.

@@ -38,11 +38,7 @@ class _LocalAdventuresState extends State<LocalAdventures> {
 
   void _save() {
     if (!_form.currentState!.validate()) return;
-    final random = Random.secure();
-    final id = List.generate(
-      16,
-      (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
-    ).join();
+    final id = _newId();
     final adventureId = _selected;
     final title = _title.text.trim();
     final details = _description.text.trim();
@@ -84,10 +80,112 @@ class _LocalAdventuresState extends State<LocalAdventures> {
     }
   }
 
+  String _newId() {
+    final random = Random.secure();
+    return List.generate(
+      16,
+      (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+    ).join();
+  }
+
+  void _updateSession(void Function(Chronicle) operation) {
+    try {
+      final saved = widget.store.update(operation);
+      setState(() {
+        _chronicle = saved;
+        _error = null;
+      });
+    } on Exception {
+      setState(() => _error = 'A játékalkalom mentése sikertelen.');
+    } on StateError {
+      setState(() => _error = 'A játékalkalom mentése sikertelen.');
+    }
+  }
+
+  Future<void> _recordOutcome(
+    Adventure adventure,
+    Session session,
+    Milestone milestone,
+  ) async {
+    var status = MilestoneStatus.completed;
+    var description = '';
+    final result =
+        await showDialog<({MilestoneStatus status, String description})>(
+          context: context,
+          builder: (context) => StatefulBuilder(
+            builder: (context, update) => AlertDialog(
+              title: Text(milestone.title),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButton<MilestoneStatus>(
+                      value: status,
+                      items: [
+                        for (final item in MilestoneStatus.values)
+                          if (item != MilestoneStatus.pending)
+                            DropdownMenuItem(
+                              value: item,
+                              child: Text(_milestoneStatus(item)),
+                            ),
+                      ],
+                      onChanged: (item) => update(() => status = item!),
+                    ),
+                    TextField(
+                      onChanged: (value) =>
+                          update(() => description = value.trim()),
+                      decoration: const InputDecoration(
+                        labelText: 'Tényleges kimenetel',
+                      ),
+                      maxLines: 3,
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Mégse'),
+                ),
+                FilledButton(
+                  onPressed: description.isEmpty
+                      ? null
+                      : () => Navigator.of(context)
+                            .pop((status: status, description: description)),
+                  child: const Text('Kimenetel mentése'),
+                ),
+              ],
+            ),
+          ),
+        );
+    if (!mounted || result == null) return;
+    _updateSession(
+      (chronicle) => chronicle.recordMilestoneOutcome(
+        adventure.id,
+        session.id,
+        eventId: _newId(),
+        milestoneId: milestone.id,
+        status: result.status,
+        outcome: result.description,
+      ),
+    );
+  }
+
+  String _milestoneStatus(MilestoneStatus status) => switch (status) {
+    MilestoneStatus.pending => 'Függőben',
+    MilestoneStatus.completed => 'Teljesítve',
+    MilestoneStatus.partiallyCompleted => 'Részben teljesítve',
+    MilestoneStatus.failed => 'Sikertelen',
+    MilestoneStatus.skipped => 'Kihagyva',
+  };
+
   @override
   Widget build(BuildContext context) {
     final adventure = _chronicle.adventures[_selected];
     final creatingMilestone = adventure != null;
+    final active = adventure?.sessions.values
+        .where((session) => session.isOpen)
+        .firstOrNull;
     return Scaffold(
       appBar: AppBar(title: const Text('Helyi kalandok')),
       body: Center(
@@ -163,25 +261,68 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                     title: Text(milestone.title),
                     subtitle: Text(
                       [
-                        switch (adventure.progress[milestone.id]!.status) {
-                          MilestoneStatus.pending => 'Függőben',
-                          MilestoneStatus.completed => 'Teljesítve',
-                          MilestoneStatus.partiallyCompleted =>
-                            'Részben teljesítve',
-                          MilestoneStatus.failed => 'Sikertelen',
-                          MilestoneStatus.skipped => 'Kihagyva',
-                        },
+                        _milestoneStatus(
+                          adventure.progress[milestone.id]!.status,
+                        ),
                         for (final outcome in milestone.plannedOutcomes)
                           outcome.description,
                       ].join('\n'),
                     ),
+                    trailing: active == null
+                        ? null
+                        : TextButton(
+                            onPressed: () =>
+                                _recordOutcome(adventure, active, milestone),
+                            child: const Text('Kimenetel rögzítése'),
+                          ),
                   ),
                 FilledButton(
                   onPressed: () => setState(() => _creating = true),
                   child: const Text('Új mérföldkő'),
                 ),
+                if (_error case final String error)
+                  Semantics(liveRegion: true, child: Text(error)),
+                if (active == null)
+                  OutlinedButton(
+                    onPressed: () => _updateSession(
+                      (chronicle) => chronicle.startSession(
+                        adventure.id,
+                        id: _newId(),
+                        startedAt: DateTime.now(),
+                      ),
+                    ),
+                    child: const Text('Játékalkalom indítása'),
+                  )
+                else
+                  OutlinedButton(
+                    onPressed: () => _updateSession(
+                      (chronicle) => chronicle.closeSession(
+                        adventure.id,
+                        active.id,
+                        DateTime.now(),
+                      ),
+                    ),
+                    child: const Text('Játékalkalom lezárása'),
+                  ),
+                for (final session in adventure.sessions.values)
+                  ExpansionTile(
+                    key: ValueKey((session.id, session.isOpen)),
+                    initiallyExpanded: session.isOpen,
+                    title: Text(
+                      session.isOpen
+                          ? 'Aktív játékalkalom'
+                          : 'Lezárt játékalkalom',
+                    ),
+                    children: [
+                      for (final event in session.events)
+                        ListTile(title: Text(event.description)),
+                    ],
+                  ),
                 TextButton(
-                  onPressed: () => setState(() => _selected = null),
+                  onPressed: () => setState(() {
+                    _selected = null;
+                    _error = null;
+                  }),
                   child: const Text('Vissza a helyi kalandokhoz'),
                 ),
               ] else ...[
