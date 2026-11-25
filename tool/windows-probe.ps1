@@ -39,15 +39,29 @@ function Get-ProbeElements {
 
 function Wait-Label([string] $label) {
     $deadline = [Diagnostics.Stopwatch]::StartNew()
+    $lastTransient = $null
     while ($deadline.Elapsed.TotalSeconds -lt 30) {
-        foreach ($element in Get-ProbeElements) {
-            if ($element.Name -ceq $label) {
-                Write-Step "Observed: $label"
-                return $element
+        try {
+            foreach ($element in Get-ProbeElements) {
+                if (($element.Name -split '\r?\n') -ccontains $label) {
+                    Write-Step "Observed: $label"
+                    return $element
+                }
             }
+        } catch {
+            # A Flutter rebuild can invalidate a just-read MSAA node.
+            $cause = $_.Exception
+            while ($null -ne $cause -and $cause -isnot [Runtime.InteropServices.COMException]) {
+                $cause = $cause.InnerException
+            }
+            if ($null -eq $cause -or $cause.HResult -notin @(-2147467259, -2147417848, -2147220995)) {
+                throw
+            }
+            $lastTransient = $cause.Message
         }
         Start-Sleep -Milliseconds 250
     }
+    if ($null -ne $lastTransient) { Write-Step "Last transient accessibility error: $lastTransient" }
     throw "UI state not observed: $label"
 }
 
