@@ -5,7 +5,7 @@
 - A [logikai modell](requirements/DOMAIN_MODEL.md) jóváhagyott. Nyitott a végleges fájlséma, a séma verziózása és migrációja, az azonosítók konkrét formátuma és a történeti hivatkozások kezelése tervmódosításkor.
 - A jelenethez rendelhető, kötetlen sorrendű mérföldkövek javasoltak a logikai modellben. Nyitott, hogy szükséges-e előfeltételeket kezelni.
 - A Drive fájlverzióhoz kötött írás és az élő kétklienses próba nyitott. A konfliktusfeloldás viselkedése jóváhagyva. A CORE helyi revízióban őrzi a feloldás előtti távoli pillanatképet és a helyi revízió hivatkozását. Nyitott a megőrzési idő és a felületi visszaállítás menete. [UC-005](requirements/USE_CASES.md#uc-005)
-- LLM szolgáltató, költség, opcionális működés.
+- A [narratív kampányértékelő](IMPLEMENTATION_PLAN.md#narratív-kampányértékelő) opcionális LLM-jéhez az OpenAI az első szolgáltatójelölt. Nyitott az adatkezelés, az API-hozzáférés és a költség. A ChatGPT felület és az alkalmazásból hívott API számlázása külön működik. [OpenAI számlázási útmutató](https://help.openai.com/en/articles/9039756-managing-billing-for-chatgpt-and-the-api-platform)
 - Discord küldési hibák, ismételt publikáció.
 - Session- és kalandszintű összefoglalók eltérései.
 - Saját licenc és üzleti modell. A nyilvános terjesztési csatorna, a pontos buildeszközök feltételei és a tényleges platformcsomagok licencleltára a [licencelési átvilágítás](LICENSING_FEASIBILITY.md) alapján ellenőrzendő.
