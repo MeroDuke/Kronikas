@@ -2,7 +2,7 @@ name: Flutter checks
 
 on:
   push:
-    paths: ['platform_probe/**', 'core/lib/**', 'tool/sdk.json', '.github/workflows/flutter-checks.yml']
+    paths: ['platform_probe/**', 'auth_backend/**', 'core/lib/**', 'tool/sdk.json', '.github/workflows/flutter-checks.yml']
 
 permissions:
   contents: read
@@ -44,6 +44,8 @@ jobs:
           flutter pub get --enforce-lockfile
           flutter analyze --no-pub | tee ../build/flutter-checks/analysis.log
           flutter test --no-pub --machine | tee ../build/flutter-checks/widgets.jsonl
+      - name: Verify the GitHub login backend
+        run: node --test auth_backend/server.test.mjs
       - name: Preserve Flutter reports
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

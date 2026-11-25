@@ -2,6 +2,8 @@
 
 ## Aktuális állapot
 
+A böngészős GitHub App-belépés jóváhagyva. A tokenváltó és a repóválasztó szintetikus tesztje átment. Az élő konfigurációhoz GitHub App regisztráció és HTTPS tokenváltó szükséges. [UC-002](TRACEABILITY.md#uc-002) · [Beállítás](../auth_backend/README.md)
+
 A konfliktusfeloldás, a gyors Flutter CI és a csomagolt Windows x64 és Android ARM64 felületi próbák a `main` ágon vannak. [Platform-CI](https://github.com/MeroDuke/Kronikas/actions/runs/45563300860)
 
 Az IMP-006 helyi útján a **Helyi kalandok** felületről önálló kaland hozható létre, és később újranyitható. A Flutter-widgetteszt ideiglenes mentési könyvtárral ellenőrzi az üres cím elutasítását, a mentést és a frissen megnyitott tárolóból történő visszaolvasást. A megnyitott kalandhoz mérföldkő és opcionális tervezett kimenetel adható. A widgetteszt ellenőrzi az üres cím elutasítását, az újranyitást és a függő státuszt. A helyi játékalkalom indítható és lezárható. Nyitott alkalomban a mérföldkő tényleges kimenetele menthető és az előzményekből visszaolvasható. Aktív alkalomban improvizált esemény és mesélői jegyzet rögzíthető. Az improvizált esemény alapból csak a mesélőnek látható, és külön megjelölhető publikálhatónak. A widgetteszt újranyitás után ellenőrzi a mentett eseményt, láthatóságot és jegyzetet. [UC-003](TRACEABILITY.md#uc-003) · [UC-004](TRACEABILITY.md#uc-004) [UC-001](TRACEABILITY.md#uc-001)

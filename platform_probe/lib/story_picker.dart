@@ -12,6 +12,7 @@ import 'package:kronikas_core/kronikas_core.dart';
 import 'package:kronikas_core/local_chronicle_store.dart';
 
 import 'conflict_panel.dart';
+import 'github_sign_in.dart';
 import 'local_adventures.dart';
 
 typedef StorySync = ({ChronicleSync sync, void Function() close});
@@ -28,7 +29,12 @@ typedef CatalogLoader = Future<StoryCatalog> Function(
   String token,
 );
 
-void main() => runApp(const StoryPickerApp(load: _loadGitHub));
+void main() => runApp(
+  StoryPickerApp(
+    load: _loadGitHub,
+    signIn: githubSignInConfigured ? connectGitHub : null,
+  ),
+);
 
 Future<Uri> _storyStorageRoot() async {
   final directory = Platform.isWindows
@@ -45,9 +51,6 @@ Future<StoryCatalog> _loadGitHub(
   String? branch,
   String token,
 ) async {
-  if (!token.startsWith('github_pat_')) {
-    throw const FormatException('Repóra korlátozott GitHub-token szükséges.');
-  }
   final client = HttpClient();
   try {
     final repo = await GitHubChronicleRemote.connect(
@@ -111,11 +114,13 @@ class StoryPickerApp extends StatelessWidget {
   const StoryPickerApp({
     super.key,
     required this.load,
+    this.signIn,
     this.testForm,
     this.testRemoteEdit,
   });
 
   final CatalogLoader load;
+  final Future<GitHubConnection> Function()? signIn;
   final ({String address, String token})? testForm;
   final Future<void> Function()? testRemoteEdit;
 
@@ -125,6 +130,7 @@ class StoryPickerApp extends StatelessWidget {
     theme: ThemeData(colorSchemeSeed: const Color(0xff355e58)),
     home: _StoryPicker(
       load: load,
+      signIn: signIn,
       testForm: testForm,
       testRemoteEdit: testRemoteEdit,
     ),
@@ -132,9 +138,15 @@ class StoryPickerApp extends StatelessWidget {
 }
 
 class _StoryPicker extends StatefulWidget {
-  const _StoryPicker({required this.load, this.testForm, this.testRemoteEdit});
+  const _StoryPicker({
+    required this.load,
+    this.signIn,
+    this.testForm,
+    this.testRemoteEdit,
+  });
 
   final CatalogLoader load;
+  final Future<GitHubConnection> Function()? signIn;
   final ({String address, String token})? testForm;
   final Future<void> Function()? testRemoteEdit;
 
@@ -143,11 +155,7 @@ class _StoryPicker extends StatefulWidget {
 }
 
 class _StoryPickerState extends State<_StoryPicker> {
-  late final _repository = TextEditingController(
-    text: widget.testForm?.address,
-  );
-  final _branch = TextEditingController();
-  late final _token = TextEditingController(text: widget.testForm?.token);
+  GitHubConnection? _connection;
   StoryCatalog? _catalog;
   Chronicle? _story;
   String? _storyTitle;
@@ -158,9 +166,6 @@ class _StoryPickerState extends State<_StoryPicker> {
   @override
   void dispose() {
     _storySync?.close();
-    _repository.dispose();
-    _branch.dispose();
-    _token.dispose();
     super.dispose();
   }
 
@@ -189,7 +194,7 @@ class _StoryPickerState extends State<_StoryPicker> {
     } catch (_) {
       if (mounted)
         setState(
-          () => _error = 'Ellenőrizd a privát GitHub-repó címét, az ágat és a mesék formátumát.',
+          () => _error = 'A GitHub-művelet sikertelen. Ellenőrizd a hozzáférést, majd próbáld újra.',
         );
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -221,29 +226,27 @@ class _StoryPickerState extends State<_StoryPicker> {
     }
   }
 
-  Future<void> _connect() async {
-    final address = _repository.text.trim();
-    final branch = _branch.text.trim();
-    final token = _token.text.trim();
-    if (address.isEmpty || token.isEmpty) {
-      setState(() => _error = 'Add meg a repó címét és a GitHub-tokent.');
+  Future<void> _connect() => _perform(() async {
+    if (widget.testForm case final fixture?) {
+      final catalog = await widget.load(fixture.address, null, fixture.token);
+      if (mounted) setState(() => _catalog = catalog);
       return;
     }
-    if (!token.startsWith('github_pat_')) {
-      setState(() => _error = 'Repóra korlátozott GitHub-token szükséges.');
-      return;
-    }
-    await _perform(() async {
-      final catalog = await widget.load(
-        address,
-        branch.isEmpty ? null : branch,
-        token,
-      );
-      if (!mounted) return;
-      _token.clear();
-      setState(() => _catalog = catalog);
-    });
-  }
+    final connection = await widget.signIn!();
+    if (mounted) setState(() => _connection = connection);
+  });
+
+  Future<void> _refreshRepositories() => _perform(() async {
+    final token = _connection!.token;
+    final repositories = await refreshGitHubRepositories(token);
+    if (mounted)
+      setState(() => _connection = (token: token, repositories: repositories));
+  });
+
+  Future<void> _selectRepository(String repository) => _perform(() async {
+    final catalog = await widget.load(repository, null, _connection!.token);
+    if (mounted) setState(() => _catalog = catalog);
+  });
 
   Future<void> _open(GitHubStory entry) => _perform(() async {
     final story = await _catalog!.open(entry);
@@ -326,37 +329,60 @@ class _StoryPickerState extends State<_StoryPicker> {
                         }),
                   child: const Text('Másik repó csatlakoztatása'),
                 ),
+              ] else if (_connection case final connection?) ...[
+                Text(
+                  'GitHub-repók',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                if (connection.repositories.isEmpty) ...[
+                  const Text('A Krónikás még nem fér hozzá privát repóhoz.'),
+                  if (githubInstallConfigured)
+                    OutlinedButton(
+                      onPressed: _busy
+                          ? null
+                          : () => _perform(openGitHubInstallation),
+                      child: const Text('Hozzáférés beállítása a GitHubon'),
+                    ),
+                  TextButton(
+                    onPressed: _busy ? null : _refreshRepositories,
+                    child: const Text('Repók frissítése'),
+                  ),
+                ],
+                for (final repository in connection.repositories)
+                  ListTile(
+                    title: Text(repository),
+                    onTap: _busy ? null : () => _selectRepository(repository),
+                  ),
+                TextButton(
+                  onPressed: _busy
+                      ? null
+                      : () => setState(() {
+                          _connection = null;
+                          _error = null;
+                        }),
+                  child: const Text('GitHub leválasztása'),
+                ),
               ] else ...[
-                TextField(
-                  controller: _repository,
-                  enabled: !_busy,
-                  decoration: const InputDecoration(
-                    labelText: 'GitHub-repó címe',
+                if (widget.testForm == null && widget.signIn == null)
+                  const Text(
+                    'A GitHub-belépés ehhez a buildhez még nincs beállítva.',
                   ),
-                ),
-                TextField(
-                  controller: _branch,
-                  enabled: !_busy,
-                  decoration: const InputDecoration(
-                    labelText: 'Ág (opcionális)',
-                  ),
-                ),
-                TextField(
-                  controller: _token,
-                  enabled: !_busy,
-                  obscureText: true,
-                  enableSuggestions: false,
-                  enableIMEPersonalizedLearning: false,
-                  autocorrect: false,
-                  decoration: const InputDecoration(
-                    labelText: 'Repóra korlátozott GitHub-token',
-                  ),
-                ),
-                const SizedBox(height: 20),
                 FilledButton(
-                  onPressed: _busy ? null : _connect,
-                  child: const Text('Repó csatlakoztatása'),
+                  onPressed:
+                      _busy ||
+                          (widget.testForm == null && widget.signIn == null)
+                      ? null
+                      : _connect,
+                  child: Text(
+                    widget.testForm == null
+                        ? 'GitHub csatlakoztatása'
+                        : 'Repó csatlakoztatása',
+                  ),
                 ),
+                if (_busy && widget.testForm == null)
+                  const Text(
+                    'Hagyd jóvá a belépést a böngészőben, majd térj vissza ide.',
+                  ),
                 OutlinedButton(
                   onPressed: _busy ? null : _openLocal,
                   child: const Text('Helyi kalandok'),
