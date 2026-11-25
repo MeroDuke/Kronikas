@@ -6,6 +6,8 @@ A GitHub-tárolási adapter és belépési demó kikerült az aktív kódból. A
 
 ## Aktuális állapot
 
+A [mesesablon és a strukturált import](STORY_IMPORT.md) első változata jóváhagyva. Az implementáció és a TST-013 futása függőben van.
+
 Az IMP-009 helyi Mesék felületét és fájlos szinkronpróbáját Windows x64-re építettük. Helyben a CORE 12 és a Flutter 6 tesztje átment. A TST-012 két helyi példánnyal igazolta a változatlan indulás nulla tartalomátvitelét, a módosult fájl elkülönített átvitelét, az offline mentés újranyitását és az ütköző változatok megőrzését. Az élő Google Drive-adapter, OAuth és Android végpontok közötti próba nyitott. [TST-012](TEST_EXECUTION.md#tst-012)
 
 A konfliktusfeloldás, a gyors Flutter CI és a csomagolt Windows x64 és Android ARM64 felületi próbák a `main` ágon vannak. [Platform-CI](https://github.com/MeroDuke/Kronikas/actions/runs/45563300860)

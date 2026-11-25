@@ -29,3 +29,7 @@ Jóváhagyás után az **IMP-001** az első önálló munkacsomag. A repóba ker
 ## IMP-009
 
 Helyi Mesék kezdőképernyő és opcionális Drive-szinkron. Első lépés a helyi felület és a szinkronlogika szintetikus próbája, majd az élő Windows–Android ellenőrzés. [ADR-0002](decisions/ADR-0002-local-stories-and-cloud-storage.md) · [UC-002](TRACEABILITY.md#uc-002) · [TST-012](TEST_EXECUTION.md#tst-012)
+
+## IMP-010
+
+Word-sablon és mintamese, bővíthető címsorjelölésekkel. A mesélő a saját szerkesztőjében írhat, a Krónikás előnézetet készít, majd jóváhagyáskor létrehozza a mesét. [Importformátum](STORY_IMPORT.md) · [UC-001](TRACEABILITY.md#uc-001) · [TST-013](TEST_EXECUTION.md#tst-013)
