@@ -147,16 +147,39 @@ void main() {
       await reopen();
       expect(find.text('Aktív játékalkalom'), findsOneWidget);
       expect(find.text('A komp átkelt.'), findsOneWidget);
+      await tap('Új improvizált esemény');
+      await tester.enterText(
+        find.byType(TextField),
+        'A révész alkut ajánlott.',
+      );
+      await tester.pumpAndSettle();
+      await tap('Publikálható');
+      await tap('Esemény mentése');
+      await tap('Új mesélői jegyzet');
+      await tester.enterText(find.byType(TextField), 'A révész titkos terve.');
+      await tester.pumpAndSettle();
+      await tap('Jegyzet mentése');
       await tap('Játékalkalom lezárása');
       await reopen();
       await tap('Lezárt játékalkalom');
       expect(find.text('A komp átkelt.'), findsOneWidget);
+      expect(find.text('A révész alkut ajánlott.'), findsOneWidget);
+      expect(find.text('A révész titkos terve.'), findsOneWidget);
+      expect(find.text('Új improvizált esemény'), findsNothing);
       expect(find.text('Kimenetel rögzítése'), findsNothing);
       final saved = LocalChronicleStore(directory).open().adventures['river']!;
       expect(saved.progress['ferry']!.status, MilestoneStatus.completed);
       expect(
-        saved.sessions.values.single.events.single.visibility,
+        saved.sessions.values.single.events.first.visibility,
         EventVisibility.gmOnly,
+      );
+      expect(
+        saved.sessions.values.single.events.last.visibility,
+        EventVisibility.publishable,
+      );
+      expect(
+        saved.sessions.values.single.notes.values.single,
+        'A révész titkos terve.',
       );
     },
   );

@@ -236,7 +236,7 @@ jobs:
           # APKs are produced by the parallel build job. On a UI-only retry
           # GitHub can serve the same commit-pinned artifacts from that run.
           wait_started=$SECONDS
-          deadline=$((SECONDS + 480))
+          deadline=$((SECONDS + 600))
           ready=false
           poll_failures=0
           while (( SECONDS < deadline )); do
