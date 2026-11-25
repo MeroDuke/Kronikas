@@ -1,5 +1,7 @@
 # Krónikás roadmap
 
+A GitHub-tárolási adapter és belépési demó kikerült az aktív kódból. A korábbi próba a [PR #11-ben](https://github.com/MeroDuke/Kronikas/pull/11) visszakereshető. A szolgáltatótól független konfliktuskezelés, a helyi revíziók és a szintetikus platformtesztek megmaradtak.
+
 **Aktuális tárolási irány.** A helyi Mesék felület alapértelmezett. Az opcionális felhőszinkron első jelöltje a Google Drive. A korábbi GitHub-tárolási terv és vizsgálatok történeti állapotot írnak le. [ADR-0002](decisions/ADR-0002-local-stories-and-cloud-storage.md) · [IMP-009](IMPLEMENTATION_PLAN.md#imp-009)
 
 [Funkciók nyomon követése](TRACEABILITY.md)

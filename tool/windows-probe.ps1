@@ -89,7 +89,6 @@ try {
     $env:KRONIKAS_PROBE_HOME = Join-Path $sandbox 'profile'
     Start-Probe
     if ($StoryPicker) {
-        Invoke-ProbeButton 'Repó csatlakoztatása'
         Invoke-ProbeButton 'Teszt mese'
         Invoke-ProbeButton 'Mese szinkronizálása'
         $null = Wait-Label 'Helyi: Helyi átkelés'

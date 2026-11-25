@@ -122,9 +122,6 @@ def main():
     adb("shell", "am", "force-stop", PACKAGE)
     try:
         adb("shell", "am", "start", "-W", "-n", ACTIVITY)
-        observe("Repó csatlakoztatása")
-        capture("01-connect")
-        tap("Repó csatlakoztatása")
         observe("Teszt mese")
         capture("02-story-list")
         tap("Teszt mese")
@@ -163,7 +160,7 @@ def main():
                 observe("Visszaállított példány: Friss távoli átkelés", scroll=True)
                 capture("08-original-remote")
         tap("Vissza a mesékhez", scroll=args.conflict or args.conflict_smoke)
-        observe("Mesék · main")
+        observe("Mesék")
         capture("05-story-list-return")
     except Exception as error:
         collect_failure(adb, PACKAGE, args.evidence, "/sdcard/kronikas-story-picker.xml", error)

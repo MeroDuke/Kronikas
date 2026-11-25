@@ -10,6 +10,8 @@ Az első próba szintetikus tárolóval is futtatható. Az élő Drive-integrác
 
 [UC-002 és UC-005](../TRACEABILITY.md) · [IMP-009](../IMPLEMENTATION_PLAN.md#imp-009) · [TST-012](../TEST_EXECUTION.md#tst-012)
 
+A GitHub-tárolási adapter és belépési demó kikerült az aktív kódból. A korábbi próba a [PR #11-ben](https://github.com/MeroDuke/Kronikas/pull/11) visszakereshető. A szolgáltatótól független konfliktuskezelés, a helyi revíziók és a szintetikus platformtesztek megmaradtak.
+
 ## Google Drive megvalósíthatóság
 
 2026-11-25 · Dokumentációs vizsgálat. Élő API-próba még nem futott.

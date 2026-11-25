@@ -63,7 +63,6 @@ Future<void> _openConflict(WidgetTester tester) async {
   final directory = Directory.systemTemp.createTempSync('kronikas-widget-');
   addTearDown(() => directory.deleteSync(recursive: true));
   await tester.pumpWidget(buildWalkthroughApp(directory));
-  await _tap(tester, 'Repó csatlakoztatása');
   await _tap(tester, 'Teszt mese');
   await _tap(tester, 'Mese szinkronizálása');
   expect(find.text('Helyi: Helyi átkelés'), findsOneWidget);
