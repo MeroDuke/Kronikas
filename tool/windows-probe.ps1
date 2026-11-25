@@ -1,6 +1,7 @@
-param(
+﻿param(
     [Parameter(Mandatory = $true)] [string] $PackageDirectory,
-    [Parameter(Mandatory = $true)] [string] $EvidenceDirectory
+    [Parameter(Mandatory = $true)] [string] $EvidenceDirectory,
+    [switch] $StoryPicker
 )
 
 $ErrorActionPreference = 'Stop'
@@ -12,7 +13,8 @@ Add-Type -ReferencedAssemblies Accessibility -TypeDefinition (
 $package = (Resolve-Path -LiteralPath $PackageDirectory).Path
 $evidence = (New-Item -ItemType Directory -Force -Path $EvidenceDirectory).FullName
 $journal = Join-Path $evidence 'steps.txt'
-$archive = Join-Path $package 'windows-probe.zip'
+$archiveName = if ($StoryPicker) { 'windows-story-picker.zip' } else { 'windows-probe.zip' }
+$archive = Join-Path $package $archiveName
 $expectedHash = (Get-Content -LiteralPath (Join-Path $package 'sha256.txt') -Raw).Trim()
 $actualHash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash
 if ($actualHash -ne $expectedHash) { throw 'Windows ZIP checksum mismatch.' }
@@ -57,7 +59,6 @@ function Invoke-ProbeButton([string] $label) {
 
 function Start-Probe {
     $script:app = Start-Process -FilePath $executable -WorkingDirectory (Split-Path -Parent $executable) -PassThru
-    $null = Wait-Label 'Ready for synthetic probe.'
 }
 
 function Close-Probe {
@@ -73,12 +74,26 @@ try {
     Expand-Archive -LiteralPath $archive -DestinationPath (Join-Path $sandbox 'app')
     $env:KRONIKAS_PROBE_HOME = Join-Path $sandbox 'profile'
     Start-Probe
-    Invoke-ProbeButton 'Save test data'
-    $null = Wait-Label 'Synthetic chronicle and protected value saved.'
-    Close-Probe
-    Start-Probe
-    Invoke-ProbeButton 'Verify saved data'
-    $null = Wait-Label 'Chronicle and protected value verified.'
+    if ($StoryPicker) {
+        Invoke-ProbeButton 'Repó csatlakoztatása'
+        Invoke-ProbeButton 'Teszt mese'
+        Invoke-ProbeButton 'Mese szinkronizálása'
+        $null = Wait-Label 'Helyi: Helyi átkelés'
+        $null = Wait-Label 'Távoli: Távoli átkelés'
+        Invoke-ProbeButton 'Helyi érték'
+        Invoke-ProbeButton 'Feloldás mentése'
+        $null = Wait-Label 'A feloldás mentve.'
+        $null = Wait-Label 'Helyi átkelés'
+    } else {
+        $null = Wait-Label 'Ready for synthetic probe.'
+        Invoke-ProbeButton 'Save test data'
+        $null = Wait-Label 'Synthetic chronicle and protected value saved.'
+        Close-Probe
+        Start-Probe
+        $null = Wait-Label 'Ready for synthetic probe.'
+        Invoke-ProbeButton 'Verify saved data'
+        $null = Wait-Label 'Chronicle and protected value verified.'
+    }
     Close-Probe
 } catch {
     Write-Step "Failed: $($_.Exception.Message)"

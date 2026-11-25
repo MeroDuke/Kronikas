@@ -62,7 +62,27 @@ jobs:
           path: build/windows-probe/
       - name: Verify packaged Windows x64 app through Windows accessibility
         shell: powershell
-        run: .\tool\windows-probe.ps1 -PackageDirectory build/windows-probe -EvidenceDirectory build/windows-ui-evidence
+        run: .\tool\windows-probe.ps1 -PackageDirectory build/windows-probe -EvidenceDirectory build/windows-ui-evidence/storage
+      - name: Build Windows story picker
+        working-directory: platform_probe
+        shell: pwsh
+        run: |
+          flutter build windows --release --no-pub --target tool/story_picker_walkthrough.dart
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          $source = 'build/windows/x64/runner/Release'
+          $evidence = '../build/windows-story-picker'
+          New-Item -ItemType Directory -Force $evidence | Out-Null
+          Copy-Item LICENSE.flutter "$source/LICENSE.flutter"
+          Compress-Archive -Path "$source/*" -DestinationPath "$evidence/windows-story-picker.zip"
+          (Get-FileHash "$evidence/windows-story-picker.zip").Hash | Set-Content "$evidence/sha256.txt"
+      - name: Preserve Windows story picker package
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: windows-story-picker
+          path: build/windows-story-picker/
+      - name: Resolve a conflict in the packaged Windows story picker
+        shell: powershell
+        run: .\tool\windows-probe.ps1 -PackageDirectory build/windows-story-picker -EvidenceDirectory build/windows-ui-evidence/story-picker -StoryPicker
       - name: Preserve Windows UI evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
