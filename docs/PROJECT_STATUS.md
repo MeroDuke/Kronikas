@@ -1,6 +1,10 @@
-# Projektállapot – 2026-11-24
+# Projektállapot – 2026-11-25
+
+**Aktuális tárolási irány.** A helyi Mesék felület alapértelmezett. Az opcionális felhőszinkron első jelöltje a Google Drive. A korábbi GitHub-tárolási terv és vizsgálatok történeti állapotot írnak le. [ADR-0002](decisions/ADR-0002-local-stories-and-cloud-storage.md) · [IMP-009](IMPLEMENTATION_PLAN.md#imp-009)
 
 ## Aktuális állapot
+
+Az IMP-009 helyi Mesék felületét és fájlos szinkronpróbáját Windows x64-re építettük. Helyben a CORE 12 és a Flutter 6 tesztje átment. A TST-012 két helyi példánnyal igazolta a változatlan indulás nulla tartalomátvitelét, a módosult fájl elkülönített átvitelét, az offline mentés újranyitását és az ütköző változatok megőrzését. Az élő Google Drive-adapter, OAuth és Android végpontok közötti próba nyitott. [TST-012](TEST_EXECUTION.md#tst-012)
 
 A konfliktusfeloldás, a gyors Flutter CI és a csomagolt Windows x64 és Android ARM64 felületi próbák a `main` ágon vannak. [Platform-CI](https://github.com/MeroDuke/Kronikas/actions/runs/45563300860)
 

@@ -9,10 +9,11 @@ import 'package:kronikas_platform_probe/story_picker.dart';
 void main() => runApp(
   buildWalkthroughApp(
     Directory.systemTemp.createTempSync('kronikas-walkthrough-'),
+    loginDemo: const bool.fromEnvironment('KRONIKAS_LOGIN_DEMO'),
   ),
 );
 
-Widget buildWalkthroughApp(Directory directory) {
+Widget buildWalkthroughApp(Directory directory, {bool loginDemo = false}) {
   final local = LocalChronicleStore(
     Directory.fromUri(directory.uri.resolve('local/')),
   );
@@ -34,7 +35,20 @@ Widget buildWalkthroughApp(Directory directory) {
       );
       await publisherSync.synchronize();
     },
-    testForm: (address: 'example/stories', token: 'github_pat_synthetic'),
+    testForm: loginDemo
+        ? null
+        : (address: 'example/stories', token: 'github_pat_synthetic'),
+    signIn: loginDemo
+        ? (context) async {
+            final approved = await showGitHubCode(context, code: 'DEMO-MESE');
+            return approved
+                ? (
+                    token: 'github_pat_synthetic',
+                    repositories: ['example/stories'],
+                  )
+                : null;
+          }
+        : null,
     load: (address, branch, token) async {
       if (address != 'example/stories' ||
           branch != null ||

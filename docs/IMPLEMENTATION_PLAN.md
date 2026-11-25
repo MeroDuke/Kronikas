@@ -25,3 +25,7 @@ Jóváhagyás után az **IMP-001** az első önálló munkacsomag. A repóba ker
 - **IMP-003 előtt** rögzítendő a kezdeti fájlséma, a történeti hivatkozások viselkedése és a mentési commitpont. **IMP-005 előtt** pontosítandó a hozzáférés, a szinkron időzítése és az eredeti változatok megőrzésének tárolási megoldása.
 - **IMP-006 előtt** döntendő a támogatott platformok köre, lokalizáció és az esetleges mérhető használhatósági cél. A kézi bizonyítékot csomaghashhez kötött, lépésenkénti jegyzőkönyvben kell megőrizni.
 - Kereskedelmi kiadásról, terméklicencről és terjesztési csatornáról külön döntés születik. A fázisok ellenőrzései a [licencelési átvilágítást](LICENSING_FEASIBILITY.md) és a [nyitott kérdéseket](OPEN_QUESTIONS.md) veszik alapul.
+
+## IMP-009
+
+Helyi Mesék kezdőképernyő és opcionális Drive-szinkron. Első lépés a helyi felület és a szinkronlogika szintetikus próbája, majd az élő Windows–Android ellenőrzés. [ADR-0002](decisions/ADR-0002-local-stories-and-cloud-storage.md) · [UC-002](TRACEABILITY.md#uc-002) · [TST-012](TEST_EXECUTION.md#tst-012)
