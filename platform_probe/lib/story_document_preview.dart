@@ -74,7 +74,9 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
   @override
   Widget build(BuildContext context) {
     final document = _document;
-    final styles = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final styles = theme.textTheme;
+    final colors = theme.colorScheme;
     return Scaffold(
       appBar: AppBar(title: const Text('Mese előnézete')),
       body: Center(
@@ -100,7 +102,38 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
                 ),
               if (_busy) const LinearProgressIndicator(),
               if (_error case final error?)
-                Semantics(liveRegion: true, child: Text(error)),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Semantics(
+                    liveRegion: true,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colors.errorContainer,
+                        border: Border.all(color: colors.error),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: DefaultTextStyle(
+                          style: styles.bodyMedium!.copyWith(
+                            color: colors.onErrorContainer,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Megnyitási hiba',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(error),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               if (document != null) ...[
                 const SizedBox(height: 24),
                 Text(document.title, style: styles.headlineMedium),
