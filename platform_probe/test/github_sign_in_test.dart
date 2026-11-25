@@ -4,7 +4,7 @@ import 'package:kronikas_platform_probe/story_picker.dart';
 
 void main() {
   testWidgets(
-    'GitHub login opens a repository from the list on its default branch',
+    'GitHub login opens the only available repository on its default branch',
     (tester) async {
       await tester.pumpWidget(
         StoryPickerApp(
@@ -24,9 +24,7 @@ void main() {
         ),
       );
       expect(find.text('GitHub-repó címe'), findsNothing);
-      await tester.tap(find.text('GitHub csatlakoztatása'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('example/stories'));
+      await tester.tap(find.text('Belépés GitHubbal'));
       await tester.pumpAndSettle();
       expect(find.text('Mesék · stories'), findsOneWidget);
     },

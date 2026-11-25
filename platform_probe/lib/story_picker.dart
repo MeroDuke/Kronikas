@@ -233,7 +233,11 @@ class _StoryPickerState extends State<_StoryPicker> {
       return;
     }
     final connection = await widget.signIn!();
-    if (mounted) setState(() => _connection = connection);
+    if (!mounted) return;
+    setState(() => _connection = connection);
+    if (connection.repositories.length == 1) {
+      await _loadRepository(connection.repositories.single);
+    }
   });
 
   Future<void> _refreshRepositories() => _perform(() async {
@@ -243,10 +247,10 @@ class _StoryPickerState extends State<_StoryPicker> {
       setState(() => _connection = (token: token, repositories: repositories));
   });
 
-  Future<void> _selectRepository(String repository) => _perform(() async {
+  Future<void> _loadRepository(String repository) async {
     final catalog = await widget.load(repository, null, _connection!.token);
     if (mounted) setState(() => _catalog = catalog);
-  });
+  }
 
   Future<void> _open(GitHubStory entry) => _perform(() async {
     final story = await _catalog!.open(entry);
@@ -331,27 +335,24 @@ class _StoryPickerState extends State<_StoryPicker> {
                 ),
               ] else if (_connection case final connection?) ...[
                 Text(
-                  'GitHub-repók',
+                  'Válassz mesetárat',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 if (connection.repositories.isEmpty) ...[
-                  const Text('A Krónikás még nem fér hozzá privát repóhoz.'),
-                  if (githubInstallConfigured)
-                    OutlinedButton(
-                      onPressed: _busy
-                          ? null
-                          : () => _perform(openGitHubInstallation),
-                      child: const Text('Hozzáférés beállítása a GitHubon'),
-                    ),
+                  const Text(
+                    'Még nincs elérhető mesetárad. Kérj hozzáférést a mesetár tulajdonosától.',
+                  ),
                   TextButton(
                     onPressed: _busy ? null : _refreshRepositories,
-                    child: const Text('Repók frissítése'),
+                    child: const Text('Mesetárak frissítése'),
                   ),
                 ],
                 for (final repository in connection.repositories)
                   ListTile(
                     title: Text(repository),
-                    onTap: _busy ? null : () => _selectRepository(repository),
+                    onTap: _busy
+                        ? null
+                        : () => _perform(() => _loadRepository(repository)),
                   ),
                 TextButton(
                   onPressed: _busy
@@ -360,25 +361,19 @@ class _StoryPickerState extends State<_StoryPicker> {
                           _connection = null;
                           _error = null;
                         }),
-                  child: const Text('GitHub leválasztása'),
+                  child: const Text('Kijelentkezés'),
                 ),
               ] else ...[
-                if (widget.testForm == null && widget.signIn == null) ...[
+                if (widget.testForm == null && widget.signIn == null)
                   const Text(
-                    'A GitHub-belépéshez a Krónikás üzemeltetőjének be kell állítania a GitHub Appot és a HTTPS tokenváltót. Addig a helyi kalandok használhatók.',
-                  ),
-                  TextButton(
-                    onPressed: _busy
-                        ? null
-                        : () => _perform(openGitHubSetupGuide),
-                    child: const Text('GitHub-belépés beállítási útmutatója'),
-                  ),
-                ] else
+                    'Az online mesék ebben a verzióban még nem érhetők el.',
+                  )
+                else
                   FilledButton(
                     onPressed: _busy ? null : _connect,
                     child: Text(
                       widget.testForm == null
-                          ? 'GitHub csatlakoztatása'
+                          ? 'Belépés GitHubbal'
                           : 'Repó csatlakoztatása',
                     ),
                   ),
