@@ -1,0 +1,42 @@
+# Mesesablon és import
+
+Jóváhagyott első változat. [IMP-010](IMPLEMENTATION_PLAN.md#imp-010) · [UC-001](TRACEABILITY.md#uc-001) · [TST-013](TEST_EXECUTION.md#tst-013)
+
+A mesélő másolható Word-sablont és kitöltött példát kap. A fejezeteket saját szerkesztőjében töltheti ki, másolhatja és átrendezheti. A Krónikás a címsorok elején álló magyar jelölést és a dokumentum sorrendjét használja.
+
+| Jelölés | Eredmény |
+| --- | --- |
+| Dokumentum címe | Mese címe |
+| Bevezetés | A mese bevezető szövege |
+| Jelenet – cím | Új jelenet |
+| Mérföldkő – cím | Az aktuális jelenet mérföldköve |
+| Lehetséges kimenetel – szöveg | Az aktuális mérföldkő tervezett kimenetele |
+| Mesélői jegyzet | A mesélőnek szóló szöveg |
+
+## Kitöltött példa
+
+> **Az eltűnt korona**
+>
+> **Bevezetés**<br>
+> A koronázás reggelén üresen találják a kincstárat.
+>
+> **Jelenet – A kincstár**<br>
+> A zár ép, az ablak alatt sárnyomok látszanak.
+>
+> **Mérföldkő – Kiderül, hol van a korona**
+>
+> **Lehetséges kimenetel – Követik a nyomokat.**<br>
+> Eljutnak a régi vízimalomhoz.
+>
+> **Lehetséges kimenetel – Kihallgatják az őrt.**<br>
+> Az őr elárulja, hogy éjjel látta a molnárt.
+>
+> **Mesélői jegyzet**<br>
+> A kapitány tudja, hogy az őr hazudott.
+>
+> **Jelenet – A régi vízimalom**<br>
+> A korona egy liszteszsák alatt lapul.
+
+Az előnézet megmutatja a felismert szerkezetet. Ismeretlen vagy nem besorolható szöveg az Egyéb szöveg részben látható. Jelölés nélküli dokumentum szövegként behozható. A Mese létrehozása művelet menti az új mesét. A tervezett kimenetelek a játék során választható lehetőségek.
+
+A Drive Behozandó mesék mappájának automatikus felismerése külön jogosultsági próba tárgya. [Tárolási döntés](decisions/ADR-0002-local-stories-and-cloud-storage.md)

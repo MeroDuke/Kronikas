@@ -104,3 +104,7 @@ Két elkülönített helyi tárolóval hozz létre két mesét. Ellenőrizd, hog
 [IMP-009](IMPLEMENTATION_PLAN.md#imp-009) · [UC-002](TRACEABILITY.md#uc-002) · [UC-005](TRACEABILITY.md#uc-005)
 
 A szolgáltatói próba részletes elfogadási feltételeit a [Drive megvalósíthatósági vizsgálat](decisions/ADR-0002-local-stories-and-cloud-storage.md#google-drive-megvalósíthatóság) rögzíti.
+
+## TST-013
+
+A kitöltött mintából ellenőrizd a címet, a bevezetést, a két jelenetet, az első jelenet mérföldkövét, annak két tervezett kimenetelét és a mesélői jegyzetet. Próbálj jelölés nélküli dokumentumot, ismeretlen címsort, megszakított és jóváhagyott importot. Megszakításkor nem készül mese, jóváhagyáskor az importált tartalom újranyitás után is elérhető. [Importformátum](STORY_IMPORT.md) · [IMP-010](IMPLEMENTATION_PLAN.md#imp-010) · [UC-001](TRACEABILITY.md#uc-001)
