@@ -6,6 +6,10 @@ A mentési próba a **Save test data** művelettel indul. Teljes bezárás és �
 
 ARM64 telefonhoz a Platform probe CI-futás `android-arm64-platform-probe` mellékletéből bontsd ki és nyisd meg az `app-arm64-v8a-release.apk` fájlt. A CI ugyanazt az ARM64 APK-t futtatja az x64-es emulátor fordítási rétegével.
 
+## Helyi önálló kaland
+
+A meseválasztó kezdőlapján a **Helyi kalandok** gomb GitHub-hozzáférés nélkül nyitja meg a helyi listát. Az **Új önálló kaland** művelethez cím kell, a leírás opcionális. A **Kaland mentése** után a kaland megnyílik, és az alkalmazás újraindítása után a listából ismét megnyitható. A helyi lista saját mentési könyvtárat használ. [UC-001](../docs/TRACEABILITY.md#uc-001)
+
 ## Repó- és meseválasztó előnézet
 
 A `flutter run -d windows --target lib/story_picker.dart` az alkalmazás felületén kéri a privát GitHub-repó címét, az opcionális ágat és az adott repóra korlátozott, fine-grained PAT-ot. A token az aktív kapcsolat memóriájában marad. A megnyitáshoz olvasási jog, a távoli feloldás mentéséhez tartalomírási jog kell. A **Mese szinkronizálása** művelet mesénként elkülönített helyi mentést használ. Ütközéskor a panel megmutatja az eltérő értékeket, kezeli az elavult döntést, és megnyithatóvá teszi a feloldás előtti példányokat. A makettől független platformpróba továbbra is a `lib/main.dart` belépési pontból indul.

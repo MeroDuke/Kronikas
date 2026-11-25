@@ -1,18 +1,18 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 // The pinned Flutter SDK provides this UI without an additional package.
 // ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kronikas_core/chronicle_sync.dart';
+import 'package:kronikas_core/github_chronicle_remote.dart';
+import 'package:kronikas_core/kronikas_core.dart';
 import 'package:kronikas_core/local_chronicle_store.dart';
 
 import 'conflict_panel.dart';
-
-import 'package:kronikas_core/github_chronicle_remote.dart';
-import 'package:kronikas_core/kronikas_core.dart';
+import 'local_adventures.dart';
 
 typedef StorySync = ({ChronicleSync sync, void Function() close});
 
@@ -29,6 +29,16 @@ typedef CatalogLoader = Future<StoryCatalog> Function(
 );
 
 void main() => runApp(const StoryPickerApp(load: _loadGitHub));
+
+Future<Uri> _storyStorageRoot() async {
+  final directory = Platform.isWindows
+      ? Platform.environment['LOCALAPPDATA']
+      : await const MethodChannel(
+          'hu.akihabarai.kronikas_platform_probe/storage',
+        ).invokeMethod<String>('storagePath');
+  if (directory == null) throw StateError('Application directory unavailable.');
+  return Directory(directory).absolute.uri.resolve('KronikasStories/');
+}
 
 Future<StoryCatalog> _loadGitHub(
   String address,
@@ -51,13 +61,6 @@ Future<StoryCatalog> _loadGitHub(
       branch: repo.branch,
       stories: stories,
       openSync: (story) async {
-        final path = Platform.isWindows
-            ? Platform.environment['LOCALAPPDATA']
-            : await const MethodChannel(
-                'hu.akihabarai.kronikas_platform_probe/storage',
-              ).invokeMethod<String>('storagePath');
-        if (path == null)
-          throw StateError('Application directory unavailable.');
         final identity = jsonEncode([
           repo.owner.toLowerCase(),
           repo.repository.toLowerCase(),
@@ -66,9 +69,7 @@ Future<StoryCatalog> _loadGitHub(
         ]);
         final key = base64Url.encode(utf8.encode(identity));
         final store = LocalChronicleStore(
-          Directory.fromUri(
-            Directory(path).absolute.uri.resolve('KronikasStories/$key/'),
-          ),
+          Directory.fromUri((await _storyStorageRoot()).resolve('$key/')),
         );
         final client = HttpClient();
         final selected = GitHubChronicleRemote(
@@ -190,6 +191,31 @@ class _StoryPickerState extends State<_StoryPicker> {
         setState(
           () => _error = 'Ellenőrizd a privát GitHub-repó címét, az ágat és a mesék formátumát.',
         );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _openLocal() async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final store = LocalChronicleStore(
+        Directory.fromUri((await _storyStorageRoot()).resolve('local/')),
+      );
+      final initial = store.open();
+      if (!mounted) return;
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute(
+          builder: (_) => LocalAdventures(store: store, initial: initial),
+        ),
+      );
+    } catch (_) {
+      if (mounted)
+        setState(() => _error = 'A helyi kalandok nem nyithatók meg.');
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -330,6 +356,10 @@ class _StoryPickerState extends State<_StoryPicker> {
                 FilledButton(
                   onPressed: _busy ? null : _connect,
                   child: const Text('Repó csatlakoztatása'),
+                ),
+                OutlinedButton(
+                  onPressed: _busy ? null : _openLocal,
+                  child: const Text('Helyi kalandok'),
                 ),
               ],
             ],
