@@ -40,3 +40,7 @@ A mesélő másolható Word-sablont és kitöltött példát kap. A fejezeteket 
 Az előnézet megmutatja a felismert szerkezetet. Ismeretlen vagy nem besorolható szöveg az Egyéb szöveg részben látható. Jelölés nélküli dokumentum szövegként behozható. A Mese létrehozása művelet menti az új mesét. A tervezett kimenetelek a játék során választható lehetőségek.
 
 A Drive Behozandó mesék mappájának automatikus felismerése külön jogosultsági próba tárgya. [Tárolási döntés](decisions/ADR-0002-local-stories-and-cloud-storage.md)
+
+Az IMP-010 első lépése a helyi Word-fájl kiválasztása és olvasható előnézete. A jóváhagyott mentés a következő lépéshez tartozik. A Word-sablon és a kitöltött minta az [importminták](../templates/) könyvtárában van.
+
+A helyi előnézet Word (.docx), UTF-8 szöveg (.txt) és Markdown (.md) formátummal működik. Mindhárom formátum ugyanazokat a magyar kulcsszavakat használja. A TXT első nem üres sora a cím, a Markdown címsorai kettőskereszttel kezdődnek. A Word-változat a beépített Cím és Címsor stílusokat használja. A megnyitott dokumentum a mesélői előnézetben jelenik meg.

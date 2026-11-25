@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'story_document_preview.dart';
+
 // Use the Material widgets from the pinned Flutter SDK.
 // ignore: deprecated_member_use
 import 'package:flutter/material.dart';
@@ -467,6 +469,15 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                     widget.standalone ? 'Új mese' : 'Új önálló kaland',
                   ),
                 ),
+                if (widget.standalone)
+                  OutlinedButton(
+                    onPressed: () => Navigator.of(context).push<void>(
+                      MaterialPageRoute(
+                        builder: (_) => const StoryDocumentPreview(),
+                      ),
+                    ),
+                    child: const Text('Mese megnyitása fájlból'),
+                  ),
                 if (_chronicle.adventures.isEmpty)
                   const Text('Még nincs helyi kaland.'),
                 for (final item in _chronicle.adventures.values)
