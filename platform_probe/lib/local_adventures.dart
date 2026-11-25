@@ -43,32 +43,51 @@ class _LocalAdventuresState extends State<LocalAdventures> {
       16,
       (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
     ).join();
+    final adventureId = _selected;
+    final title = _title.text.trim();
+    final details = _description.text.trim();
     try {
-      final saved = widget.store.update(
-        (chronicle) => chronicle.createAdventure(
-          id: id,
-          title: _title.text.trim(),
-          description: _description.text.trim(),
-        ),
-      );
+      final saved = widget.store.update((chronicle) {
+        if (adventureId == null) {
+          chronicle.createAdventure(id: id, title: title, description: details);
+        } else {
+          chronicle.addMilestone(
+            adventureId,
+            id: id,
+            title: title,
+            plannedOutcomes: [
+              if (details.isNotEmpty) (id: id, description: details),
+            ],
+          );
+        }
+      });
       setState(() {
         _chronicle = saved;
-        _selected = id;
+        _selected = adventureId ?? id;
         _creating = false;
         _error = null;
       });
       _title.clear();
       _description.clear();
     } on Exception {
-      setState(() => _error = 'A kaland mentése sikertelen.');
+      setState(
+        () => _error = adventureId == null
+            ? 'A kaland mentése sikertelen.'
+            : 'A mérföldkő mentése sikertelen.',
+      );
     } on StateError {
-      setState(() => _error = 'A kaland mentése sikertelen.');
+      setState(
+        () => _error = adventureId == null
+            ? 'A kaland mentése sikertelen.'
+            : 'A mérföldkő mentése sikertelen.',
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final adventure = _chronicle.adventures[_selected];
+    final creatingMilestone = adventure != null;
     return Scaffold(
       appBar: AppBar(title: const Text('Helyi kalandok')),
       body: Center(
@@ -84,24 +103,36 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                     children: [
                       TextFormField(
                         controller: _title,
-                        decoration: const InputDecoration(
-                          labelText: 'Kaland címe',
+                        decoration: InputDecoration(
+                          labelText: creatingMilestone
+                              ? 'Mérföldkő címe'
+                              : 'Kaland címe',
                         ),
                         validator: (value) =>
                             value == null || value.trim().isEmpty
-                            ? 'Add meg a kaland címét.'
+                            ? (creatingMilestone
+                                  ? 'Add meg a mérföldkő címét.'
+                                  : 'Add meg a kaland címét.')
                             : null,
                       ),
                       TextFormField(
                         controller: _description,
-                        decoration: const InputDecoration(labelText: 'Leírás'),
+                        decoration: InputDecoration(
+                          labelText: creatingMilestone
+                              ? 'Tervezett kimenetel'
+                              : 'Leírás',
+                        ),
                         maxLines: 3,
                       ),
                       if (_error case final String error)
                         Semantics(liveRegion: true, child: Text(error)),
                       FilledButton(
                         onPressed: _save,
-                        child: const Text('Kaland mentése'),
+                        child: Text(
+                          creatingMilestone
+                              ? 'Mérföldkő mentése'
+                              : 'Kaland mentése',
+                        ),
                       ),
                       TextButton(
                         onPressed: () => setState(() {
@@ -122,6 +153,33 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                 ),
                 if (adventure.description.isNotEmpty)
                   Text(adventure.description),
+                const SizedBox(height: 16),
+                Text(
+                  'Mérföldkövek',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                for (final milestone in adventure.milestones.values)
+                  ListTile(
+                    title: Text(milestone.title),
+                    subtitle: Text(
+                      [
+                        switch (adventure.progress[milestone.id]!.status) {
+                          MilestoneStatus.pending => 'Függőben',
+                          MilestoneStatus.completed => 'Teljesítve',
+                          MilestoneStatus.partiallyCompleted =>
+                            'Részben teljesítve',
+                          MilestoneStatus.failed => 'Sikertelen',
+                          MilestoneStatus.skipped => 'Kihagyva',
+                        },
+                        for (final outcome in milestone.plannedOutcomes)
+                          outcome.description,
+                      ].join('\n'),
+                    ),
+                  ),
+                FilledButton(
+                  onPressed: () => setState(() => _creating = true),
+                  child: const Text('Új mérföldkő'),
+                ),
                 TextButton(
                   onPressed: () => setState(() => _selected = null),
                   child: const Text('Vissza a helyi kalandokhoz'),

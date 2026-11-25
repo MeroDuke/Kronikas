@@ -8,7 +8,7 @@ ARM64 telefonhoz a Platform probe CI-futás `android-arm64-platform-probe` mell�
 
 ## Helyi önálló kaland
 
-A meseválasztó kezdőlapján a **Helyi kalandok** gomb GitHub-hozzáférés nélkül nyitja meg a helyi listát. Az **Új önálló kaland** művelethez cím kell, a leírás opcionális. A **Kaland mentése** után a kaland megnyílik, és az alkalmazás újraindítása után a listából ismét megnyitható. A helyi lista saját mentési könyvtárat használ. [UC-001](../docs/TRACEABILITY.md#uc-001)
+A meseválasztó kezdőlapján a **Helyi kalandok** gomb GitHub-hozzáférés nélkül nyitja meg a helyi listát. Az **Új önálló kaland** művelethez cím kell, a leírás opcionális. A **Kaland mentése** után a kaland megnyílik, és az alkalmazás újraindítása után a listából ismét megnyitható. A helyi lista saját mentési könyvtárat használ. A megnyitott kalandban az **Új mérföldkő** címet és opcionális tervezett kimenetelt kér. Az új mérföldkő függő státusszal kerül a listára, és újranyitás után is látható. [UC-001](../docs/TRACEABILITY.md#uc-001)
 
 ## Repó- és meseválasztó előnézet
 

@@ -4,7 +4,7 @@
 
 **Jelenleg** a GitHub-meseválasztó és a szintetikus konfliktusfeloldás a `main` ágon van. A csomagolt Windows x64 és Android ARM64 próbákat a GitHub Actions futtatja. [Projektállapot](PROJECT_STATUS.md) · [Platform-CI](https://github.com/MeroDuke/Kronikas/actions/runs/45563300860)
 
-**Következő mérföldkő** az IMP-006 helyi mesélői útja. Az első lépés az önálló kaland létrehozása és újranyitása a helyi kalandlistából. Ezután következik a mérföldkő felvétele és a játékalkalom vezetése. [UC-001](TRACEABILITY.md#uc-001) · [IMP-006](IMPLEMENTATION_PLAN.md#imp-006)
+**Következő mérföldkő** az IMP-006 helyi mesélői útja. Az önálló kaland már létrehozható és újranyitható. A következő lépés a játékalkalom indítása és a mérföldkő kimenetelének rögzítése. [UC-001](TRACEABILITY.md#uc-001) · [IMP-006](IMPLEMENTATION_PLAN.md#imp-006)
 
 ## Mérföldkövek
 

@@ -4,7 +4,7 @@
 
 A konfliktusfeloldás, a gyors Flutter CI és a csomagolt Windows x64 és Android ARM64 felületi próbák a `main` ágon vannak. [Platform-CI](https://github.com/MeroDuke/Kronikas/actions/runs/45563300860)
 
-Az IMP-006 helyi útján a **Helyi kalandok** felületről önálló kaland hozható létre, és később újranyitható. A Flutter-widgetteszt ideiglenes mentési könyvtárral ellenőrzi az üres cím elutasítását, a mentést és a frissen megnyitott tárolóból történő visszaolvasást. A helyi mérföldkő és játékalkalom kezelése a következő fejlesztési lépés. [UC-001](TRACEABILITY.md#uc-001)
+Az IMP-006 helyi útján a **Helyi kalandok** felületről önálló kaland hozható létre, és később újranyitható. A Flutter-widgetteszt ideiglenes mentési könyvtárral ellenőrzi az üres cím elutasítását, a mentést és a frissen megnyitott tárolóból történő visszaolvasást. A megnyitott kalandhoz mérföldkő és opcionális tervezett kimenetel adható. A widgetteszt ellenőrzi az üres cím elutasítását, az újranyitást és a függő státuszt. A játékalkalom indítása és a mérföldkő tényleges kimenetelének rögzítése hátravan. [UC-001](TRACEABILITY.md#uc-001)
 
 [Funkciók nyomon követése](TRACEABILITY.md)
 
