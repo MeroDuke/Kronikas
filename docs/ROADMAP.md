@@ -10,7 +10,7 @@ A GitHub-tárolási adapter és belépési demó kikerült az aktív kódból. A
 
 **Következő mérföldkő** az [IMP-009](IMPLEMENTATION_PLAN.md#imp-009) tárolási próbája. Az IMP-006 helyi mesélői útjának eddigi eredményei alább követhetők. Az önálló kaland már létrehozható és újranyitható. A helyi játékalkalom indítása, a mérföldkő kimenetelének rögzítése és az alkalom lezárása widgetteszttel igazolt. Az aktív alkalomhoz improvizált esemény és mesélői jegyzet adható. A következő nyitott helyi feladat az előkészítő nézet bővítése kampányokkal és jelenetekkel. [UC-001](TRACEABILITY.md#uc-001) · [IMP-006](IMPLEMENTATION_PLAN.md#imp-006)
 
-Az [IMP-010 mesesablon és import](STORY_IMPORT.md) első változata jóváhagyva.
+Az [IMP-010 mesesablon és import](STORY_IMPORT.md) első lépése a háromféle sablon és a helyi előnézet. A meseként mentés a következő lépés.
 
 ## Mérföldkövek
 

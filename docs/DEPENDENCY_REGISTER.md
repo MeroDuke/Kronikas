@@ -29,3 +29,13 @@ A Flutter-próba feloldott csomagjai, platformeszközei és csomagleltára az [I
 A Flutter 3.50.1 SDK-ból származó `flutter_test` BSD-3-Clause licencű fejlesztői függőség. A pontos tranzitív verziókat a [Flutter lockfile](../platform_probe/pubspec.lock) rögzíti. A feloldott csomagok licencfájljait ellenőriztük. A `clock` és a `fake_async` Apache-2.0 licencű. Az új tesztcsomagok a widgetteszt futtatásához tartoznak. [Flutter SDK-licenc](https://github.com/flutter/flutter/blob/ae9b586f34a8443573f82ef57c3bf914a908cbf7/LICENSE)
 
 A Flutter- és Gradle-gyorsítótárat kezelő GitHub Action v6.1.0 MIT licencű, teljes commitazonosítóhoz rögzítve. [actions/cache licenc](https://github.com/actions/cache/blob/55cc8345863c7cc4c66a329aec7e433d2d1c52a9/LICENSE)
+
+## IMP-010 Word-előnézet
+
+Közvetlen futásidejű függőségek, ellenőrizve 2026-11-25-én a csomagok LICENSE fájljai alapján. Az MIT és BSD-3-Clause kereskedelmi felhasználást enged a copyright és licencszöveg megőrzésével. A BSD-3-Clause a szerző nevének jóváhagyás nélküli promóciós használatát is tiltja.
+
+- `archive 4.7.1`, MIT, DOCX ZIP-konténer olvasása. [Csomaglicenc](https://pub.dev/packages/archive/versions/4.7.1/license)
+- `xml 6.6.1`, MIT, Word XML olvasása. [Csomaglicenc](https://pub.dev/packages/xml/versions/6.6.1/license)
+- `posix 6.5.4` és `petitparser 7.1.0`, MIT, valamint `ffi 2.2.0`, BSD-3-Clause, tranzitív futásidejű csomagok. [Pontos feloldás](../platform_probe/pubspec.lock)
+
+A fájlválasztás a Windows és az Android rendszerfelületével működik.

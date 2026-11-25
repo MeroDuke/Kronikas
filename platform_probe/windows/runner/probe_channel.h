@@ -3,17 +3,38 @@
 
 #include <windows.h>
 #include <wincrypt.h>
+#include <commdlg.h>
+
+#include "utils.h"
 
 #include <flutter/method_channel.h>
 #include <flutter/standard_method_codec.h>
 
 #include <vector>
 
-inline void RegisterProbeChannel(flutter::BinaryMessenger* messenger) {
+inline void RegisterProbeChannel(flutter::BinaryMessenger* messenger, HWND owner) {
   flutter::MethodChannel<flutter::EncodableValue> channel(
       messenger, "hu.akihabarai.kronikas_platform_probe/storage",
       &flutter::StandardMethodCodec::GetInstance());
-  channel.SetMethodCallHandler([](const auto& call, auto result) {
+  channel.SetMethodCallHandler([owner](const auto& call, auto result) {
+    if (call.method_name() == "pickStoryDocument") {
+      wchar_t path[32768] = {};
+      OPENFILENAMEW options{};
+      options.lStructSize = sizeof(options);
+      options.hwndOwner = owner;
+      options.lpstrFilter = L"Krónikás dokumentumok\0*.docx;*.txt;*.md\0";
+      options.lpstrFile = path;
+      options.nMaxFile = static_cast<DWORD>(sizeof(path) / sizeof(path[0]));
+      options.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR;
+      if (GetOpenFileNameW(&options)) {
+        result->Success(flutter::EncodableValue(Utf8FromUtf16(path)));
+      } else if (CommDlgExtendedError() == 0) {
+        result->Success();
+      } else {
+        result->Error("document_picker_failed");
+      }
+      return;
+    }
     const bool encrypt = call.method_name() == "protect";
     if (!encrypt && call.method_name() != "unprotect") {
       result->NotImplemented();
