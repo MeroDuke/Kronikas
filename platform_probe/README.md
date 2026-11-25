@@ -4,7 +4,7 @@ Szintetikus Flutter-próba Windowson és Androidon. A mentés a Dart CORE helyi 
 
 A mentési próba a **Save test data** művelettel indul. Teljes bezárás és újraindítás után a **Verify saved data** ellenőrzi a kaland állapotát, eseményét és a védett értéket. Windowson a `KRONIKAS_PROBE_HOME` környezeti változóval külön tesztkönyvtár adható meg.
 
-ARM64 telefonhoz a Platform probe CI-futás `android-arm64-platform-probe` mellékletéből bontsd ki és nyisd meg az `app-arm64-v8a-release.apk` fájlt. Az emulátoros CI-próba külön x86_64 APK-val fut.
+ARM64 telefonhoz a Platform probe CI-futás `android-arm64-platform-probe` mellékletéből bontsd ki és nyisd meg az `app-arm64-v8a-release.apk` fájlt. A CI ugyanazt az ARM64 APK-t futtatja az x64-es emulátor fordítási rétegével.
 
 ## Repó- és meseválasztó előnézet
 
