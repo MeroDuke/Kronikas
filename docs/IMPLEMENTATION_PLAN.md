@@ -33,3 +33,7 @@ Helyi Mesék kezdőképernyő és opcionális Drive-szinkron. Első lépés a he
 ## IMP-010
 
 Word-sablon és mintamese, bővíthető címsorjelölésekkel. A mesélő a saját szerkesztőjében írhat, a Krónikás előnézetet készít, majd jóváhagyáskor létrehozza a mesét. [Importformátum](STORY_IMPORT.md) · [UC-001](TRACEABILITY.md#uc-001) · [TST-013](TEST_EXECUTION.md#tst-013)
+
+### Bevezető megosztása Discordon
+
+Az IMP-008 első lépése az importált mese bevezetőjének elküldése. A mesélő megadja a Discord webhook URL-jét, és a csatorna nevét a megjelenítéshez. A kliens előnézetben mutatja a bevezetőt és a megadott csatornanevet. Kizárólag a Küldés Discordra művelet indít HTTP-kérést. A mesélői jegyzetek és az egyéb szekciók kimaradnak. A webhook URL védett helyi tárolóban marad. A Discord visszaigazolása, az elutasítás és a bizonytalan kézbesítés külön állapot. A kliens bizonytalan küldéskor nem próbálkozik automatikusan. [UC-007](TRACEABILITY.md#uc-007) · [TST-007](TEST_EXECUTION.md#tst-007)
