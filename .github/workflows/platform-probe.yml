@@ -20,7 +20,7 @@ jobs:
     env:
       FLUTTER_SUPPRESS_ANALYTICS: 'true'
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up pinned Flutter
@@ -56,7 +56,7 @@ jobs:
           Compress-Archive -Path "$source/*" -DestinationPath "$evidence/windows-probe.zip"
           (Get-FileHash "$evidence/windows-probe.zip").Hash | Set-Content "$evidence/sha256.txt"
       - name: Preserve Windows package
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: windows-platform-probe
           path: build/windows-probe/
@@ -76,7 +76,7 @@ jobs:
           Compress-Archive -Path "$source/*" -DestinationPath "$evidence/windows-story-picker.zip"
           (Get-FileHash "$evidence/windows-story-picker.zip").Hash | Set-Content "$evidence/sha256.txt"
       - name: Preserve Windows story picker package
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: windows-story-picker
           path: build/windows-story-picker/
@@ -85,7 +85,7 @@ jobs:
         run: .\tool\windows-probe.ps1 -PackageDirectory build/windows-story-picker -EvidenceDirectory build/windows-ui-evidence/story-picker -StoryPicker
       - name: Preserve Windows UI evidence
         if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: windows-ui-evidence
           path: build/windows-ui-evidence/
@@ -97,7 +97,7 @@ jobs:
       FLUTTER_SUPPRESS_ANALYTICS: 'true'
       DART_SUPPRESS_ANALYTICS: 'true'
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up pinned Flutter
@@ -109,7 +109,7 @@ jobs:
           test "$(git -C "$RUNNER_TEMP/flutter" rev-parse HEAD)" = "$revision"
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
       - name: Cache Gradle dependencies
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.gradle/caches
@@ -137,7 +137,7 @@ jobs:
           unzip -Z1 "$apk" | awk -F/ '$1 == "lib" && $3 != "" {print $2}' | sort -u > native-abis.txt
           test "$(cat native-abis.txt)" = arm64-v8a
       - name: Preserve the ARM64 APK and inventory
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android-arm64-platform-probe
           path: build/android-arm64-probe/
@@ -159,7 +159,7 @@ jobs:
           unzip -l story-picker.apk > apk-inventory.txt
           unzip -p story-picker.apk assets/flutter_assets/NOTICES.Z > flutter-notices.z
       - name: Preserve the ARM64 story picker
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android-arm64-story-picker
           path: build/android-arm64-story-picker/
@@ -171,11 +171,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Cache the Android emulator and system image
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             /usr/local/lib/android/sdk/emulator
@@ -287,7 +287,7 @@ jobs:
           echo "ARM64 install and smoke tests: $((SECONDS - test_started))s"
       - name: Preserve Android UI evidence
         if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android-ui-evidence
           path: build/android-e2e/evidence/
