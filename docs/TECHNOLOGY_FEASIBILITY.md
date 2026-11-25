@@ -12,7 +12,7 @@ A Score tapasztalataiból levezetett előszűrés és a tényleges csomag ellen�
 | .NET MAUI | Mindkét célplatform támogatott. A C# CORE külön könyvtárban tesztelhető. | A MAUI MIT licencű. A Windows App SDK, a kiválasztott IDE és az Android workload külön leltározandó. A MAUI támogatási ciklusa rendszeres frissítést igényel; a C# CORE más .NET felülettel is használható. [Platformok](https://learn.microsoft.com/en-us/dotnet/maui/supported-platforms) · [Támogatási ciklus](https://dotnet.microsoft.com/en-us/platform/support/policy/maui) |
 | PWA | Telepíthető böngészőből, a service worker támogatja az offline betöltést. Saját alkalmazásszerver nélkül is kiszolgálható statikus HTTPS tárhelyről. | A tartós offline állapot böngészőkvótáktól, törléstől és perzisztenciaengedélytől függ. A védett helyi titoktárolást és a külső API-k közvetlen böngészős elérését külön igazolni kellene. Tárhely és esetleges framework díja/licence választásfüggő. [Telepítés](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable) · [Helyi tárolás](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria) |
 
-**Ajánlás:** Flutter a felülethez, tiszta Dart a CORE-hoz. A .NET MAUI maradjon tartalék, ha a Flutter platformintegráció vagy a terjesztési feltételek nem igazolhatók. Az MVP cél-OS-verzióit a konkrét támogatott SDK és a teszteszközök alapján kell kiválasztani.
+**Ajánlás:** Flutter a felülethez, tiszta Dart a CORE-hoz. A .NET MAUI maradjon tartalék, ha a Flutter platformintegráció vagy a terjesztési feltételek nem igazolhatók. Az alkalmazás cél-OS-verzióit a konkrét támogatott SDK és a teszteszközök alapján kell kiválasztani.
 
 ## Adattárolás és szinkron
 

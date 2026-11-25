@@ -1,16 +1,26 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 // The pinned Flutter SDK provides this UI without an additional package.
 // ignore: deprecated_member_use
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:kronikas_core/chronicle_sync.dart';
+import 'package:kronikas_core/local_chronicle_store.dart';
+
+import 'conflict_panel.dart';
+
 import 'package:kronikas_core/github_chronicle_remote.dart';
 import 'package:kronikas_core/kronikas_core.dart';
+
+typedef StorySync = ({ChronicleSync sync, void Function() close});
 
 typedef StoryCatalog = ({
   String branch,
   List<GitHubStory> stories,
   Future<Chronicle> Function(GitHubStory) open,
+  Future<StorySync> Function(GitHubStory) openSync,
 });
 typedef CatalogLoader = Future<StoryCatalog> Function(
   String address,
@@ -40,6 +50,40 @@ Future<StoryCatalog> _loadGitHub(
     return (
       branch: repo.branch,
       stories: stories,
+      openSync: (story) async {
+        final path = Platform.isWindows
+            ? Platform.environment['LOCALAPPDATA']
+            : await const MethodChannel(
+                'hu.akihabarai.kronikas_platform_probe/storage',
+              ).invokeMethod<String>('storagePath');
+        if (path == null)
+          throw StateError('Application directory unavailable.');
+        final identity = jsonEncode([
+          repo.owner.toLowerCase(),
+          repo.repository.toLowerCase(),
+          repo.branch,
+          story.directory,
+        ]);
+        final key = base64Url.encode(utf8.encode(identity));
+        final store = LocalChronicleStore(
+          Directory.fromUri(
+            Directory(path).absolute.uri.resolve('KronikasStories/$key/'),
+          ),
+        );
+        final client = HttpClient();
+        final selected = GitHubChronicleRemote(
+          owner: repo.owner,
+          repository: repo.repository,
+          branch: repo.branch,
+          directory: '',
+          token: () async => token,
+          client: client,
+        ).forStory(story);
+        return (
+          sync: ChronicleSync(store, selected),
+          close: () => client.close(force: true),
+        );
+      },
       open: (story) async {
         final client = HttpClient();
         try {
@@ -63,24 +107,35 @@ Future<StoryCatalog> _loadGitHub(
 }
 
 class StoryPickerApp extends StatelessWidget {
-  const StoryPickerApp({super.key, required this.load, this.testForm});
+  const StoryPickerApp({
+    super.key,
+    required this.load,
+    this.testForm,
+    this.testRemoteEdit,
+  });
 
   final CatalogLoader load;
   final ({String address, String token})? testForm;
+  final Future<void> Function()? testRemoteEdit;
 
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: 'Krónikás',
     theme: ThemeData(colorSchemeSeed: const Color(0xff355e58)),
-    home: _StoryPicker(load: load, testForm: testForm),
+    home: _StoryPicker(
+      load: load,
+      testForm: testForm,
+      testRemoteEdit: testRemoteEdit,
+    ),
   );
 }
 
 class _StoryPicker extends StatefulWidget {
-  const _StoryPicker({required this.load, this.testForm});
+  const _StoryPicker({required this.load, this.testForm, this.testRemoteEdit});
 
   final CatalogLoader load;
   final ({String address, String token})? testForm;
+  final Future<void> Function()? testRemoteEdit;
 
   @override
   State<_StoryPicker> createState() => _StoryPickerState();
@@ -95,11 +150,13 @@ class _StoryPickerState extends State<_StoryPicker> {
   StoryCatalog? _catalog;
   Chronicle? _story;
   String? _storyTitle;
+  StorySync? _storySync;
   String? _error;
   bool _busy = false;
 
   @override
   void dispose() {
+    _storySync?.close();
     _repository.dispose();
     _branch.dispose();
     _token.dispose();
@@ -164,8 +221,14 @@ class _StoryPickerState extends State<_StoryPicker> {
 
   Future<void> _open(GitHubStory entry) => _perform(() async {
     final story = await _catalog!.open(entry);
+    final connection = await _catalog!.openSync(entry);
+    if (!mounted) {
+      connection.close();
+      return;
+    }
     if (mounted)
       setState(() {
+        _storySync = connection;
         _story = story;
         _storyTitle = entry.title;
       });
@@ -199,8 +262,18 @@ class _StoryPickerState extends State<_StoryPicker> {
                     adventure: adventure,
                     showTitle: adventure.title != _storyTitle,
                   ),
+                ConflictPanel(
+                  sync: _storySync!.sync,
+                  testRemoteEdit: widget.testRemoteEdit,
+                  onChanged: () =>
+                      setState(() => _story = _storySync!.sync.local.open()),
+                ),
                 TextButton(
-                  onPressed: () => setState(() => _story = null),
+                  onPressed: () => setState(() {
+                    _storySync?.close();
+                    _storySync = null;
+                    _story = null;
+                  }),
                   child: const Text('Vissza a mesékhez'),
                 ),
               ] else if (catalog != null) ...[

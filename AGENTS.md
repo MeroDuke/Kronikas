@@ -15,6 +15,12 @@ A repository a projekt hiteles információforrása. A ChatGPT WebUI és a Codex
 - Jelentős követelmény- és architektúraváltozás csak tulajdonosi jóváhagyással.
 - Fontos változtatásokhoz külön branch és PR; ne merge-elj jóváhagyás nélkül. A tulajdonos által kifejezetten engedélyezett közvetlen módosítás kivétel.
 
+## Windows Computer Use
+
+- Közvetlenül a következő felületi művelet előtt indítsd a vezérlést. Build, CI-várakozás, naplóelemzés és dokumentáció közben zárd le a munkamenetet.
+- Az utolsó felületi ellenőrzés után zárd be a próba során indított tesztablakot, fejezd be a vezérlési tevékenységet, és reseteld a dedikált Computer Use node_repl munkamenetet. Ezt hiba vagy megszakítás után is végezd el, amint az ablak biztonságosan bezárható.
+- Jelezd, amikor a Windows-vezérlés véget ért. Új felületi lépéshez indíts új munkamenetet, és azonosítsd újra a célablakot.
+
 ## Munkazárás
 - Frissítsd az érintett dokumentumokat, backlogot, projektállapotot és nyitott kérdéseket.
 - Funkcióváltozáskor ellenőrizd a [funkcióláncot](docs/TRACEABILITY.md) a felhasználási esettől a követelményen és munkacsomagon át a tesztig. Frissítsd a visszahivatkozásokat és a futási bizonyítékot.

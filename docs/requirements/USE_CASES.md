@@ -54,7 +54,9 @@ A mesélő lezárja az aznapi játékalkalmat, miközben a kaland folytatható m
 
 [Funkciólánc](../TRACEABILITY.md#uc-005)
 
-A mesélő ugyanabból a letöltött állapotból módosít egy kalandot Androidon és Windowson. A Windows előbb szinkronizál. Amikor az Android megpróbálja feltölteni a saját módosításait, az alkalmazás jelzi az ütközést és megőrzi a helyi változásokat. A távoli állapot változatlanul elérhető. Az MVP-ben a mesélő által használható feloldási út még döntésre vár.
+A mesélő ugyanabból a letöltött állapotból módosít egy kalandot Androidon és Windowson. Ha Windowson átírja a kaland címét, Androidon pedig eseményt rögzít, a szinkron után mindkét módosítás látszik mindkét eszközön.
+
+Ha mindkét eszközön más címre írja át ugyanazt a kalandot, a Krónikás egymás mellett mutatja a két címet. A mesélő kiválasztja az egyiket vagy új címet ad meg. A többi független módosítás megmarad, és mindkét eredeti változat visszaállítható. Ha a helyi vagy távoli változat időközben megváltozik, a Krónikás az aktuális állapotot mutatja, és új megerősítést kér. [Követelmény](FUNCTIONAL_REQUIREMENTS.md#fr-019) · [Tesztmenet](../TEST_EXECUTION.md#tst-004)
 
 <a name="uc-006"></a>
 

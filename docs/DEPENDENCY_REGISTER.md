@@ -23,3 +23,9 @@ Rögzítendő továbbá: közvetlen/tranzitív jelleg, ellenőrzés dátuma, ter
 Az ellenőrzött SDK-verziók és CI-eszközök az [IMP-001 eszköznyilvántartásában](CORE_DEVELOPMENT.md) szerepelnek.
 
 A Flutter-próba feloldott csomagjai, platformeszközei és csomagleltára az [IMP-004 jegyzőkönyvében](PLATFORM_PROBE.md) követhetők.
+
+## Tesztelési és CI-függőségek
+
+A Flutter 3.50.1 SDK-ból származó `flutter_test` BSD-3-Clause licencű fejlesztői függőség. A pontos tranzitív verziókat a [Flutter lockfile](../platform_probe/pubspec.lock) rögzíti. A feloldott csomagok licencfájljait ellenőriztük. A `clock` és a `fake_async` Apache-2.0 licencű. Az új tesztcsomagok a widgetteszt futtatásához tartoznak. [Flutter SDK-licenc](https://github.com/flutter/flutter/blob/ae9b586f34a8443573f82ef57c3bf914a908cbf7/LICENSE)
+
+A Flutter- és Gradle-gyorsítótárat kezelő GitHub Action MIT licencű, teljes commitazonosítóhoz rögzítve. [actions/cache licenc](https://github.com/actions/cache/blob/0057852bfaa89a56745cba8c7296529d2fc39830/LICENSE)

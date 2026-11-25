@@ -23,6 +23,9 @@ def main():
     parser.add_argument("--abi", choices=("arm64-v8a", "x86_64"), default="arm64-v8a")
     parser.add_argument("--adb", default="adb")
     parser.add_argument("--evidence", required=True, type=Path)
+    conflict_mode = parser.add_mutually_exclusive_group()
+    conflict_mode.add_argument("--conflict", action="store_true", help="exercise full synthetic conflict resolution")
+    conflict_mode.add_argument("--conflict-smoke", action="store_true", help="resolve one synthetic conflict")
     parser.add_argument("--replace-test-app", action="store_true",
                         help="allow uninstall of this synthetic app if its signature differs")
     args = parser.parse_args()
@@ -88,20 +91,29 @@ def main():
             raise RuntimeError("ADB did not return a PNG screenshot.")
         (args.evidence / f"{name}.png").write_bytes(png)
 
-    def observe(label):
-        for _ in range(8):
+    def observe(label, *, scroll=False, resource_id=None):
+        for attempt in range(12 if scroll else 8):
             adb("shell", "uiautomator", "dump", "/sdcard/kronikas-story-picker.xml")
             root = ET.fromstring(adb("shell", "cat", "/sdcard/kronikas-story-picker.xml"))
             for node in root.iter("node"):
                 labels = (node.get("text", "") + "\n" + node.get("content-desc", "")).splitlines()
-                if label in labels and node.get("package") == PACKAGE:
+                matched = (node.get("resource-id") == resource_id
+                           if resource_id is not None else label in labels)
+                if matched and node.get("package") == PACKAGE:
                     record(f"Observed: {label}")
                     return node
+            if scroll:
+                size = re.findall(r"(\d+)x(\d+)", adb("shell", "wm", "size"))
+                width, height = map(int, size[-1])
+                top, bottom = height * 4 // 10, height * 7 // 10
+                start, end = (bottom, top) if attempt < 5 else (top, bottom)
+                adb("shell", "input", "swipe", str(width // 2), str(start),
+                    str(width // 2), str(end), "320")
             time.sleep(1)
         raise RuntimeError(f"UI state not observed: {label}")
 
-    def tap(label):
-        node = observe(label)
+    def tap(label, *, scroll=False, resource_id=None):
+        node = observe(label, scroll=scroll, resource_id=resource_id)
         left, top, right, bottom = map(int, re.findall(r"\d+", node.get("bounds", "")))
         record(f"Tap: {label}")
         adb("shell", "input", "tap", str((left + right) // 2), str((top + bottom) // 2))
@@ -122,7 +134,35 @@ def main():
         observe("A csapat átkelt a folyón.")
         observe("Csak a mesélőnek")
         capture("04-session-history")
-        tap("Vissza a mesékhez")
+        if args.conflict or args.conflict_smoke:
+            tap("Lezárt játékalkalom")
+            tap("Mese szinkronizálása", scroll=True)
+            observe("Helyi: Helyi átkelés", scroll=True)
+            observe("Távoli: Távoli átkelés", scroll=True)
+            if args.conflict:
+                tap("Helyi érték", scroll=True)
+                observe("Kiválasztva: Helyi átkelés", scroll=True)
+                capture("06-conflict-values")
+                tap("Szimulált távoli módosítás", scroll=True)
+                tap("Feloldás mentése", scroll=True)
+                observe("A változatok frissültek. Erősítsd meg újra.", scroll=True)
+                observe("Távoli: Friss távoli átkelés", scroll=True)
+            tap("Új érték", scroll=True, resource_id="conflict-value-adventures/synthetic/title")
+            adb("shell", "input", "text", "Merged%stitle")
+            adb("shell", "input", "keyevent", "4")
+            observe("Kiválasztva: Merged title", scroll=True)
+            tap("Feloldás mentése", scroll=True)
+            observe("A feloldás mentve.", scroll=True)
+            observe("Merged title", scroll=True)
+            capture("06-resolution-saved")
+            if args.conflict:
+                tap("Eredeti helyi változat megnyitása", scroll=True)
+                observe("Visszaállított példány: Helyi átkelés", scroll=True)
+                capture("07-original-local")
+                tap("Eredeti távoli változat megnyitása", scroll=True)
+                observe("Visszaállított példány: Friss távoli átkelés", scroll=True)
+                capture("08-original-remote")
+        tap("Vissza a mesékhez", scroll=args.conflict or args.conflict_smoke)
         observe("Mesék · main")
         capture("05-story-list-return")
     except Exception as error:
