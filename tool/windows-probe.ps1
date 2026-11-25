@@ -37,13 +37,13 @@ function Get-ProbeElements {
     }
 }
 
-function Wait-Label([string] $label) {
+function Wait-Label([string] $label, [switch] $RequireEnabled) {
     $deadline = [Diagnostics.Stopwatch]::StartNew()
     $lastTransient = $null
     while ($deadline.Elapsed.TotalSeconds -lt 30) {
         try {
             foreach ($element in Get-ProbeElements) {
-                if (($element.Name -split '\r?\n') -ccontains $label) {
+                if (($element.Name -split '\r?\n') -ccontains $label -and (!$RequireEnabled -or $element.IsEnabled)) {
                     Write-Step "Observed: $label"
                     return $element
                 }
@@ -66,7 +66,7 @@ function Wait-Label([string] $label) {
 }
 
 function Invoke-ProbeButton([string] $label) {
-    $element = Wait-Label $label
+    $element = Wait-Label $label -RequireEnabled
     Write-Step "Invoke: $label"
     $element.Invoke()
 }
@@ -95,6 +95,7 @@ try {
         $null = Wait-Label 'Helyi: Helyi átkelés'
         $null = Wait-Label 'Távoli: Távoli átkelés'
         Invoke-ProbeButton 'Helyi érték'
+        $null = Wait-Label 'Kiválasztva: Helyi átkelés'
         Invoke-ProbeButton 'Feloldás mentése'
         $null = Wait-Label 'A feloldás mentve.'
         $null = Wait-Label 'Helyi átkelés'
