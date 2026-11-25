@@ -111,4 +111,6 @@ A Mesék → Mese megnyitása fájlból útvonalon válaszd ki a kitöltött min
 
 A felismerési ellenőrzéshez nyiss meg egy hétköznapi dokumentumot mindhárom formátumban. Az app jelezze, hogy a fájl nem Krónikás-mese. A jelöléssel ellátott sablonok és a korábbi jelenet–mérföldkő szerkezet nyíljanak meg. Sérült fájlnál az általános megnyitási hiba jelenjen meg.
 
+A kampányértékelő [TST-006](#tst-006) próbáján két lezárt alkalommal és helyettesítő LLM-adapterrel ellenőrizd, hogy csak a jóváhagyott bemenet kerül át, a tervezett és tényleges események elkülönülnek, és a szolgáltatás hibája esetén elérhető marad a kézi szerkesztés.
+
 A kampányértékelő integrációjakor a [TST-007](#tst-007) ellenőrzi, hogy ugyanaz a beállított Discord-cél használható, az előnézet megnyitása nem küld üzenetet, és a jóváhagyott szöveg belső jegyzetek nélkül kerül ki. [Kampányértékelő](IMPLEMENTATION_PLAN.md#kampányértékelő-megosztása-discordon)

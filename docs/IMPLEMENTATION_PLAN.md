@@ -38,6 +38,12 @@ Word-sablon és mintamese, bővíthető címsorjelölésekkel. A mesélő a saj�
 
 Az IMP-008 első lépése az importált mese bevezetőjének elküldése. A mesélő megadja a Discord webhook URL-jét, és a csatorna nevét a megjelenítéshez. A kliens előnézetben mutatja a bevezetőt és a megadott csatornanevet. Kizárólag a Küldés Discordra művelet indít HTTP-kérést. A mesélői jegyzetek és az egyéb szekciók kimaradnak. A webhook URL védett helyi tárolóban marad. A Discord visszaigazolása, az elutasítás és a bizonytalan kézbesítés külön állapot. A kliens bizonytalan küldéskor nem próbálkozik automatikusan. [UC-007](TRACEABILITY.md#uc-007) · [TST-007](TEST_EXECUTION.md#tst-007)
 
+### Narratív kampányértékelő
+
+Az IMP-007 kampányszintű értékelése a mese publikálásra szánt részleteiből és a lezárt játékalkalmak publikálhatónak jelölt, tényleges eseményeiből készül. A tervezett lehetőségek háttérként szerepelhetnek, a megtörtént eseményektől elkülönítve. A belső mesélői jegyzetek kimaradnak az LLM bemenetéből is.
+
+A mesélő írhat saját értékelést, vagy kérhet LLM-től narratív piszkozatot. Külső szolgáltató esetén a generálás külön felhasználói művelet, és előtte látható az átadandó tartalom. A piszkozat szerkeszthető és menthető. Discordra csak a jóváhagyott változat küldhető. Szerkesztés után új jóváhagyás kell. Szolgáltató, adatkezelés és költség külön döntés. [UC-006](TRACEABILITY.md#uc-006) · [TST-006](TEST_EXECUTION.md#tst-006)
+
 ### Kampányértékelő megosztása Discordon
 
 A kampányértékelő elkészülte után az IMP-008 meglévő Discord webhook beállítását és küldési folyamatát használja. A mesélő a célcsatornát és a játékosoknak szánt értékelés pontos szövegét ellenőrzi, majd külön jóváhagyja a küldést. A belső mesélői jegyzetek kimaradnak. [UC-007](TRACEABILITY.md#uc-007) · [TST-007](TEST_EXECUTION.md#tst-007)
