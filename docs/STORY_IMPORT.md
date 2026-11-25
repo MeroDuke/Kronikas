@@ -37,10 +37,16 @@ A mesélő másolható Word-sablont és kitöltött példát kap. A fejezeteket 
 > **Jelenet – A régi vízimalom**<br>
 > A korona egy liszteszsák alatt lapul.
 
-Az előnézet megmutatja a felismert szerkezetet. Ismeretlen vagy nem besorolható szöveg az Egyéb szöveg részben látható. Jelölés nélküli dokumentum szövegként behozható. A Mese létrehozása művelet menti az új mesét. A tervezett kimenetelek a játék során választható lehetőségek.
+Az előnézet megmutatja a felismert szerkezetet. Ismeretlen vagy nem besorolható szöveg az Egyéb szöveg részben látható. A fájlt a Krónikás-mese jelölés vagy a korábbi sablon felismerhető jelenet–mérföldkő szerkezete azonosítja. A Mese létrehozása művelet menti az új mesét. A tervezett kimenetelek a játék során választható lehetőségek.
 
 A Drive Behozandó mesék mappájának automatikus felismerése külön jogosultsági próba tárgya. [Tárolási döntés](decisions/ADR-0002-local-stories-and-cloud-storage.md)
 
 Az IMP-010 első lépése a helyi Word-fájl kiválasztása és olvasható előnézete. A jóváhagyott mentés a következő lépéshez tartozik. A Word-sablon és a kitöltött minta az [importminták](../templates/) könyvtárában van.
 
 A helyi előnézet Word (.docx), UTF-8 szöveg (.txt) és Markdown (.md) formátummal működik. Mindhárom formátum ugyanazokat a magyar kulcsszavakat használja. A TXT első nem üres sora a cím, a Markdown címsorai kettőskereszttel kezdődnek. A Word-változat a beépített Cím és Címsor stílusokat használja. A megnyitott dokumentum a mesélői előnézetben jelenik meg.
+
+## Mesefájl felismerése
+
+Az első nem üres sorban álló Krónikás-mese jelölést mindhárom formátum elfogadja, és az előnézet kihagyja. A korábbi sablon jelölés nélkül is megnyitható, ha jelenetet és annak mérföldkövét tartalmazza. Az egyéb olvasható dokumentumokra az app az „Ez a fájl nem Krónikás-mese.” üzenetet mutatja. A sérült fájlokra külön megnyitási hiba jelenik meg. [TST-013](TEST_EXECUTION.md#tst-013)
+
+A fájlmegnyitási hibát külön, kontrasztos doboz és félkövér cím jelzi a fájlválasztás alatt.

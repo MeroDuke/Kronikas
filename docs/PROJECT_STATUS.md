@@ -6,6 +6,8 @@ A GitHub-tárolási adapter és belépési demó kikerült az aktív kódból. A
 
 ## Aktuális állapot
 
+A [mesefájl-felismerést](STORY_IMPORT.md#mesefájl-felismerése) a TST-013 ellenőrzi. A 13 helyi Flutter-teszt átment, köztük a három formátum közönséges dokumentumainak elutasítása és a régi Word-minta megnyitása.
+
 Az [IMP-010 mesesablon](STORY_IMPORT.md) Word, TXT és Markdown formátumban elérhető. A helyi Mesék felületről megnyitható az olvasható előnézet. A TST-013 előnézeti része helyben igazolt. A 12 Flutter-teszt és a Windows x64 Mesék build sikeres. Az Android natív fájlválasztó kézi próbája nyitott, a jóváhagyott mesementés a következő lépés.
 
 Az IMP-009 helyi Mesék felületét és fájlos szinkronpróbáját Windows x64-re építettük. Helyben a CORE 12 és a Flutter 6 tesztje átment. A TST-012 két helyi példánnyal igazolta a változatlan indulás nulla tartalomátvitelét, a módosult fájl elkülönített átvitelét, az offline mentés újranyitását és az ütköző változatok megőrzését. Az élő Google Drive-adapter, OAuth és Android végpontok közötti próba nyitott. [TST-012](TEST_EXECUTION.md#tst-012)

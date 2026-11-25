@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kronikas_platform_probe/story_document.dart';
 
@@ -40,7 +41,7 @@ void main() {
     final story = readStoryDocument(
       'story.md',
       utf8.encode(
-        '# A mese\n## Mérföldkő – A nyom\nSzöveg.\n## Szereplők\nA kapitány.',
+        'Krónikás-mese\n# A mese\n## Mérföldkő – A nyom\nSzöveg.\n## Szereplők\nA kapitány.',
       ),
     );
     expect(
@@ -55,8 +56,33 @@ void main() {
     ]);
   });
 
+  test('rejects ordinary documents across all supported formats', () {
+    final xml = utf8.encode(
+      '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+      '<w:body><w:p><w:r><w:t>Bevásárlólista</w:t></w:r></w:p></w:body>'
+      '</w:document>',
+    );
+    final archive = Archive()
+      ..addFile(ArchiveFile('word/document.xml', xml.length, xml));
+    final files = {
+      'list.txt': utf8.encode('Bevásárlólista\nAlma és tej'),
+      'list.md': utf8.encode('# Bevásárlólista\n## Bevezetés\nAlma és tej'),
+      'list.docx': ZipEncoder().encode(archive),
+    };
+    for (final file in files.entries) {
+      expect(
+        () => readStoryDocument(file.key, file.value),
+        throwsA(isA<NotStoryDocument>()),
+        reason: file.key,
+      );
+    }
+  });
+
   test('rejects empty and invalid files', () {
-    expect(() => readStoryDocument('empty.txt', []), throwsFormatException);
+    expect(
+      () => readStoryDocument('empty.txt', []),
+      throwsA(isA<NotStoryDocument>()),
+    );
     expect(() => readStoryDocument('invalid.docx', [1, 2, 3]), throwsException);
   });
 }

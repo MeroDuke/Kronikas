@@ -30,17 +30,27 @@ final class StorySection {
 typedef StoryDocument = ({String title, List<StorySection> sections});
 typedef _Paragraph = ({String text, bool title, bool heading});
 
+final class NotStoryDocument implements Exception {
+  const NotStoryDocument();
+}
+
 StoryDocument readStoryDocument(String filename, List<int> bytes) {
   if (bytes.length > storyFileLimit) {
     throw const FormatException('Story file is too large.');
   }
-  final extension = filename.split('.').last.toLowerCase();
-  final paragraphs = switch (extension) {
+  final separator = filename.lastIndexOf('.');
+  final extension = separator < 0
+      ? ''
+      : filename.substring(separator + 1).toLowerCase();
+  var paragraphs = switch (extension) {
     'docx' => _wordParagraphs(bytes),
     'md' || 'txt' => _textParagraphs(utf8.decode(bytes), extension == 'md'),
     _ => throw const FormatException('Unsupported story format.'),
   };
-  if (paragraphs.isEmpty) throw const FormatException('Empty story.');
+  final explicitlyMarked =
+      paragraphs.firstOrNull?.text.toLowerCase() == 'krónikás-mese';
+  if (explicitlyMarked) paragraphs = paragraphs.sublist(1);
+  if (paragraphs.isEmpty) throw const NotStoryDocument();
   final hasTitle =
       paragraphs.first.title ||
       (!paragraphs.first.heading && extension == 'txt');
@@ -83,10 +93,12 @@ StoryDocument readStoryDocument(String filename, List<int> bytes) {
     }
     current.paragraphs.add(paragraph.text);
   }
+  if (!explicitlyMarked &&
+      !sections.any((section) => section.kind == StorySectionKind.milestone)) {
+    throw const NotStoryDocument();
+  }
   return (
-    title: hasTitle
-        ? paragraphs.first.text
-        : filename.substring(0, filename.lastIndexOf('.')),
+    title: hasTitle ? paragraphs.first.text : filename.substring(0, separator),
     sections: sections,
   );
 }
