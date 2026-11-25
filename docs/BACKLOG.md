@@ -8,6 +8,7 @@
 | TASK-004 | [Domain- és adatmodell](requirements/DOMAIN_MODEL.md) | Jóváhagyva |
 | TASK-005 | [Technológiai megvalósíthatóság](TECHNOLOGY_FEASIBILITY.md) | Technológiai irány jóváhagyva, próbák függőben |
 | TASK-006 | [Architektúra és tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md) | Jóváhagyva |
+| IMP-008 | [Discord-megosztás](IMPLEMENTATION_PLAN.md#imp-008) | Bevezető elkészült, élő próba és összefoglaló nyitott |
 | IMP-010 | [Mesesablon és import](STORY_IMPORT.md) | Sablon és helyi előnézet elkészült, importmentés hátravan |
 | IMP-009 | [Helyi Mesék és Drive-szinkron](IMPLEMENTATION_PLAN.md#imp-009) | Helyi felület és szintetikus próba igazolva, GitHub-adapter eltávolítva, élő Drive nyitott |
 | TASK-007 | [Implementációs terv](IMPLEMENTATION_PLAN.md) | Jóváhagyva |

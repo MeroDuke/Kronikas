@@ -6,6 +6,8 @@ A GitHub-tárolási adapter és belépési demó kikerült az aktív kódból. A
 
 ## Aktuális állapot
 
+Az importált mese bevezetőjének [Discord-megosztása](IMPLEMENTATION_PLAN.md#bevezető-megosztása-discordon) elkészült a fejlesztői ágon. A cím és a bevezető kerül az előnézetbe, a webhook helyben védett. Helyettesítő HTTP-klienssel ellenőriztük a sikeres, elutasított, korlátozott és bizonytalan küldést. 2026-11-25-én a tulajdonos Windowsról elküldte a szintetikus sablon címét és bevezetőjét. A mellékelt képernyőkép igazolja, hogy a Krónikás üzenete megjelent a privát tesztcsatornán. Az élő Android-küldés külön ellenőrzendő.
+
 A [mesefájl-felismerést](STORY_IMPORT.md#mesefájl-felismerése) a TST-013 ellenőrzi. A 13 helyi Flutter-teszt átment, köztük a három formátum közönséges dokumentumainak elutasítása és a régi Word-minta megnyitása.
 
 Az [IMP-010 mesesablon](STORY_IMPORT.md) Word, TXT és Markdown formátumban elérhető. A helyi Mesék felületről megnyitható az olvasható előnézet. A TST-013 előnézeti része helyben igazolt. A 12 Flutter-teszt és a Windows x64 Mesék build sikeres. Az Android natív fájlválasztó kézi próbája nyitott, a jóváhagyott mesementés a következő lépés.

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'discord_introduction.dart';
 import 'story_document.dart';
 
 const _channel = MethodChannel('hu.akihabarai.kronikas_platform_probe/storage');
@@ -74,6 +75,12 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
   @override
   Widget build(BuildContext context) {
     final document = _document;
+    final introduction =
+        document?.sections
+            .where((section) => section.kind == StorySectionKind.introduction)
+            .expand((section) => section.paragraphs)
+            .join('\n\n') ??
+        '';
     final theme = Theme.of(context);
     final styles = theme.textTheme;
     final colors = theme.colorScheme;
@@ -137,6 +144,19 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
               if (document != null) ...[
                 const SizedBox(height: 24),
                 Text(document.title, style: styles.headlineMedium),
+                if (introduction.trim().isNotEmpty)
+                  OutlinedButton(
+                    onPressed: _busy
+                        ? null
+                        : () => Navigator.of(context).push<void>(
+                            MaterialPageRoute(
+                              builder: (_) => DiscordIntroduction(
+                                message: '${document.title}\n\n$introduction',
+                              ),
+                            ),
+                          ),
+                    child: const Text('Bevezető megosztása Discordon'),
+                  ),
                 for (final section in document.sections)
                   Padding(
                     padding: EdgeInsetsDirectional.only(
