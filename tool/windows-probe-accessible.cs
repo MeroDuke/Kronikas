@@ -27,6 +27,13 @@ public sealed class ProbeAccessible {
 
     public string Name { get { return accessible.get_accName(childId); } }
 
+    public bool IsEnabled {
+        get {
+            const int unavailable = 0x1;
+            return (Convert.ToInt32(accessible.get_accState(childId)) & unavailable) == 0;
+        }
+    }
+
     public void Invoke() {
         accessible.accDoDefaultAction(childId);
     }

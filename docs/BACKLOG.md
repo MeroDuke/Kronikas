@@ -10,7 +10,7 @@
 | TASK-006 | [Architektúra és tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md) | Jóváhagyva |
 | TASK-007 | [Implementációs terv](IMPLEMENTATION_PLAN.md) | Jóváhagyva |
 
-Az implementációs feladatok még nem jóváhagyottak. Követelmény–feladat–teszt kapcsolatokat a specifikáció kialakításakor rögzítjük.
+Az implementáció munkacsomagjait az [implementációs terv](IMPLEMENTATION_PLAN.md), állapotukat és a következő lépést a [roadmap](ROADMAP.md) követi. A követelmény–feladat–teszt kapcsolatok a [funkciókövetési táblában](TRACEABILITY.md) érhetők el.
 
 TASK-005 kiegészítése: a technológiai alternatívák licenc-, költség- és vendor lock-in vizsgálata, a függőségi nyilvántartás feltöltése a kiválasztás előtt.
 TASK-006 kiegészítése: AI-output ellenőrzés, CI/minőségi kapuk, követelménykövetés és szakmai bizonyítékok megőrzésének tervezése. A Score és az Aldrod adaptált tesztgyakorlatait a TASK-007 ütemezi a megfelelő fázisokhoz.
