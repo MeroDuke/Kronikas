@@ -54,7 +54,7 @@ A csomagolt platformregressziót a GitHub Actions futtatja. Fejlesztés közben 
 
 A korábbi két-ABI-s futás igazolta az ARM64 APK működését ezen az emulátoron. [GitHub Actions futás és bizonyítékok](https://github.com/MeroDuke/Kronikas/actions/runs/45446620447)
 
-A fizikai tabletet valódi eszközt vagy két eszköz közötti kapcsolatot igénylő célzott próbákhoz használjuk. A Windows-csomag a `windows` jobban készül. A Windows kezelőfelületének végigjárására az alábbi Computer Use menet szolgál.
+A fizikai tabletet valódi eszközt vagy két eszköz közötti kapcsolatot igénylő célzott próbákhoz használjuk. A Windows x64 csomag és a mentési felületi ellenőrzés a `windows` jobban fut.
 
 ## Fizikai Android-tablet – ADB Wi-Fi-n
 
@@ -63,6 +63,12 @@ A fizikai tableten minden ADB-műveletet vezeték nélküli hibakereséssel vég
 Fizikai próba: Wi-Fi-s ADB-n célzott, már telepített ARM64 platformpróbán lefutott a felületi mentés, teljes leállítás, újraindítás és visszaolvasás. A meglévő szintetikus kaland és a védett próbaérték ellenőrzése sikeres volt.
 
 A tabletes regressziót Codex futtatja Wi-Fi-s ADB-n. Minden fizikai futás az ellenőrizendő fejlesztési commit friss ARM64-próbacsomagjával kezdődik, a korábban telepített tesztapp frissítésével. A [meseválasztó próbafuttató](../platform_probe/README.md#fizikai-tabletpróba) igazolja a CI-melléklet commitját és a tabletbe telepített APK hashét. Ha a rátelepítés aláírás miatt nem lehetséges, a szintetikus próbaalkalmazás cseréje külön engedélyezhető. A felületi lépésekhez a futtató képernyőképet és naplót ment. A futtató a végén bezárja a tesztappot, amíg a tablet ADB-n elérhető. A feloldás és az esetleges ADB-engedély megadása eszközoldali lépés.
+
+## Windows x64 csomagpróba a CI-ban
+
+A `windows` job ellenőrzi a csomag ZIP-fájljának SHA-256 értékét, majd külön könyvtárba bontja és onnan indítja a tényleges EXE-t. A `tool/windows-probe.ps1` a Windows UI Automation API-val megkeresi a felület elemeit. Egy üres szintetikus profilban a **Save test data** gombbal ment, bezárja és újraindítja a programot, majd a **Verify saved data** gombbal ellenőrzi a krónikát és a DPAPI-védett értéket. A végén bezárja a próbát.
+
+A `windows-ui-evidence` melléklet a csomag hashét és a lépések naplóját tartalmazza. Hiba esetén a még elérhető alkalmazás UI-fája is bekerül. A helyi Computer Use a további felületi forgatókönyvek célzott próbájára használható.
 
 ## Windows E2E Codex Computer Use-zal
 
