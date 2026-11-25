@@ -95,3 +95,8 @@ Az útvonal az elérhető funkciókkal bővül. A szinkron esetén a képernyőn
 
 - A `dart-core-results` melléklet `core.json` és `core.log` fájlja a szinkronellenőrzés nevét, az elvárt és a tényleges értéket mutatja. A veremkivonat a `core.log` fájlban olvasható.
 - Az `android-ui-evidence` mellékletben az `arm64` könyvtáron belül a `storage-failure` vagy `story-picker` mappát nyisd meg. A futtató a hibaüzenetet, az aktuális képernyőképet, a UI-fát és a szintetikus app UID-jára szűrt logcat-részletet próbálja menteni a bezárás előtt. A gyűjtés hibái a job naplójában látszanak. Eszközkapcsolat elvesztésekor a már mentett bizonyítékok érhetők el.
+
+## TST-012
+
+Két elkülönített helyi tárolóval hozz létre két mesét. Ellenőrizd, hogy a másik kliens csak induláskor tölti le őket. Ismételt indításnál mérd a tartalomlekérések és -írások számát. Módosíts egy mesét, és ellenőrizd, hogy csak annak tartalma mozog. Állítsd le a távoli elérést mentés előtt, indítsd újra a klienst, majd ellenőrizd a függő mentés továbbítását. Módosítsd ugyanazt a mesét mindkét oldalon, és ellenőrizd mindkét példány megőrzését. Az élő Drive-próbát szintetikus mesével ismételd meg Windowson és Androidon.
+[IMP-009](IMPLEMENTATION_PLAN.md#imp-009) · [UC-002](TRACEABILITY.md#uc-002) · [UC-005](TRACEABILITY.md#uc-005)

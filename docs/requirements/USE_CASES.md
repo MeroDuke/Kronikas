@@ -1,5 +1,7 @@
 # Felhasználási esetek – v0.1
 
+A tárolási folyamat aktuális szabályait az [ADR-0002](../decisions/ADR-0002-local-stories-and-cloud-storage.md) és az [FR-012–FR-018](FUNCTIONAL_REQUIREMENTS.md#fr-012) rögzíti. A GitHub-lépések a korábbi próbamenethez tartoznak.
+
 [Funkciók nyomon követése](../TRACEABILITY.md)
 
 Állapot: tulajdonos által jóváhagyva (TASK-002).

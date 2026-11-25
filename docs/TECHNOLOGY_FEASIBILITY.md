@@ -1,5 +1,7 @@
 # Technológiai megvalósíthatóság – TASK-005
 
+**Aktuális tárolási irány.** A helyi Mesék felület alapértelmezett. Az opcionális felhőszinkron első jelöltje a Google Drive. A korábbi GitHub-tárolási terv és vizsgálatok történeti állapotot írnak le. [ADR-0002](decisions/ADR-0002-local-stories-and-cloud-storage.md) · [IMP-009](IMPLEMENTATION_PLAN.md#imp-009)
+
 Állapot: a technológiai irány tulajdonos által jóváhagyva, a konkrét verziók és próbák függőben. Ellenőrzés dátuma: 2026-11-24. Alap: a jóváhagyott [domainmodell](requirements/DOMAIN_MODEL.md) és [nem funkcionális követelmények](requirements/NON_FUNCTIONAL_REQUIREMENTS.md).
 
 A Score tapasztalataiból levezetett előszűrés és a tényleges csomag ellenőrzése a [licencelési átvilágításban](LICENSING_FEASIBILITY.md) szerepel.

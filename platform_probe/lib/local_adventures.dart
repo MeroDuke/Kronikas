@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 // Use the Material widgets from the pinned Flutter SDK.
@@ -5,16 +6,21 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:kronikas_core/kronikas_core.dart';
 import 'package:kronikas_core/local_chronicle_store.dart';
+import 'package:kronikas_core/story_storage_sync.dart';
 
 class LocalAdventures extends StatefulWidget {
   const LocalAdventures({
     super.key,
     required this.store,
     required this.initial,
+    this.storyStorageSync,
+    this.standalone = false,
   });
 
   final LocalChronicleStore store;
   final Chronicle initial;
+  final StoryStorageSync? storyStorageSync;
+  final bool standalone;
 
   @override
   State<LocalAdventures> createState() => _LocalAdventuresState();
@@ -28,6 +34,29 @@ class _LocalAdventuresState extends State<LocalAdventures> {
   String? _selected;
   String? _error;
   bool _creating = false;
+  String? _syncStatus;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_sync(download: true));
+  }
+
+  Future<void> _sync({bool download = false}) async {
+    final sync = widget.storyStorageSync;
+    if (sync == null) return;
+    final result = await sync.synchronize(download: download);
+    if (!mounted) return;
+    setState(() {
+      _chronicle = widget.store.open();
+      _syncStatus = switch (result) {
+        StorySyncResult.complete => 'A tárolási próba naprakész.',
+        StorySyncResult.conflict =>
+          'Eltérő meseváltozatok. Mindkét példány megmaradt.',
+        StorySyncResult.pending => 'A szinkron függőben van.',
+      };
+    });
+  }
 
   @override
   void dispose() {
@@ -65,6 +94,7 @@ class _LocalAdventuresState extends State<LocalAdventures> {
       });
       _title.clear();
       _description.clear();
+      unawaited(_sync());
     } on Exception {
       setState(
         () => _error = adventureId == null
@@ -95,6 +125,7 @@ class _LocalAdventuresState extends State<LocalAdventures> {
         _chronicle = saved;
         _error = null;
       });
+      unawaited(_sync());
     } on Exception {
       setState(() => _error = 'A játékalkalom mentése sikertelen.');
     } on StateError {
@@ -256,13 +287,17 @@ class _LocalAdventuresState extends State<LocalAdventures> {
         .where((session) => session.isOpen)
         .firstOrNull;
     return Scaffold(
-      appBar: AppBar(title: const Text('Helyi kalandok')),
+      appBar: AppBar(
+        title: Text(widget.standalone ? 'Mesék' : 'Helyi kalandok'),
+      ),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 620),
           child: ListView(
             padding: const EdgeInsets.all(24),
             children: [
+              if (_syncStatus case final String status)
+                Semantics(liveRegion: true, child: Text(status)),
               if (_creating)
                 Form(
                   key: _form,
@@ -419,12 +454,18 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                     _selected = null;
                     _error = null;
                   }),
-                  child: const Text('Vissza a helyi kalandokhoz'),
+                  child: Text(
+                    widget.standalone
+                        ? 'Vissza a mesékhez'
+                        : 'Vissza a helyi kalandokhoz',
+                  ),
                 ),
               ] else ...[
                 FilledButton(
                   onPressed: () => setState(() => _creating = true),
-                  child: const Text('Új önálló kaland'),
+                  child: Text(
+                    widget.standalone ? 'Új mese' : 'Új önálló kaland',
+                  ),
                 ),
                 if (_chronicle.adventures.isEmpty)
                   const Text('Még nincs helyi kaland.'),

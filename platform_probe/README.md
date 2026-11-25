@@ -33,3 +33,9 @@ python tool/tablet-story-picker.py <kibontott-melléklet> --commit <teljes-SHA> 
 A futtató a commitot, az ARM64-architektúrát és a csomag SHA-256 értékét telepítés előtt ellenőrzi. A telepített APK visszaolvasott hashének is egyeznie kell. A próba a repó csatlakoztatásáról, a meselistáról, a megnyitott meséről és a visszalépésről képernyőképet ment. Eltérő CI-aláírásnál a `--replace-test-app` kapcsolóval engedélyezhető a szintetikus meseválasztó eltávolítása és újratelepítése.
 
 Az Androidos futtatók a képernyőképek és a felületi ellenőrzés után bezárják a tesztalkalmazást. A bezárás hibás futásnál is megtörténik, amíg a készülék ADB-n elérhető.
+
+## Mesék és tárolási próba
+
+A `flutter build windows --release --no-pub --target lib/stories.dart` paranccsal a Mesék kezdőképernyő épül. A Windows-build a korábbi helyi kalandok mentési könyvtárát használja. A Mesék felület a Google-tárhely beállítása nélkül is használható.
+
+A fejlesztői tárolási próbához a `KRONIKAS_SYNC_PREVIEW_DIRECTORY` környezeti változót csak szintetikus adatokhoz kijelölt könyvtárra állítsd. A próba elkülönített helyi mentést és fájlos tesztadaptert használ. A Google OAuth és az élő Drive-átvitel külön ellenőrzést igényel. [ADR-0002](../docs/decisions/ADR-0002-local-stories-and-cloud-storage.md) · [TST-012](../docs/TEST_EXECUTION.md#tst-012)

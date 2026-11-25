@@ -1,5 +1,7 @@
 # Architektúra és tesztstratégia – TASK-006
 
+**Aktuális tárolási irány.** A helyi Mesék felület alapértelmezett. Az opcionális felhőszinkron első jelöltje a Google Drive. A korábbi GitHub-tárolási terv és vizsgálatok történeti állapotot írnak le. [ADR-0002](decisions/ADR-0002-local-stories-and-cloud-storage.md) · [IMP-009](IMPLEMENTATION_PLAN.md#imp-009)
+
 [Funkciók nyomon követése](TRACEABILITY.md)
 
 Tulajdonos által jóváhagyott terv. Alapja a jóváhagyott [domainmodell](requirements/DOMAIN_MODEL.md), a [technológiai irány](TECHNOLOGY_FEASIBILITY.md) és a [licencelési átvilágítás](LICENSING_FEASIBILITY.md).
