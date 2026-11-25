@@ -1,5 +1,7 @@
 # Tesztfuttatási útmutató – TASK-006
 
+A csomagolt meseválasztó próba közvetlenül a szintetikus Mesék listáról indul. A GitHub-belépési és repócsatlakoztatási lépések a korábbi futásokhoz tartoznak.
+
 [Funkciók nyomon követése](TRACEABILITY.md)
 
 Tulajdonos által jóváhagyott útmutató. A [tesztstratégia](ARCHITECTURE_AND_TEST_STRATEGY.md) ellenőrzéseinek végrehajtási menete. A CORE helyi futtatásához a repó gyökeréből indítsd a `pwsh -NoProfile -File tool/test.ps1` parancsot a [rögzített Dart SDK-val](CORE_DEVELOPMENT.md).

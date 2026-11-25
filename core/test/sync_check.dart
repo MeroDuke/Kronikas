@@ -3,11 +3,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:kronikas_core/chronicle_sync.dart';
-import 'package:kronikas_core/github_chronicle_remote.dart';
 import 'package:kronikas_core/local_chronicle_store.dart';
 
 final syncChecks = <String, Future<void> Function()>{
-  'repository address accepts user input and rejects other origins': _addresses,
   'offline edits persist and competing clients keep both versions': _conflict,
   'incompatible sessions preserve both client states': _incompatibleSessions,
   'independent edits survive synchronization on both clients': _independent,
@@ -16,32 +14,6 @@ final syncChecks = <String, Future<void> Function()>{
   'lost write response and concurrent edit recover across reopen':
       _lostResponse,
 };
-
-Future<void> _addresses() async {
-  for (final address in [
-    '  SampleOwner/sample-stories ',
-    'https://github.com/SampleOwner/sample-stories.git/',
-  ]) {
-    final repo = parseGitHubRepository(address);
-    _expect('Repository owner', repo.owner, 'SampleOwner');
-    _expect('Repository name', repo.repository, 'sample-stories');
-  }
-  for (final address in [
-    'http://github.com/owner/repo',
-    'https://github.com.example/owner/repo',
-    'https://user@github.com/owner/repo',
-    'https://github.com/owner/repo?token=value',
-    'https://github.com/owner/repo/tree/main',
-    'https://github.com/owner/invalid%2Frepo',
-  ]) {
-    try {
-      parseGitHubRepository(address);
-      throw StateError('Invalid repository address was accepted.');
-    } on FormatException {
-      continue;
-    }
-  }
-}
 
 Future<void> _conflict() async {
   await _withStores((first, second) async {

@@ -1,5 +1,7 @@
 # Dart CORE fejlesztés – IMP-001–003
 
+A GitHub-tárolási adapter és belépési demó kikerült az aktív kódból. A korábbi próba a [PR #11-ben](https://github.com/MeroDuke/Kronikas/pull/11) visszakereshető. A szolgáltatótól független konfliktuskezelés, a helyi revíziók és a szintetikus platformtesztek megmaradtak.
+
 A tiszta Dart csomag publikus belépési pontja a `core/lib/kronikas_core.dart`. A `Chronicle` kezeli a kampányt, az önálló vagy kampányhoz tartozó kalandot, a jeleneteket, a mérföldköveket, a mesélői jegyzeteket és a játékalkalmakat. A mérföldkő rögzítése együtt frissíti az aktuális állapotot és az eseménytörténetet. Egy kalandhoz egyszerre egy nyitott alkalom tartozhat. Az azonosítókat és időpontokat a hívó adja meg.
 
 ## Helyi mentés
