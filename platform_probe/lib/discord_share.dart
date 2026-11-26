@@ -9,16 +9,17 @@ import 'discord_publication.dart';
 
 const _channel = MethodChannel('hu.akihabarai.kronikas_platform_probe/storage');
 
-class DiscordIntroduction extends StatefulWidget {
-  const DiscordIntroduction({super.key, required this.message});
+class DiscordShare extends StatefulWidget {
+  const DiscordShare({super.key, required this.message, required this.title});
 
   final String message;
+  final String title;
 
   @override
-  State<DiscordIntroduction> createState() => _DiscordIntroductionState();
+  State<DiscordShare> createState() => _DiscordShareState();
 }
 
-class _DiscordIntroductionState extends State<DiscordIntroduction> {
+class _DiscordShareState extends State<DiscordShare> {
   final _form = GlobalKey<FormState>();
   final _label = TextEditingController();
   final _webhook = TextEditingController();
@@ -121,13 +122,13 @@ class _DiscordIntroductionState extends State<DiscordIntroduction> {
       _sending = true;
       _status = null;
     });
-    final result = await sendDiscordIntroduction(destination, widget.message);
+    final result = await sendDiscordMessage(destination, widget.message);
     if (!mounted) return;
     setState(() {
       _sending = false;
       _delivery = result;
       _status = switch (result) {
-        DiscordDelivery.sent => 'A bevezető megjelent a Discordon.',
+        DiscordDelivery.sent => 'Az üzenet megjelent a Discordon.',
         DiscordDelivery.rejected =>
           'A Discord elutasította a küldést. Ellenőrizd a webhook linkjét.',
         DiscordDelivery.rateLimited =>
@@ -142,7 +143,7 @@ class _DiscordIntroductionState extends State<DiscordIntroduction> {
     final destination = _destination;
     final tooLong = widget.message.length > discordMessageLimit;
     return Scaffold(
-      appBar: AppBar(title: const Text('Bevezető megosztása')),
+      appBar: AppBar(title: Text(widget.title)),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 640),
@@ -203,7 +204,7 @@ class _DiscordIntroductionState extends State<DiscordIntroduction> {
                 const SizedBox(height: 12),
                 if (tooLong)
                   const Text(
-                    'A bevezető túllépi a Discord 2000 karakteres üzenethatárát.',
+                    'Az üzenet túllépi a Discord 2000 karakteres üzenethatárát.',
                   ),
                 FilledButton(
                   onPressed:

@@ -25,7 +25,7 @@ void main() {
   test('sends one confirmed request without mentions or redirects', () async {
     final client = _Client(200, '{"id":"456"}');
     expect(
-      await sendDiscordIntroduction(
+      await sendDiscordMessage(
         destination,
         'Próba @everyone',
         createClient: () => client,
@@ -50,7 +50,7 @@ void main() {
     ]) {
       final client = _Client(status, body);
       expect(
-        await sendDiscordIntroduction(
+        await sendDiscordMessage(
           destination,
           'Próba',
           createClient: () => client,

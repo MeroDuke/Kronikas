@@ -114,3 +114,5 @@ A felismerési ellenőrzéshez nyiss meg egy hétköznapi dokumentumot mindháro
 A kampányértékelő [TST-006](#tst-006) próbáján két lezárt alkalommal és helyettesítő LLM-adapterrel ellenőrizd, hogy csak a jóváhagyott bemenet kerül át, a tervezett és tényleges események elkülönülnek, és a szolgáltatás hibája esetén elérhető marad a kézi szerkesztés. Ellenőrizd, hogy API-kulcs nélkül vagy üres jelölőnégyzettel nincs API-hívás. A bejelölés és az előnézet önmagában sem indít kérést, a jóváhagyott generálás egyet indít.
 
 A kampányértékelő integrációjakor a [TST-007](#tst-007) ellenőrzi, hogy ugyanaz a beállított Discord-cél használható, az előnézet megnyitása nem küld üzenetet, és a jóváhagyott szöveg belső jegyzetek nélkül kerül ki. [Kampányértékelő](IMPLEMENTATION_PLAN.md#kampányértékelő-megosztása-discordon)
+
+A dokumentumösszegzés Discord-próbáján ellenőrizd, hogy az összegzés gomb üres szakasznál hiányzik, a küldési előnézetben a cím és a záró szakasz szerepel, valamint a bevezető és a mesélői jegyzet külön marad. [TST-007](#tst-007)

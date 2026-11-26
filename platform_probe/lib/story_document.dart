@@ -29,6 +29,15 @@ final class StorySection {
 }
 
 typedef StoryDocument = ({String title, List<StorySection> sections});
+String? storySectionMessage(StoryDocument document, StorySectionKind kind) {
+  final body = document.sections
+      .where((section) => section.kind == kind)
+      .expand((section) => section.paragraphs)
+      .join('\n\n')
+      .trim();
+  return body.isEmpty ? null : '${document.title}\n\n$body';
+}
+
 typedef _Paragraph = ({String text, bool title, bool heading});
 
 final class NotStoryDocument implements Exception {

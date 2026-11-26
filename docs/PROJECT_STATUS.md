@@ -6,6 +6,8 @@ A GitHub-tárolási adapter és belépési demó kikerült az aktív kódból. A
 
 ## Aktuális állapot
 
+A dokumentum Összegzés szakasza külön elküldhető Discordra a bevezetővel közös webhook-beállítással. A teszt ellenőrzi a két üzenet pontos tartalmát és az üres összegzés kezelését. Az élő összegzésküldés még ellenőrzendő. [Mesesablon](STORY_IMPORT.md) · [TST-007](TEST_EXECUTION.md#tst-007)
+
 A mesesablon három formátumában az **Összegzés** a dokumentum végén szerepel. Az előnézet külön felismeri. Az LLM a tervek szerint a mesedokumentum jóváhagyott részleteit is felhasználja. [Mesesablon](STORY_IMPORT.md)
 
 Az importált mese bevezetőjének [Discord-megosztása](IMPLEMENTATION_PLAN.md#bevezető-megosztása-discordon) elkészült a fejlesztői ágon. A cím és a bevezető kerül az előnézetbe, a webhook helyben védett. Helyettesítő HTTP-klienssel ellenőriztük a sikeres, elutasított, korlátozott és bizonytalan küldést. 2026-11-25-én a tulajdonos Windowsról elküldte a szintetikus sablon címét és bevezetőjét. A mellékelt képernyőkép igazolja, hogy a Krónikás üzenete megjelent a privát tesztcsatornán. Az élő Android-küldés külön ellenőrzendő.

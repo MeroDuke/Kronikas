@@ -54,3 +54,5 @@ A helyi előnézet Word (.docx), UTF-8 szöveg (.txt) és Markdown (.md) formát
 Az első nem üres sorban álló Krónikás-mese jelölést mindhárom formátum elfogadja, és az előnézet kihagyja. A korábbi sablon jelölés nélkül is megnyitható, ha jelenetet és annak mérföldkövét tartalmazza. Az egyéb olvasható dokumentumokra az app az „Ez a fájl nem Krónikás-mese.” üzenetet mutatja. A sérült fájlokra külön megnyitási hiba jelenik meg. [TST-013](TEST_EXECUTION.md#tst-013)
 
 A fájlmegnyitási hibát külön, kontrasztos doboz és félkövér cím jelzi a fájlválasztás alatt.
+
+Az előnézet külön **Bevezető megosztása Discordon** és **Összegzés megosztása Discordon** műveletet kínál, ha az adott szakasznak van szövege. Mindkettő a mentett webhookot használja. Az előnézet a mese címét és a választott szakaszt tartalmazza. A Küldés Discordra művelet indítja a küldést. [TST-007](TEST_EXECUTION.md#tst-007)

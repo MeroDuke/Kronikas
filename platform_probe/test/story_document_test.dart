@@ -22,6 +22,16 @@ void main() {
     ]);
     expect(story.sections[3].paragraphs, ['Eljutnak a régi vízimalomhoz.']);
     expect(story.sections[6].title, 'A régi vízimalom');
+    expect(
+      storySectionMessage(story, StorySectionKind.summary),
+      'Az eltűnt korona\n\nA nyomok a vízimalomhoz vezettek. A csapat visszavitte a koronát.',
+    );
+    expect(
+      storySectionMessage(story, StorySectionKind.introduction),
+      'Az eltűnt korona\n\nA koronázás reggelén üresen találják a kincstárat.',
+    );
+    story.sections.last.paragraphs.clear();
+    expect(storySectionMessage(story, StorySectionKind.summary), isNull);
   });
 
   for (final extension in ['md', 'txt', 'docx']) {
