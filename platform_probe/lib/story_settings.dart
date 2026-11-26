@@ -23,7 +23,7 @@ class _StorySettingsState extends State<StorySettings> {
   String? _openAiStatus;
   bool _busy = true;
   bool _configured = false;
-  String? _error;
+  String? _discordStatus;
 
   @override
   void initState() {
@@ -48,7 +48,7 @@ class _StorySettingsState extends State<StorySettings> {
       _label.text = destination.label;
       _webhook.text = destination.webhook.toString();
     } catch (_) {
-      _error = 'A mentett Discord-beállítás nem olvasható.';
+      _discordStatus = 'A mentett Discord-beállítás nem olvasható.';
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -72,7 +72,11 @@ class _StorySettingsState extends State<StorySettings> {
       _openAiStatus = null;
     });
     try {
-      await widget.settings.saveOpenAiKey(remove ? null : _openAiKey.text);
+      final key = remove ? null : _openAiKey.text.trim();
+      await widget.settings.saveOpenAiKey(key);
+      if (await widget.settings.loadOpenAiKey() != key) {
+        throw StateError('OpenAI settings could not be read back.');
+      }
       if (!mounted) return;
       _openAiKey.clear();
       _openAiConfigured = !remove;
@@ -96,14 +100,27 @@ class _StorySettingsState extends State<StorySettings> {
           );
     setState(() {
       _busy = true;
-      _error = null;
+      _discordStatus = null;
     });
     try {
       await widget.settings.save(destination);
-      if (mounted) Navigator.of(context).pop();
+      if (await widget.settings.load() != destination) {
+        throw StateError('Discord settings could not be read back.');
+      }
+      if (!mounted) return;
+      _configured = !remove;
+      if (remove) {
+        _label.clear();
+        _webhook.clear();
+      }
+      _discordStatus = remove
+          ? 'A Discord leválasztva.'
+          : 'A Discord-beállítás mentve.';
     } catch (_) {
       if (mounted)
-        setState(() => _error = 'A Discord-beállítás mentése sikertelen.');
+        setState(
+          () => _discordStatus = 'A Discord-beállítás mentése sikertelen.',
+        );
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -151,13 +168,18 @@ class _StorySettingsState extends State<StorySettings> {
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: _busy ? null : () => _save(),
-                child: const Text('Mentés'),
+                child: const Text('Discord mentése'),
               ),
               if (_configured)
                 TextButton(
                   onPressed: _busy ? null : () => _save(remove: true),
                   child: const Text('Discord leválasztása'),
                 ),
+              if (_busy) const LinearProgressIndicator(),
+              if ((_discordStatus ??
+                      (_configured ? 'Van mentett Discord-cél.' : null))
+                  case final status?)
+                Semantics(liveRegion: true, child: Text(status)),
               const SizedBox(height: 24),
               Text('OpenAI', style: Theme.of(context).textTheme.titleLarge),
               TextField(
@@ -189,9 +211,7 @@ class _StorySettingsState extends State<StorySettings> {
                 ),
               if (_openAiStatus case final status?)
                 Semantics(liveRegion: true, child: Text(status)),
-              if (_busy) const LinearProgressIndicator(),
-              if (_error case final error?)
-                Semantics(liveRegion: true, child: Text(error)),
+              if (_openAiBusy) const LinearProgressIndicator(),
             ],
           ),
         ),

@@ -120,3 +120,5 @@ A dokumentumösszegzés Discord-próbáján ellenőrizd, hogy az összegzés gom
 Nyiss meg két külön mesét, csak az első Beállítások menüjében adj meg webhookot. Ellenőrizd, hogy a második mese küldésgombjai inaktívak, és a gombok alatt egyetlen látható felirat irányít a Beállításokhoz. Újranyitáskor az első beállítása megmarad, leválasztáskor a küldésgombjai inaktívvá válnak. [TST-007](#tst-007)
 
 Az OpenAI-beállítás próbáján ments és törölj szintetikus kulcsot, majd nyisd meg újra a mesét. Másik mese kulcsa és az ugyanahhoz a meséhez mentett Discord-cél külön ellenőrizendő. Mentéskor nincs API-hívás. [TST-006](#tst-006)
+
+A Beállítások próbáján mindkét integrációt mentsd egymás után ugyanazon a képernyőn. Mindkét mentés adjon visszajelzést és maradjon az oldalon. Újranyitáskor ellenőrizd a mentett állapotjelzéseket. Az OpenAI mező üres marad, a mentett kulcs jelenlétét külön felirat jelzi.
