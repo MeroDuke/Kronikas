@@ -64,3 +64,5 @@ A megnyitott mese Beállítások menüjében adható meg, módosítható és tö
 Az alkalmazásban a letiltott művelet okát látható súgószöveg magyarázza. Közös ok esetén a műveletcsoporthoz egyetlen felirat tartozik.
 
 A mese Beállítások menüjében külön OpenAI API-kulcs adható meg, cserélhető és törölhető. A kulcs mesénként, a platform védett tárolásával marad az eszközön. Mentéskor nincs hálózati ellenőrzés vagy generálás. [IMP-007](IMPLEMENTATION_PLAN.md#imp-007)
+
+A két integráció külön menthető. A **Discord mentése** és az **API-kulcs mentése** a Beállítások oldalon ad visszajelzést a mentett érték sikeres visszaolvasása után. Újranyitáskor az oldal jelzi mindkét integráció mentett állapotát. Az OpenAI kulcsmezője ilyenkor üres, és új kulcs megadására használható.
