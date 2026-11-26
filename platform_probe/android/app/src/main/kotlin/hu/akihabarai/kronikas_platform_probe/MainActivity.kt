@@ -63,7 +63,7 @@ class MainActivity : FlutterActivity() {
                     }
                     output.toByteArray()
                 }
-                runOnUiThread { result.success(mapOf("name" to name, "bytes" to bytes)) }
+                runOnUiThread { result.success(mapOf("name" to name, "bytes" to bytes, "uri" to uri.toString())) }
             } catch (_: Exception) {
                 runOnUiThread { result.error("document_read_failed", null, null) }
             }

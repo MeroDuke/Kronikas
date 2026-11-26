@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'story_document_preview.dart';
+import 'story_discord_settings.dart';
+import 'story_settings.dart';
 
 // Use the Material widgets from the pinned Flutter SDK.
 // ignore: deprecated_member_use
@@ -291,6 +293,19 @@ class _LocalAdventuresState extends State<LocalAdventures> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.standalone ? 'Mesék' : 'Helyi kalandok'),
+        actions: [
+          if (adventure != null)
+            TextButton(
+              onPressed: () => Navigator.of(context).push<void>(
+                MaterialPageRoute(
+                  builder: (_) => StorySettings(
+                    settings: StoryDiscordSettings('adventure:${adventure.id}'),
+                  ),
+                ),
+              ),
+              child: const Text('Beállítások'),
+            ),
+        ],
       ),
       body: Center(
         child: ConstrainedBox(
