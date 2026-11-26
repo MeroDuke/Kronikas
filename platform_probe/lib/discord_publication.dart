@@ -22,7 +22,7 @@ Uri parseDiscordWebhook(String value) {
   return uri;
 }
 
-Future<DiscordDelivery> sendDiscordIntroduction(
+Future<DiscordDelivery> sendDiscordMessage(
   DiscordDestination destination,
   String message, {
   HttpClient Function()? createClient,

@@ -49,3 +49,5 @@ A mesélő írhat saját értékelést, vagy kérhet LLM-től narratív piszkoza
 ### Kampányértékelő megosztása Discordon
 
 A kampányértékelő elkészülte után az IMP-008 meglévő Discord webhook beállítását és küldési folyamatát használja. A mesélő a célcsatornát és a játékosoknak szánt értékelés pontos szövegét ellenőrzi, majd külön jóváhagyja a küldést. A belső mesélői jegyzetek kimaradnak. [UC-007](TRACEABILITY.md#uc-007) · [TST-007](TEST_EXECUTION.md#tst-007)
+
+A dokumentum Összegzés szakasza az IMP-008 második megosztási forrása. Az előnézetben külön műveletet kap, és a bevezetővel közös webhook-beállítást használ. [Mesesablon](STORY_IMPORT.md) · [TST-007](TEST_EXECUTION.md#tst-007)
