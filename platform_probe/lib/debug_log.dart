@@ -100,15 +100,65 @@ final class DebugLog {
   final File _enabledMarker;
   late bool enabled;
   bool writeFailed = false;
+  File? _activeFile;
+  static final _logName = RegExp(
+    r'^debug-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(?:-\d+)?\.log$',
+  );
 
   File _file(String name) => File.fromUri(directory.uri.resolve(name));
+
+  static String timestamp(DateTime time) => time
+      .toUtc()
+      .toIso8601String()
+      .substring(0, 19)
+      .replaceFirst('T', '_')
+      .replaceAll(':', '-');
+
+  String _name(File file) => file.uri.pathSegments.last;
+
+  List<File> _logFiles() {
+    if (!directory.existsSync()) return [];
+    final files = [
+      for (final name in ['debug.previous.log', 'debug.log'])
+        if (_file(name).existsSync()) _file(name),
+    ];
+    final dated =
+        directory
+            .listSync(followLinks: false)
+            .whereType<File>()
+            .where((file) => _logName.hasMatch(_name(file)))
+            .toList()
+          ..sort(
+            (a, b) =>
+                _name(a).split('.').first.compareTo(_name(b).split('.').first),
+          );
+    return [...files, ...dated];
+  }
+
+  File _newLogFile(DateTime now) {
+    directory.createSync(recursive: true);
+    final stem = 'debug-${timestamp(now)}';
+    var file = _file('$stem.log');
+    var suffix = 0;
+    while (file.existsSync()) {
+      suffix++;
+      file = _file('$stem-${suffix.toString().padLeft(4, '0')}.log');
+    }
+    file.createSync(exclusive: true);
+    final oldFiles = _logFiles().where((old) => old.path != file.path).toList();
+    for (final old in oldFiles.take(
+      oldFiles.length > 1 ? oldFiles.length - 1 : 0,
+    )) {
+      old.deleteSync();
+    }
+    return file;
+  }
 
   void setEnabled(bool value) {
     if (value == enabled) return;
     final marker = _enabledMarker;
     if (value) {
-      directory.createSync(recursive: true);
-      _file('debug.log').openSync(mode: FileMode.append).closeSync();
+      _activeFile ??= _newLogFile(DateTime.now());
       marker.parent.createSync(recursive: true);
       marker.createSync();
     } else {
@@ -122,12 +172,12 @@ final class DebugLog {
   void record(DebugEvent event) {
     if (!enabled) return;
     try {
-      directory.createSync(recursive: true);
-      final file = _file('debug.log');
+      final now = DateTime.now().toUtc();
+      var file = _activeFile ??= _newLogFile(now);
       final line =
-          '${DateTime.now().toUtc().toIso8601String()} [${event.component}] ${event.name}\n';
+          '${now.toIso8601String()} [${event.component}] ${event.name}\n';
       if (file.existsSync() && file.lengthSync() + line.length > maxBytes) {
-        file.renameSync(_file('debug.previous.log').path);
+        file = _activeFile = _newLogFile(now);
       }
       file.writeAsStringSync(line, mode: FileMode.append);
       writeFailed = false;
@@ -136,11 +186,7 @@ final class DebugLog {
     }
   }
 
-  String read() => ['debug.previous.log', 'debug.log']
-      .map(_file)
-      .where((file) => file.existsSync())
-      .map((file) => file.readAsStringSync())
-      .join();
+  String read() => _logFiles().map((file) => file.readAsStringSync()).join();
 }
 
 void debugEvent(DebugEvent event) => DebugLog.current?.record(event);

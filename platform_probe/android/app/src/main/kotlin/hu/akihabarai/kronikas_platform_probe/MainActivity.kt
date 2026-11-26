@@ -4,6 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.provider.OpenableColumns
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -21,7 +25,10 @@ class MainActivity : FlutterActivity() {
         val picker = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "text/plain"
-            putExtra(Intent.EXTRA_TITLE, "kronikas-debug.txt")
+            val format = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ROOT).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+            putExtra(Intent.EXTRA_TITLE, "kronikas-debug-${format.format(Date())}.txt")
         }
         debugLogExport = result to bytes
         try {

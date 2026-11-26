@@ -50,6 +50,14 @@ void main() {
       (f) => f.path.endsWith('.log'),
     );
     expect(files, hasLength(2));
+    expect(
+      files.every(
+        (file) =>
+            RegExp(r'^debug-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(?:-\d+)?\.log$')
+                .hasMatch(file.uri.pathSegments.last),
+      ),
+      isTrue,
+    );
     expect(files.every((f) => f.lengthSync() <= 128), isTrue);
     expect(log.read(), contains('[document] story_opened'));
   });

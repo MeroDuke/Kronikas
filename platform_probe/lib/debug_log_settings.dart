@@ -84,7 +84,7 @@ class _DebugLogSettingsState extends State<DebugLogSettings> {
         if (Platform.isWindows) ...[
           const Text('Mentési mappa'),
           SelectableText(log.directory.path),
-          const Text('Fájlok: debug.log és debug.previous.log'),
+          const Text('Példa: debug-2026-11-26_14-32-08.log (UTC)'),
           OutlinedButton(
             onPressed: () => _openFolder(log),
             child: const Text('Naplómappa megnyitása'),
