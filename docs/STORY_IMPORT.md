@@ -62,3 +62,5 @@ Az előnézet külön **Bevezető megosztása Discordon** és **Összegzés mego
 A megnyitott mese Beállítások menüjében adható meg, módosítható és törölhető a Discord webhook. A küldési előnézet csak a kiválasztott szöveget és a mentett célt mutatja. Beállítatlan mesén az elérhető bevezető és összegzés küldési gombja inaktív, az okot a gombok alatti egyetlen, látható súgószöveg jelzi. A webhookok elkülönítve és titkosítva maradnak az eszközön. A régi globális webhookot a felhasználó rendelheti hozzá a kívánt meséhez az újbóli megadásával. A dokumentum azonosítója jelenleg a Windows fájlútvonal vagy Android dokumentum-URI, a helyi kalandé a saját azonosítója. Az áthelyezett dokumentumhoz új beállítás szükséges.
 
 Az alkalmazásban a letiltott művelet okát látható súgószöveg magyarázza. Közös ok esetén a műveletcsoporthoz egyetlen felirat tartozik.
+
+A mese Beállítások menüjében külön OpenAI API-kulcs adható meg, cserélhető és törölhető. A kulcs mesénként, a platform védett tárolásával marad az eszközön. Mentéskor nincs hálózati ellenőrzés vagy generálás. [IMP-007](IMPLEMENTATION_PLAN.md#imp-007)
