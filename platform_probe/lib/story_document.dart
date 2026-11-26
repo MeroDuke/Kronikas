@@ -35,7 +35,10 @@ String? storySectionMessage(StoryDocument document, StorySectionKind kind) {
       .expand((section) => section.paragraphs)
       .join('\n\n')
       .trim();
-  return body.isEmpty ? null : '${document.title}\n\n$body';
+  if (body.isEmpty) return null;
+  return kind == StorySectionKind.introduction
+      ? '${document.title}\n\n$body'
+      : body;
 }
 
 typedef _Paragraph = ({String text, bool title, bool heading});

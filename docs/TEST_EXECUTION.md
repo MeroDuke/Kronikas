@@ -115,4 +115,4 @@ A kampányértékelő [TST-006](#tst-006) próbáján két lezárt alkalommal é
 
 A kampányértékelő integrációjakor a [TST-007](#tst-007) ellenőrzi, hogy ugyanaz a beállított Discord-cél használható, az előnézet megnyitása nem küld üzenetet, és a jóváhagyott szöveg belső jegyzetek nélkül kerül ki. [Kampányértékelő](IMPLEMENTATION_PLAN.md#kampányértékelő-megosztása-discordon)
 
-A dokumentumösszegzés Discord-próbáján ellenőrizd, hogy az összegzés gomb üres szakasznál hiányzik, a küldési előnézetben a cím és a záró szakasz szerepel, valamint a bevezető és a mesélői jegyzet külön marad. [TST-007](#tst-007)
+A dokumentumösszegzés Discord-próbáján ellenőrizd, hogy az összegzés gomb üres szakasznál hiányzik, a küldési előnézetben csak a záró szakasz szerepel, valamint a bevezető és a mesélői jegyzet külön marad. [TST-007](#tst-007)

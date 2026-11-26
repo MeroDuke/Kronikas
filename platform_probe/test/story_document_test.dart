@@ -24,7 +24,7 @@ void main() {
     expect(story.sections[6].title, 'A régi vízimalom');
     expect(
       storySectionMessage(story, StorySectionKind.summary),
-      'Az eltűnt korona\n\nA nyomok a vízimalomhoz vezettek. A csapat visszavitte a koronát.',
+      'A nyomok a vízimalomhoz vezettek. A csapat visszavitte a koronát.',
     );
     expect(
       storySectionMessage(story, StorySectionKind.introduction),

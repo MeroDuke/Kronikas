@@ -55,4 +55,4 @@ Az első nem üres sorban álló Krónikás-mese jelölést mindhárom formátum
 
 A fájlmegnyitási hibát külön, kontrasztos doboz és félkövér cím jelzi a fájlválasztás alatt.
 
-Az előnézet külön **Bevezető megosztása Discordon** és **Összegzés megosztása Discordon** műveletet kínál, ha az adott szakasznak van szövege. Mindkettő a mentett webhookot használja. Az előnézet a mese címét és a választott szakaszt tartalmazza. A Küldés Discordra művelet indítja a küldést. [TST-007](TEST_EXECUTION.md#tst-007)
+Az előnézet külön **Bevezető megosztása Discordon** és **Összegzés megosztása Discordon** műveletet kínál, ha az adott szakasznak van szövege. Mindkettő a mentett webhookot használja. A bevezető előnézete és üzenete a mese címét és a bevezetőt tartalmazza. Az összegzés előnézete és üzenete az összegzés szövegét tartalmazza. A Küldés Discordra művelet indítja a küldést. [TST-007](TEST_EXECUTION.md#tst-007)
