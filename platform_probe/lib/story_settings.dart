@@ -17,6 +17,10 @@ class _StorySettingsState extends State<StorySettings> {
   final _form = GlobalKey<FormState>();
   final _label = TextEditingController();
   final _webhook = TextEditingController();
+  final _openAiKey = TextEditingController();
+  bool _openAiBusy = true;
+  bool _openAiConfigured = false;
+  String? _openAiStatus;
   bool _busy = true;
   bool _configured = false;
   String? _error;
@@ -25,12 +29,14 @@ class _StorySettingsState extends State<StorySettings> {
   void initState() {
     super.initState();
     _load();
+    _loadOpenAi();
   }
 
   @override
   void dispose() {
     _label.dispose();
     _webhook.dispose();
+    _openAiKey.dispose();
     super.dispose();
   }
 
@@ -45,6 +51,38 @@ class _StorySettingsState extends State<StorySettings> {
       _error = 'A mentett Discord-beállítás nem olvasható.';
     } finally {
       if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _loadOpenAi() async {
+    try {
+      final key = await widget.settings.loadOpenAiKey();
+      if (mounted) _openAiConfigured = key != null;
+    } catch (_) {
+      if (mounted)
+        _openAiStatus = 'A mentett API-kulcs nem olvasható. Add meg újra.';
+    } finally {
+      if (mounted) setState(() => _openAiBusy = false);
+    }
+  }
+
+  Future<void> _saveOpenAi({bool remove = false}) async {
+    setState(() {
+      _openAiBusy = true;
+      _openAiStatus = null;
+    });
+    try {
+      await widget.settings.saveOpenAiKey(remove ? null : _openAiKey.text);
+      if (!mounted) return;
+      _openAiKey.clear();
+      _openAiConfigured = !remove;
+      _openAiStatus = remove ? 'Az API-kulcs törölve.' : 'Az API-kulcs mentve.';
+    } on FormatException {
+      _openAiStatus = 'Adj meg egy API-kulcsot szóközök nélkül.';
+    } catch (_) {
+      _openAiStatus = 'Az API-kulcs mentése sikertelen.';
+    } finally {
+      if (mounted) setState(() => _openAiBusy = false);
     }
   }
 
@@ -120,6 +158,37 @@ class _StorySettingsState extends State<StorySettings> {
                   onPressed: _busy ? null : () => _save(remove: true),
                   child: const Text('Discord leválasztása'),
                 ),
+              const SizedBox(height: 24),
+              Text('OpenAI', style: Theme.of(context).textTheme.titleLarge),
+              TextField(
+                controller: _openAiKey,
+                enabled: !_openAiBusy,
+                obscureText: true,
+                autocorrect: false,
+                enableSuggestions: false,
+                decoration: InputDecoration(
+                  labelText: _openAiConfigured
+                      ? 'Új OpenAI API-kulcs'
+                      : 'OpenAI API-kulcs',
+                  helperText: _openAiConfigured
+                      ? 'Van mentett API-kulcs.'
+                      : null,
+                ),
+              ),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: _openAiBusy ? null : () => _saveOpenAi(),
+                child: const Text('API-kulcs mentése'),
+              ),
+              if (_openAiConfigured)
+                TextButton(
+                  onPressed: _openAiBusy
+                      ? null
+                      : () => _saveOpenAi(remove: true),
+                  child: const Text('API-kulcs törlése'),
+                ),
+              if (_openAiStatus case final status?)
+                Semantics(liveRegion: true, child: Text(status)),
               if (_busy) const LinearProgressIndicator(),
               if (_error case final error?)
                 Semantics(liveRegion: true, child: Text(error)),

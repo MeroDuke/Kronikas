@@ -48,5 +48,14 @@ void main() {
       'protect',
       'unprotect',
     ]);
+    expect(await first().loadOpenAiKey(), isNull);
+    await first().saveOpenAiKey(' synthetic-key ');
+    expect(await first().loadOpenAiKey(), 'synthetic-key');
+    expect(await second.loadOpenAiKey(), isNull);
+    expect(await second.load(), destination);
+    await first().saveOpenAiKey('replacement-key');
+    expect(await first().loadOpenAiKey(), 'replacement-key');
+    await first().saveOpenAiKey(null);
+    expect(await first().loadOpenAiKey(), isNull);
   });
 }
