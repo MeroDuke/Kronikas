@@ -6,6 +6,8 @@ A GitHub-tárolási adapter és belépési demó kikerült az aktív kódból. A
 
 ## Aktuális állapot
 
+A Discord cél mesénként, a [Beállításokban](STORY_IMPORT.md#mesénkénti-beállítások) kezelhető. A közös webhookot mesénként kell hozzárendelni.
+
 A dokumentum Összegzés szakasza külön elküldhető Discordra a bevezetővel közös webhook-beállítással. A teszt ellenőrzi a két üzenet pontos tartalmát és az üres összegzés kezelését. A tulajdonos képernyőképe igazolja az összegzés célcsatornára érkezését a korábbi, címet is tartalmazó változattal. A cím nélküli változat pontos szövegét automatizált teszt ellenőrzi. [Mesesablon](STORY_IMPORT.md) · [TST-007](TEST_EXECUTION.md#tst-007)
 
 A mesesablon három formátumában az **Összegzés** a dokumentum végén szerepel. Az előnézet külön felismeri. Az LLM a tervek szerint a mesedokumentum jóváhagyott részleteit is felhasználja. [Mesesablon](STORY_IMPORT.md)
