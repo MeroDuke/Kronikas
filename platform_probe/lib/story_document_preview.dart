@@ -209,22 +209,19 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
                   (StorySectionKind.summary, 'Összegzés megosztása Discordon'),
                 ])
                   if (storySectionMessage(document, kind) case final message?)
-                    Tooltip(
-                      message: destination == null && !_busy ? discordHelp : '',
-                      child: OutlinedButton(
-                        onPressed: _busy || destination == null
-                            ? null
-                            : () => Navigator.of(context).push<void>(
-                                MaterialPageRoute(
-                                  builder: (_) => DiscordShare(
-                                    title: title,
-                                    message: message,
-                                    destination: destination,
-                                  ),
+                    OutlinedButton(
+                      onPressed: _busy || destination == null
+                          ? null
+                          : () => Navigator.of(context).push<void>(
+                              MaterialPageRoute(
+                                builder: (_) => DiscordShare(
+                                  title: title,
+                                  message: message,
+                                  destination: destination,
                                 ),
                               ),
-                        child: Text(title),
-                      ),
+                            ),
+                      child: Text(title),
                     ),
                 if (destination == null &&
                     !_busy &&
