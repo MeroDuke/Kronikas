@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'campaign_recap.dart';
 import 'story_document_preview.dart';
 
 // Use the Material widgets from the pinned Flutter SDK.
@@ -142,8 +143,11 @@ class _LocalAdventuresState extends State<LocalAdventures> {
   ) async {
     var status = MilestoneStatus.completed;
     var description = '';
+    var publishable = false;
     final result =
-        await showDialog<({MilestoneStatus status, String description})>(
+        await showDialog<
+          ({MilestoneStatus status, String description, bool publishable})
+        >(
           context: context,
           builder: (context) => StatefulBuilder(
             builder: (context, update) => AlertDialog(
@@ -172,6 +176,12 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                       ),
                       maxLines: 3,
                     ),
+                    CheckboxListTile(
+                      title: const Text('Publikálható'),
+                      value: publishable,
+                      onChanged: (value) =>
+                          update(() => publishable = value ?? false),
+                    ),
                   ],
                 ),
               ),
@@ -183,8 +193,11 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                 FilledButton(
                   onPressed: description.isEmpty
                       ? null
-                      : () => Navigator.of(context)
-                            .pop((status: status, description: description)),
+                      : () => Navigator.of(context).pop((
+                          status: status,
+                          description: description,
+                          publishable: publishable,
+                        )),
                   child: const Text('Kimenetel mentése'),
                 ),
               ],
@@ -200,6 +213,9 @@ class _LocalAdventuresState extends State<LocalAdventures> {
         milestoneId: milestone.id,
         status: result.status,
         outcome: result.description,
+        visibility: result.publishable
+            ? EventVisibility.publishable
+            : EventVisibility.gmOnly,
       ),
     );
   }
@@ -426,6 +442,17 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                       ),
                     ],
                   ),
+                OutlinedButton(
+                  onPressed: () => Navigator.of(context).push<void>(
+                    MaterialPageRoute(
+                      builder: (_) => CampaignRecap(
+                        store: widget.store,
+                        adventureId: adventure.id,
+                      ),
+                    ),
+                  ),
+                  child: const Text('Kampányértékelő'),
+                ),
                 for (final session in adventure.sessions.values)
                   ExpansionTile(
                     key: ValueKey((session.id, session.isOpen)),

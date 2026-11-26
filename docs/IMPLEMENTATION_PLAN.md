@@ -47,3 +47,5 @@ A mesélő írhat saját értékelést, vagy kérhet LLM-től narratív piszkoza
 ### Kampányértékelő megosztása Discordon
 
 A kampányértékelő elkészülte után az IMP-008 meglévő Discord webhook beállítását és küldési folyamatát használja. A mesélő a célcsatornát és a játékosoknak szánt értékelés pontos szövegét ellenőrzi, majd külön jóváhagyja a küldést. A belső mesélői jegyzetek kimaradnak. [UC-007](TRACEABILITY.md#uc-007) · [TST-007](TEST_EXECUTION.md#tst-007)
+
+Az IMP-007 helyi felülete a megnyitott mese Kampányértékelő gombjáról érhető el. Kampányhoz kötött mesénél a kampány lezárt alkalmait, önálló mesénél annak lezárt alkalmait használja. A helyi piszkozat és annak jóváhagyása eszközön marad. Módosított szöveg mentése visszavonja a korábbi jóváhagyást.

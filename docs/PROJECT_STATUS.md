@@ -6,6 +6,8 @@ A GitHub-tárolási adapter és belépési demó kikerült az aktív kódból. A
 
 ## Aktuális állapot
 
+Elkészült az IMP-007 helyi kampányértékelője. A Mesék felületen a lezárt alkalmak publikálható eseményeiből készülő szöveg szerkeszthető, menthető és jóváhagyható. Az LLM-generálás és a Discord-küldés innen továbbra is tervezett. [UC-006](TRACEABILITY.md#uc-006) · [TST-006](TEST_EXECUTION.md#tst-006)
+
 Az importált mese bevezetőjének [Discord-megosztása](IMPLEMENTATION_PLAN.md#bevezető-megosztása-discordon) elkészült a fejlesztői ágon. A cím és a bevezető kerül az előnézetbe, a webhook helyben védett. Helyettesítő HTTP-klienssel ellenőriztük a sikeres, elutasított, korlátozott és bizonytalan küldést. 2026-11-25-én a tulajdonos Windowsról elküldte a szintetikus sablon címét és bevezetőjét. A mellékelt képernyőkép igazolja, hogy a Krónikás üzenete megjelent a privát tesztcsatornán. Az élő Android-küldés külön ellenőrzendő.
 
 A [mesefájl-felismerést](STORY_IMPORT.md#mesefájl-felismerése) a TST-013 ellenőrzi. A 13 helyi Flutter-teszt átment, köztük a három formátum közönséges dokumentumainak elutasítása és a régi Word-minta megnyitása.
