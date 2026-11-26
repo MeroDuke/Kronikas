@@ -92,6 +92,7 @@ final class DebugLog {
     : _enabledMarker =
           enabledMarker ?? File.fromUri(directory.uri.resolve('enabled')) {
     enabled = _enabledMarker.existsSync();
+    pruneExpired();
   }
 
   static DebugLog? current;
@@ -101,6 +102,9 @@ final class DebugLog {
   late bool enabled;
   bool writeFailed = false;
   File? _activeFile;
+  DateTime? _lastPrune;
+  static const retention = Duration(days: 14);
+  static const _legacyNames = ['debug.previous.log', 'debug.log'];
   static final _logName = RegExp(
     r'^debug-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(?:-\d+)?\.log$',
   );
@@ -119,7 +123,7 @@ final class DebugLog {
   List<File> _logFiles() {
     if (!directory.existsSync()) return [];
     final files = [
-      for (final name in ['debug.previous.log', 'debug.log'])
+      for (final name in _legacyNames)
         if (_file(name).existsSync()) _file(name),
     ];
     final dated =
@@ -145,13 +149,50 @@ final class DebugLog {
       file = _file('$stem-${suffix.toString().padLeft(4, '0')}.log');
     }
     file.createSync(exclusive: true);
-    final oldFiles = _logFiles().where((old) => old.path != file.path).toList();
-    for (final old in oldFiles.take(
-      oldFiles.length > 1 ? oldFiles.length - 1 : 0,
-    )) {
-      old.deleteSync();
-    }
     return file;
+  }
+
+  DateTime _fileDate(File file) {
+    final name = _name(file);
+    if (!_logName.hasMatch(name)) return file.lastModifiedSync().toUtc();
+    final date = name.substring(6, 16);
+    final time = name.substring(17, 25).replaceAll('-', ':');
+    return DateTime.tryParse('${date}T${time}Z') ??
+        file.lastModifiedSync().toUtc();
+  }
+
+  void pruneExpired({DateTime? now}) {
+    final time = (now ?? DateTime.now()).toUtc();
+    _lastPrune = time;
+    final cutoff = time.subtract(retention);
+    try {
+      final files = _logFiles();
+      final legacyFolder = _enabledMarker.parent;
+      if (legacyFolder.absolute.uri != directory.absolute.uri) {
+        files.addAll(
+          [
+            for (final name in _legacyNames)
+              File.fromUri(legacyFolder.uri.resolve(name)),
+          ].where((file) => file.existsSync()),
+        );
+      }
+      for (final file in files) {
+        try {
+          if (_fileDate(file).isAfter(cutoff)) continue;
+          file.deleteSync();
+          if (_activeFile?.uri == file.uri) _activeFile = null;
+        } on FileSystemException {
+          // A locked or already removed file can wait for the next sweep.
+        }
+      }
+    } on FileSystemException {
+      // Diagnostics housekeeping must not prevent startup or other actions.
+    }
+  }
+
+  List<File> filesForExport() {
+    pruneExpired();
+    return _logFiles().reversed.toList();
   }
 
   void setEnabled(bool value) {
@@ -173,6 +214,10 @@ final class DebugLog {
     if (!enabled) return;
     try {
       final now = DateTime.now().toUtc();
+      if (_lastPrune == null ||
+          now.difference(_lastPrune!) >= const Duration(hours: 1)) {
+        pruneExpired(now: now);
+      }
       var file = _activeFile ??= _newLogFile(now);
       final line =
           '${now.toIso8601String()} [${event.component}] ${event.name}\n';
@@ -186,7 +231,8 @@ final class DebugLog {
     }
   }
 
-  String read() => _logFiles().map((file) => file.readAsStringSync()).join();
+  String read() =>
+      filesForExport().reversed.map((file) => file.readAsStringSync()).join();
 }
 
 void debugEvent(DebugEvent event) => DebugLog.current?.record(event);

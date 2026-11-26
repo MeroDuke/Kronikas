@@ -4,10 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.provider.OpenableColumns
 import java.io.ByteArrayOutputStream
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -17,7 +13,7 @@ class MainActivity : FlutterActivity() {
     private var debugLogExport: Pair<MethodChannel.Result, ByteArray>? = null
 
     @Suppress("DEPRECATION")
-    private fun saveDebugLog(bytes: ByteArray, result: MethodChannel.Result) {
+    private fun saveDebugLog(name: String, bytes: ByteArray, result: MethodChannel.Result) {
         if (debugLogExport != null || bytes.isEmpty() || bytes.size > 256 * 1024) {
             result.error("debug_log_export_unavailable", null, null)
             return
@@ -25,10 +21,7 @@ class MainActivity : FlutterActivity() {
         val picker = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "text/plain"
-            val format = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ROOT).apply {
-                timeZone = TimeZone.getTimeZone("UTC")
-            }
-            putExtra(Intent.EXTRA_TITLE, "kronikas-debug-${format.format(Date())}.txt")
+            putExtra(Intent.EXTRA_TITLE, name)
         }
         debugLogExport = result to bytes
         try {
@@ -133,7 +126,7 @@ class MainActivity : FlutterActivity() {
             try {
                 when (call.method) {
                     "pickStoryDocument" -> pickStoryDocument(result)
-                    "saveDebugLog" -> saveDebugLog(requireNotNull(call.arguments as? ByteArray), result)
+                    "saveDebugLog" -> saveDebugLog(requireNotNull(call.argument<String>("name")), requireNotNull(call.argument<ByteArray>("bytes")), result)
                     "storagePath" -> result.success(noBackupFilesDir.absolutePath)
                     "protect" -> result.success(ProbeStorage.protect(requireNotNull(call.arguments as? ByteArray)))
                     "unprotect" -> result.success(ProbeStorage.unprotect(requireNotNull(call.arguments as? ByteArray)))

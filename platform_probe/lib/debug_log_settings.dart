@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 // ignore: deprecated_member_use
@@ -31,6 +30,7 @@ class _DebugLogSettingsState extends State<DebugLogSettings> {
 
   Future<void> _openFolder(DebugLog log) async {
     try {
+      log.pruneExpired();
       await log.directory.create(recursive: true);
       await Process.start('explorer.exe', [log.directory.path]);
     } catch (_) {
@@ -45,15 +45,29 @@ class _DebugLogSettingsState extends State<DebugLogSettings> {
       _status = null;
     });
     try {
-      final content = log.read();
-      if (content.isEmpty) {
+      final files = log.filesForExport();
+      if (files.isEmpty) {
         if (mounted) setState(() => _status = 'Még nincs naplóbejegyzés.');
         return;
       }
-      final filename = await _storage.invokeMethod<String>(
-        'saveDebugLog',
-        Uint8List.fromList(utf8.encode(content)),
+      final selected = await showDialog<File>(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: const Text('Melyik naplót mented?'),
+          children: [
+            for (final file in files)
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context, file),
+                child: Text(file.uri.pathSegments.last),
+              ),
+          ],
+        ),
       );
+      if (!mounted || selected == null) return;
+      final filename = await _storage.invokeMethod<String>('saveDebugLog', {
+        'name': selected.uri.pathSegments.last,
+        'bytes': await selected.readAsBytes(),
+      });
       if (filename != null) {
         debugEvent(DebugEvent.log_exported);
         if (mounted)

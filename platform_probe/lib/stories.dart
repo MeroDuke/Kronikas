@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 // ignore: deprecated_member_use
@@ -30,6 +31,10 @@ Future<void> main() async {
         enabledMarker: File.fromUri(diagnostics.resolve('enabled')),
       );
       debugEvent(DebugEvent.app_started);
+      Timer.periodic(
+        const Duration(hours: 1),
+        (_) => DebugLog.current?.pruneExpired(),
+      );
     } on FileSystemException {
       // A diagnostics path failure must not block startup.
     }

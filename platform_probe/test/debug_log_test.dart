@@ -39,7 +39,25 @@ void main() {
     expect(marker.existsSync(), isFalse);
   });
 
-  test('rotates the current file and keeps one previous file', () {
+  test('prunes only expired application logs even when disabled', () {
+    final root = Directory.systemTemp.createTempSync('kronikas-log-retention-');
+    addTearDown(() => root.deleteSync(recursive: true));
+    File write(String name) =>
+        File.fromUri(root.uri.resolve(name))..writeAsStringSync('test');
+    final now = DateTime.now().toUtc();
+    final stamp = DebugLog.timestamp(now.subtract(const Duration(days: 15)));
+    final expired = write('debug-$stamp.log');
+    final unrelated = write('notes.log')
+      ..setLastModifiedSync(now.subtract(const Duration(days: 20)));
+    final recent = write('debug-${DebugLog.timestamp(now)}.log');
+    final log = DebugLog(root);
+    expect(log.enabled, isFalse);
+    expect(expired.existsSync(), isFalse);
+    expect(recent.existsSync(), isTrue);
+    expect(unrelated.existsSync(), isTrue);
+  });
+
+  test('rotates without discarding recent files', () {
     final root = Directory.systemTemp.createTempSync('kronikas-log-');
     addTearDown(() => root.deleteSync(recursive: true));
     final log = DebugLog(root, maxBytes: 128)..setEnabled(true);
@@ -49,7 +67,7 @@ void main() {
     final files = root.listSync().whereType<File>().where(
       (f) => f.path.endsWith('.log'),
     );
-    expect(files, hasLength(2));
+    expect(files.length, greaterThan(2));
     expect(
       files.every(
         (file) =>
