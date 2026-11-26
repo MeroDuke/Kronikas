@@ -6,7 +6,7 @@ A GitHub-tárolási adapter és belépési demó kikerült az aktív kódból. A
 
 ## Aktuális állapot
 
-A mese Beállítások menüjében az OpenAI API-kulcs mesénként megadható és törölhető. A helyi védett tárolást automatizált teszt ellenőrzi helyettesített platformcsatornával. A generálás későbbi lépés. [IMP-007](IMPLEMENTATION_PLAN.md#imp-007)
+A mese Beállítások menüjében az OpenAI API-kulcs mesénként megadható és törölhető. A helyi védett tárolást automatizált teszt ellenőrzi helyettesített platformcsatornával. Az AI-alapú dokumentumösszegzés fizetési és adatátadási jóváhagyás után használható. A párbeszédablak elutasítását és az OpenAI válaszfeldolgozását helyi teszt igazolja. Az élő lánc még ellenőrzendő. [IMP-007](IMPLEMENTATION_PLAN.md#imp-007)
 
 A Discord cél mesénként, a [Beállításokban](STORY_IMPORT.md#mesénkénti-beállítások) kezelhető. A közös webhookot mesénként kell hozzárendelni.
 

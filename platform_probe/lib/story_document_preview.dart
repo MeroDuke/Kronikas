@@ -24,6 +24,7 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
   StoryDocument? _document;
   StoryDiscordSettings? _settings;
   DiscordDestination? _destination;
+  bool _hasOpenAiKey = false;
   bool _settingsUnreadable = false;
 
   Future<void> _loadDestination(StoryDiscordSettings settings) async {
@@ -34,9 +35,16 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
     } catch (_) {
       unreadable = true;
     }
+    var hasOpenAiKey = false;
+    try {
+      hasOpenAiKey = await settings.loadOpenAiKey() != null;
+    } catch (_) {
+      // An unreadable key cannot enable AI generation.
+    }
     if (mounted && identical(settings, _settings)) {
       setState(() {
         _destination = destination;
+        _hasOpenAiKey = hasOpenAiKey;
         _settingsUnreadable = unreadable;
       });
     }
@@ -99,6 +107,7 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
         _settings = settings;
         _destination = null;
         _settingsUnreadable = false;
+        _hasOpenAiKey = false;
       });
       await _loadDestination(settings);
     } on NotStoryDocument {
@@ -208,7 +217,8 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
                   ),
                   (StorySectionKind.summary, 'Összegzés megosztása Discordon'),
                 ])
-                  if (storySectionMessage(document, kind) case final message?)
+                  if (storySectionMessage(document, kind) != null ||
+                      kind == StorySectionKind.summary && _hasOpenAiKey)
                     OutlinedButton(
                       onPressed: _busy || destination == null
                           ? null
@@ -216,7 +226,12 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
                               MaterialPageRoute(
                                 builder: (_) => DiscordShare(
                                   title: title,
-                                  message: message,
+                                  message:
+                                      storySectionMessage(document, kind) ?? '',
+                                  storyContext: kind == StorySectionKind.summary
+                                      ? storyContextText(document)
+                                      : null,
+                                  settings: _hasOpenAiKey ? settings : null,
                                   destination: destination,
                                 ),
                               ),
@@ -225,7 +240,8 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
                     ),
                 if (destination == null &&
                     !_busy &&
-                    (storySectionMessage(
+                    (_hasOpenAiKey ||
+                        storySectionMessage(
                               document,
                               StorySectionKind.introduction,
                             ) !=

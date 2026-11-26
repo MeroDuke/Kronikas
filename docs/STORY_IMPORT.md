@@ -66,3 +66,7 @@ Az alkalmazásban a letiltott művelet okát látható súgószöveg magyarázza
 A mese Beállítások menüjében külön OpenAI API-kulcs adható meg, cserélhető és törölhető. A kulcs mesénként, a platform védett tárolásával marad az eszközön. Mentéskor nincs hálózati ellenőrzés vagy generálás. [IMP-007](IMPLEMENTATION_PLAN.md#imp-007)
 
 A két integráció külön menthető. A **Discord mentése** és az **API-kulcs mentése** a Beállítások oldalon ad visszajelzést a mentett érték sikeres visszaolvasása után. Újranyitáskor az oldal jelzi mindkét integráció mentett állapotát. Az OpenAI kulcsmezője ilyenkor üres, és új kulcs megadására használható.
+
+## AI-alapú összegzés publikálása
+
+Az Összegzés megosztása képernyőn az AI-kapcsoló alapból üres. A kapcsoló mentett mesénkénti OpenAI-kulccsal használható. Bekapcsolva a Küldés Discordra minden próbálkozáskor külön jóváhagyást kér az OpenAI oldalán fizetős generáláshoz és a teljes beolvasott szöveg, köztük a mesélői jegyzetek átadásához. A dokumentumszöveg kontextus. A modell az Összegzés szakaszt tekinti elsődlegesnek, hiányában a korábbi részekből dolgozik. A mesélői jegyzet és a tervezett lehetőségek nem jelenhetnek meg tényként az eredményben. Jóváhagyáskor az elkészült szöveg megy Discordra. Sikertelen, hiányos vagy a Discord-határt túllépő generálás megállítja a küldést. [TST-006](TEST_EXECUTION.md#tst-006) · [TST-007](TEST_EXECUTION.md#tst-007)
