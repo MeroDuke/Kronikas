@@ -58,11 +58,11 @@ enum DebugEvent {
   sync_pending,
   route_closed,
   logging_enabled,
-  log_copied;
+  log_exported;
 
   String get component => switch (this) {
     app_started => 'app',
-    logging_enabled || log_copied => 'logger',
+    logging_enabled || log_exported => 'logger',
     story_opened || story_rejected || story_open_failed => 'document',
     adventure_saved ||
     adventure_save_failed ||

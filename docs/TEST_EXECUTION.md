@@ -127,4 +127,4 @@ Az importált mesedokumentum AI-publikálásakor ellenőrizd az alapból üres j
 
 ## TST-014
 
-Kapcsold be a Hibakeresési naplót, nyiss meg érvényes és hibás mesét, módosíts beállítást, majd ellenőrizd a másolt naplót. Az események és eredményeik olvashatók, a szintetikus kulcs, webhook, fájlútvonal és mezőérték hiányzik. Újranyitás után a kapcsoló megmarad. Kikapcsolva végezz további műveleteket és ellenőrizd, hogy a napló nem nő. Ismételd meg Windowson és Androidon. [IMP-011](IMPLEMENTATION_PLAN.md#imp-011)
+Kapcsold be a Hibakeresési naplót, nyiss meg érvényes és hibás mesét, módosíts beállítást, majd ellenőrizd a mentett naplófájlt. Windowson nyisd meg a jelzett mappát, Androidon ments másolatot a Letöltések mappába, majd nyisd meg a Fájlok alkalmazásban. Próbáld ki a fájlmentő megszakítását is. Az események és eredményeik olvashatók, a szintetikus kulcs, webhook, fájlútvonal és mezőérték hiányzik. Újranyitás után a kapcsoló megmarad. Kikapcsolva végezz további műveleteket és ellenőrizd, hogy a napló nem nő. Ismételd meg Windowson és Androidon. [IMP-011](IMPLEMENTATION_PLAN.md#imp-011)
