@@ -12,6 +12,7 @@ A mesélő másolható Word-sablont és kitöltött példát kap. A fejezeteket 
 | Mérföldkő – cím | Az aktuális jelenet mérföldköve |
 | Lehetséges kimenetel – szöveg | Az aktuális mérföldkő tervezett kimenetele |
 | Mesélői jegyzet | A mesélőnek szóló szöveg |
+| Összegzés | A dokumentum végén szereplő lezárás vagy annak vázlata |
 
 ## Kitöltött példa
 
@@ -36,6 +37,9 @@ A mesélő másolható Word-sablont és kitöltött példát kap. A fejezeteket 
 >
 > **Jelenet – A régi vízimalom**<br>
 > A korona egy liszteszsák alatt lapul.
+>
+> **Összegzés**<br>
+> A nyomok a vízimalomhoz vezettek. A csapat visszavitte a koronát.
 
 Az előnézet megmutatja a felismert szerkezetet. Ismeretlen vagy nem besorolható szöveg az Egyéb szöveg részben látható. A fájlt a Krónikás-mese jelölés vagy a korábbi sablon felismerhető jelenet–mérföldkő szerkezete azonosítja. A Mese létrehozása művelet menti az új mesét. A tervezett kimenetelek a játék során választható lehetőségek.
 

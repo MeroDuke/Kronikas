@@ -18,9 +18,10 @@ void main() {
       StorySectionKind.outcome,
       StorySectionKind.note,
       StorySectionKind.scene,
+      StorySectionKind.summary,
     ]);
     expect(story.sections[3].paragraphs, ['Eljutnak a régi vízimalomhoz.']);
-    expect(story.sections.last.title, 'A régi vízimalom');
+    expect(story.sections[6].title, 'A régi vízimalom');
   });
 
   for (final extension in ['md', 'txt', 'docx']) {
@@ -28,6 +29,10 @@ void main() {
       final file = File('../templates/story-template.$extension');
       final story = readStoryDocument(file.path, file.readAsBytesSync());
       expect(story.title, '[A mese címe]');
+      expect(story.sections.last.kind, StorySectionKind.summary);
+      expect(story.sections.last.paragraphs, [
+        '[Írd le, hogyan zárul a mese.]',
+      ]);
       expect(
         story.sections.where(
           (section) => section.kind == StorySectionKind.outcome,
