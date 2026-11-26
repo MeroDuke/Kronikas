@@ -8,6 +8,7 @@ const _xmlLimit = 2 * 1024 * 1024;
 
 enum StorySectionKind {
   introduction('Bevezetés', 0),
+  summary('Összegzés', 0),
   scene('Jelenet', 0),
   milestone('Mérföldkő', 1),
   outcome('Lehetséges kimenetel', 2),
@@ -75,6 +76,7 @@ StoryDocument readStoryDocument(String filename, List<int> bytes) {
           case StorySectionKind.milestone:
             hasMilestone = true;
           case StorySectionKind.introduction:
+          case StorySectionKind.summary:
             hasScene = false;
             hasMilestone = false;
           case StorySectionKind.note:
@@ -112,7 +114,8 @@ StoryDocument readStoryDocument(String filename, List<int> bytes) {
     final title = match?.group(2)?.trim() ?? '';
     if (title.isNotEmpty ||
         kind == StorySectionKind.introduction ||
-        kind == StorySectionKind.note) {
+        kind == StorySectionKind.note ||
+        kind == StorySectionKind.summary) {
       return (kind, title);
     }
   }

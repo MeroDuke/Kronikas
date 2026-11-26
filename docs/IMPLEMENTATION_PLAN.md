@@ -40,6 +40,8 @@ Az IMP-008 első lépése az importált mese bevezetőjének elküldése. A mes�
 
 ### Narratív kampányértékelő
 
+A mesesablon utolsó szakasza az **Összegzés**. A beolvasó önálló szakaszként azonosítja, és a teljes dokumentumot az előnézetben mutatja. Az LLM később innen kaphatja meg a mese cselekményét és az összegzés vázlatát. Külső szolgáltatóhoz csak a mesélő által jóváhagyott, megosztható kontextus kerülhet.
+
 Az IMP-007 kampányszintű értékelése a mese publikálásra szánt részleteiből és a lezárt játékalkalmak publikálhatónak jelölt, tényleges eseményeiből készül. A tervezett lehetőségek háttérként szerepelhetnek, a megtörtént eseményektől elkülönítve. A belső mesélői jegyzetek kimaradnak az LLM bemenetéből is.
 
 A mesélő írhat saját értékelést, vagy kérhet LLM-től narratív piszkozatot. A helyi narratív összegzés elkészülte után az **AI-alapú összegzés** jelölőnégyzet API-kulcs beállítása esetén választható. Alapból üres. Üres jelölőnégyzettel a helyi változat használható API-hívás nélkül. Bejelölve a mesélő átnézi az átadandó tartalmat, majd külön indítja a generálást. API-kulcs hiányában a helyi út elérhető. Külső szolgáltató esetén a generálás külön felhasználói művelet, és előtte látható az átadandó tartalom. A piszkozat szerkeszthető és menthető. Discordra csak a jóváhagyott változat küldhető. Szerkesztés után új jóváhagyás kell. Szolgáltató, adatkezelés és költség külön döntés. [UC-006](TRACEABILITY.md#uc-006) · [TST-006](TEST_EXECUTION.md#tst-006)
@@ -47,5 +49,3 @@ A mesélő írhat saját értékelést, vagy kérhet LLM-től narratív piszkoza
 ### Kampányértékelő megosztása Discordon
 
 A kampányértékelő elkészülte után az IMP-008 meglévő Discord webhook beállítását és küldési folyamatát használja. A mesélő a célcsatornát és a játékosoknak szánt értékelés pontos szövegét ellenőrzi, majd külön jóváhagyja a küldést. A belső mesélői jegyzetek kimaradnak. [UC-007](TRACEABILITY.md#uc-007) · [TST-007](TEST_EXECUTION.md#tst-007)
-
-Az IMP-007 helyi felülete a megnyitott mese Kampányértékelő gombjáról érhető el. Kampányhoz kötött mesénél a kampány lezárt alkalmait, önálló mesénél annak lezárt alkalmait használja. A helyi piszkozat és annak jóváhagyása eszközön marad. Módosított szöveg mentése visszavonja a korábbi jóváhagyást.

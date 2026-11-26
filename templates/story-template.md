@@ -23,3 +23,7 @@ Krónikás-mese
 ### Mesélői jegyzet
 
 [Ide jön, amit csak a mesélőnek kell tudnia.]
+
+## Összegzés
+
+[Írd le, hogyan zárul a mese.]
