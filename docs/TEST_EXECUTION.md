@@ -122,3 +122,5 @@ Nyiss meg két külön mesét, csak az első Beállítások menüjében adj meg 
 Az OpenAI-beállítás próbáján ments és törölj szintetikus kulcsot, majd nyisd meg újra a mesét. Másik mese kulcsa és az ugyanahhoz a meséhez mentett Discord-cél külön ellenőrizendő. Mentéskor nincs API-hívás. [TST-006](#tst-006)
 
 A Beállítások próbáján mindkét integrációt mentsd egymás után ugyanazon a képernyőn. Mindkét mentés adjon visszajelzést és maradjon az oldalon. Újranyitáskor ellenőrizd a mentett állapotjelzéseket. Az OpenAI mező üres marad, a mentett kulcs jelenlétét külön felirat jelzi.
+
+Az importált mesedokumentum AI-publikálásakor ellenőrizd az alapból üres jelölőnégyzetet és a fizetési párbeszédablakot. Elutasításkor térj vissza a megosztás képernyőjére. Jóváhagyáskor a dokumentum teljes beolvasott szövege a generálás bemenete. A sikeres válasz szövege kerül Discordra, az OpenAI-hiba megállítja a küldést.

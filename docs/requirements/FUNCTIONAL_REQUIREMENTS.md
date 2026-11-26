@@ -29,6 +29,6 @@
 | <a name="fr-023"></a>FR-023<br>[UC-006](../TRACEABILITY.md#uc-006) · [UC-007](../TRACEABILITY.md#uc-007) | Összefoglaló mentése | UC-006, UC-007 | A mentett összefoglaló szövege újranyitás után visszaolvasható. |
 | <a name="fr-024"></a>FR-024<br>[UC-007](../TRACEABILITY.md#uc-007) | Discord-csatorna konfigurálása | UC-007 | A mesélő beállíthatja a Discord-célt; a célhoz tartozó titok kezelésére az NFR-007 vonatkozik. |
 | <a name="fr-025"></a>FR-025<br>[UC-007](../TRACEABILITY.md#uc-007) | Discord publikáció | UC-007 | Sikeres küldéskor a jóváhagyott szöveg megjelenik a beállított csatornán; sikertelen vagy bizonytalan küldéskor látható az eltérő állapot, és a mentett szöveg megmarad. |
-| <a name="fr-026"></a>FR-026<br>[UC-006](../TRACEABILITY.md#uc-006) | Mesélői és publikálható információk elkülönítése | UC-006 | Egy publikálható esemény bekerülhet az összefoglaló bemenetébe; egy titkos esemény és egy kihagyott jelenet kimarad, az opcionális LLM bemenetéből is. |
+| <a name="fr-026"></a>FR-026<br>[UC-006](../TRACEABILITY.md#uc-006) | Mesélői és publikálható információk elkülönítése | UC-006 | Egy publikálható esemény bekerülhet az összefoglaló bemenetébe; egy titkos esemény és egy kihagyott jelenet kimarad, a játékalkalom eseményeiből képzett LLM-bemenetből is. A dokumentumalapú AI-útvonalon a teljes szöveg küldését külön jóváhagyás engedélyezi. |
 
 A felhasználási esetek leírása az [UC-dokumentumban](USE_CASES.md) található. A kritériumokat a tulajdonos jóváhagyta (TASK-003).

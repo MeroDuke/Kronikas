@@ -29,6 +29,17 @@ final class StorySection {
 }
 
 typedef StoryDocument = ({String title, List<StorySection> sections});
+String storyContextText(StoryDocument document) => [
+  document.title,
+  for (final section in document.sections)
+    [
+      section.title.isEmpty
+          ? section.kind.label
+          : '${section.kind.label} – ${section.title}',
+      ...section.paragraphs,
+    ].join('\n'),
+].join('\n\n');
+
 String? storySectionMessage(StoryDocument document, StorySectionKind kind) {
   final body = document.sections
       .where((section) => section.kind == kind)
