@@ -98,7 +98,11 @@ class _DebugLogSettingsState extends State<DebugLogSettings> {
             child: const Text('Naplófájl mentése'),
           ),
         ],
-        if (_status case final status?)
+        if ((_status ??
+                (log.writeFailed
+                    ? 'A naplófájl nem írható a megadott mappába.'
+                    : null))
+            case final status?)
           Semantics(liveRegion: true, child: Text(status)),
       ],
     );

@@ -22,6 +22,23 @@ void main() {
     expect(enabled.read(), before);
   });
 
+  test('preserves an existing logging preference with a new log directory', () {
+    final root = Directory.systemTemp.createTempSync('kronikas-log-location-');
+    addTearDown(() => root.deleteSync(recursive: true));
+    final preferences = Directory.fromUri(root.uri.resolve('diagnostics/'));
+    final previous = DebugLog(preferences)..setEnabled(true);
+    final original = previous.read();
+    final logs = Directory.fromUri(root.uri.resolve('logs/'));
+    final marker = File.fromUri(preferences.uri.resolve('enabled'));
+    final current = DebugLog(logs, enabledMarker: marker);
+    expect(current.enabled, isTrue);
+    current.record(DebugEvent.app_started);
+    expect(current.read(), contains('app_started'));
+    expect(previous.read(), original);
+    current.setEnabled(false);
+    expect(marker.existsSync(), isFalse);
+  });
+
   test('rotates the current file and keeps one previous file', () {
     final root = Directory.systemTemp.createTempSync('kronikas-log-');
     addTearDown(() => root.deleteSync(recursive: true));

@@ -21,8 +21,13 @@ Future<void> main() async {
     if (path == null) throw StateError('Storage unavailable.');
     final root = Directory(path).absolute.uri.resolve('KronikasStories/');
     try {
+      final diagnostics = root.resolve('diagnostics/');
+      final logs = Platform.isWindows
+          ? File(Platform.resolvedExecutable).parent.uri.resolve('logs/')
+          : diagnostics;
       DebugLog.current = DebugLog(
-        Directory.fromUri(root.resolve('diagnostics/')),
+        Directory.fromUri(logs),
+        enabledMarker: File.fromUri(diagnostics.resolve('enabled')),
       );
       debugEvent(DebugEvent.app_started);
     } on FileSystemException {

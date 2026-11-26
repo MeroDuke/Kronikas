@@ -88,32 +88,41 @@ enum DebugEvent {
 }
 
 final class DebugLog {
-  DebugLog(this.directory, {this.maxBytes = 128 * 1024})
-    : enabled = File.fromUri(directory.uri.resolve('enabled')).existsSync();
+  DebugLog(this.directory, {File? enabledMarker, this.maxBytes = 128 * 1024})
+    : _enabledMarker =
+          enabledMarker ?? File.fromUri(directory.uri.resolve('enabled')) {
+    enabled = _enabledMarker.existsSync();
+  }
 
   static DebugLog? current;
   final Directory directory;
   final int maxBytes;
-  bool enabled;
+  final File _enabledMarker;
+  late bool enabled;
+  bool writeFailed = false;
 
   File _file(String name) => File.fromUri(directory.uri.resolve(name));
 
   void setEnabled(bool value) {
     if (value == enabled) return;
-    final marker = _file('enabled');
+    final marker = _enabledMarker;
     if (value) {
       directory.createSync(recursive: true);
+      _file('debug.log').openSync(mode: FileMode.append).closeSync();
+      marker.parent.createSync(recursive: true);
       marker.createSync();
     } else {
       if (marker.existsSync()) marker.deleteSync();
     }
     enabled = value;
+    writeFailed = false;
     if (value) record(DebugEvent.logging_enabled);
   }
 
   void record(DebugEvent event) {
     if (!enabled) return;
     try {
+      directory.createSync(recursive: true);
       final file = _file('debug.log');
       final line =
           '${DateTime.now().toUtc().toIso8601String()} [${event.component}] ${event.name}\n';
@@ -121,8 +130,9 @@ final class DebugLog {
         file.renameSync(_file('debug.previous.log').path);
       }
       file.writeAsStringSync(line, mode: FileMode.append);
+      writeFailed = false;
     } on FileSystemException {
-      // Diagnostics must not prevent the underlying action.
+      writeFailed = true;
     }
   }
 
