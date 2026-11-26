@@ -10,6 +10,49 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     private var documentResult: MethodChannel.Result? = null
+    private var debugLogExport: Pair<MethodChannel.Result, ByteArray>? = null
+
+    @Suppress("DEPRECATION")
+    private fun saveDebugLog(name: String, bytes: ByteArray, result: MethodChannel.Result) {
+        if (debugLogExport != null || bytes.isEmpty() || bytes.size > 256 * 1024) {
+            result.error("debug_log_export_unavailable", null, null)
+            return
+        }
+        val picker = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TITLE, name)
+        }
+        debugLogExport = result to bytes
+        try {
+            startActivityForResult(picker, 151)
+        } catch (_: Exception) {
+            debugLogExport = null
+            result.error("debug_log_picker_failed", null, null)
+        }
+    }
+
+    private fun completeDebugLogExport(resultCode: Int, data: Intent?) {
+        val (result, bytes) = debugLogExport ?: return
+        debugLogExport = null
+        val uri = data?.data
+        if (resultCode != Activity.RESULT_OK || uri == null) {
+            result.success(null)
+            return
+        }
+        Thread {
+            try {
+                val name = contentResolver.query(
+                    uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null,
+                )?.use { if (it.moveToFirst()) it.getString(0) else null }
+                val stream = requireNotNull(contentResolver.openOutputStream(uri, "wt"))
+                stream.use { it.write(bytes) }
+                runOnUiThread { result.success(name ?: "kronikas-debug.txt") }
+            } catch (_: Exception) {
+                runOnUiThread { result.error("debug_log_write_failed", null, null) }
+            }
+        }.start()
+    }
 
     @Suppress("DEPRECATION")
     private fun pickStoryDocument(result: MethodChannel.Result) {
@@ -37,6 +80,10 @@ class MainActivity : FlutterActivity() {
     @Deprecated("FlutterActivity uses Android activity results")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 151) {
+            completeDebugLogExport(resultCode, data)
+            return
+        }
         if (requestCode != 150) return
         val result = documentResult ?: return
         documentResult = null
@@ -79,6 +126,7 @@ class MainActivity : FlutterActivity() {
             try {
                 when (call.method) {
                     "pickStoryDocument" -> pickStoryDocument(result)
+                    "saveDebugLog" -> saveDebugLog(requireNotNull(call.argument<String>("name")), requireNotNull(call.argument<ByteArray>("bytes")), result)
                     "storagePath" -> result.success(noBackupFilesDir.absolutePath)
                     "protect" -> result.success(ProbeStorage.protect(requireNotNull(call.arguments as? ByteArray)))
                     "unprotect" -> result.success(ProbeStorage.unprotect(requireNotNull(call.arguments as? ByteArray)))

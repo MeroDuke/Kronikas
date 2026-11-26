@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 // ignore: deprecated_member_use
@@ -7,6 +8,7 @@ import 'package:kronikas_core/local_chronicle_store.dart';
 import 'package:kronikas_core/story_storage_sync.dart';
 
 import 'local_adventures.dart';
+import 'debug_log.dart';
 import 'story_storage_preview.dart';
 
 Future<void> main() async {
@@ -19,6 +21,23 @@ Future<void> main() async {
           ).invokeMethod<String>('storagePath');
     if (path == null) throw StateError('Storage unavailable.');
     final root = Directory(path).absolute.uri.resolve('KronikasStories/');
+    try {
+      final diagnostics = root.resolve('diagnostics/');
+      final logs = Platform.isWindows
+          ? File(Platform.resolvedExecutable).parent.uri.resolve('logs/')
+          : diagnostics;
+      DebugLog.current = DebugLog(
+        Directory.fromUri(logs),
+        enabledMarker: File.fromUri(diagnostics.resolve('enabled')),
+      );
+      debugEvent(DebugEvent.app_started);
+      Timer.periodic(
+        const Duration(hours: 1),
+        (_) => DebugLog.current?.pruneExpired(),
+      );
+    } on FileSystemException {
+      // A diagnostics path failure must not block startup.
+    }
     final previewPath = Platform.environment['KRONIKAS_SYNC_PREVIEW_DIRECTORY'];
     final store = LocalChronicleStore(
       Directory.fromUri(
@@ -34,6 +53,7 @@ Future<void> main() async {
     runApp(
       MaterialApp(
         title: 'Krónikás',
+        navigatorObservers: [_DebugNavigation()],
         home: LocalAdventures(
           store: store,
           initial: store.open(),
@@ -50,5 +70,12 @@ Future<void> main() async {
         ),
       ),
     );
+  }
+}
+
+class _DebugNavigation extends NavigatorObserver {
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    debugEvent(DebugEvent.route_closed);
   }
 }
