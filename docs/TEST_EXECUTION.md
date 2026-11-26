@@ -124,3 +124,7 @@ Az OpenAI-beállítás próbáján ments és törölj szintetikus kulcsot, majd 
 A Beállítások próbáján mindkét integrációt mentsd egymás után ugyanazon a képernyőn. Mindkét mentés adjon visszajelzést és maradjon az oldalon. Újranyitáskor ellenőrizd a mentett állapotjelzéseket. Az OpenAI mező üres marad, a mentett kulcs jelenlétét külön felirat jelzi.
 
 Az importált mesedokumentum AI-publikálásakor ellenőrizd az alapból üres jelölőnégyzetet és a fizetési párbeszédablakot. Elutasításkor térj vissza a megosztás képernyőjére. Jóváhagyáskor a dokumentum teljes beolvasott szövege a generálás bemenete. A sikeres válasz szövege kerül Discordra, az OpenAI-hiba megállítja a küldést.
+
+## TST-014
+
+Kapcsold be a Hibakeresési naplót, nyiss meg érvényes és hibás mesét, módosíts beállítást, majd ellenőrizd a másolt naplót. Az események és eredményeik olvashatók, a szintetikus kulcs, webhook, fájlútvonal és mezőérték hiányzik. Újranyitás után a kapcsoló megmarad. Kikapcsolva végezz további műveleteket és ellenőrizd, hogy a napló nem nő. Ismételd meg Windowson és Androidon. [IMP-011](IMPLEMENTATION_PLAN.md#imp-011)

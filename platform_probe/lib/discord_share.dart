@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'discord_publication.dart';
 import 'openai_summary.dart';
+import 'debug_log.dart';
 import 'story_discord_settings.dart';
 
 class DiscordShare extends StatefulWidget {
@@ -33,6 +34,7 @@ class _DiscordShareState extends State<DiscordShare> {
   DiscordDelivery? _delivery;
 
   Future<void> _send() async {
+    debugEvent(DebugEvent.discord_send_requested);
     final destination = widget.destination;
     setState(() {
       _sending = true;
@@ -61,9 +63,11 @@ class _DiscordShareState extends State<DiscordShare> {
       );
       if (!mounted) return;
       if (approved != true) {
+        debugEvent(DebugEvent.ai_declined);
         setState(() => _sending = false);
         return;
       }
+      debugEvent(DebugEvent.ai_approved);
       try {
         final key = await widget.settings!.loadOpenAiKey();
         if (key == null) {
@@ -71,8 +75,10 @@ class _DiscordShareState extends State<DiscordShare> {
             'Add meg az OpenAI API-kulcsot a mese Beállításaiban.',
           );
         }
+        debugEvent(DebugEvent.ai_generation_started);
         message = await generateOpenAiSummary(key, widget.storyContext!);
         if (!mounted) return;
+        debugEvent(DebugEvent.ai_generation_completed);
         setState(() => _generated = message);
         if (message.length > discordMessageLimit) {
           throw const OpenAiSummaryException(
@@ -80,6 +86,7 @@ class _DiscordShareState extends State<DiscordShare> {
           );
         }
       } catch (error) {
+        debugEvent(DebugEvent.ai_generation_failed);
         if (mounted)
           setState(() {
             _sending = false;
@@ -90,7 +97,14 @@ class _DiscordShareState extends State<DiscordShare> {
         return;
       }
     }
+    debugEvent(DebugEvent.discord_send_started);
     final result = await sendDiscordMessage(destination, message);
+    debugEvent(switch (result) {
+      DiscordDelivery.sent => DebugEvent.discord_sent,
+      DiscordDelivery.rejected => DebugEvent.discord_rejected,
+      DiscordDelivery.rateLimited => DebugEvent.discord_rate_limited,
+      DiscordDelivery.uncertain => DebugEvent.discord_delivery_uncertain,
+    });
     if (!mounted) return;
     setState(() {
       _sending = false;
@@ -134,6 +148,7 @@ class _DiscordShareState extends State<DiscordShare> {
                   onChanged: _sending || finished || widget.settings == null
                       ? null
                       : (value) => setState(() {
+                          debugEvent(DebugEvent.ai_option_changed);
                           _useAi = value ?? false;
                           _generated = null;
                           _status = null;

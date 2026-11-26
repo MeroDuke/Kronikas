@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 
 import 'discord_publication.dart';
 import 'discord_share.dart';
+import 'debug_log.dart';
 import 'story_discord_settings.dart';
 import 'story_settings.dart';
 import 'story_document.dart';
@@ -51,6 +52,7 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
   }
 
   Future<void> _openSettings(StoryDiscordSettings settings) async {
+    debugEvent(DebugEvent.settings_opened);
     await Navigator.of(context).push<void>(
       MaterialPageRoute(builder: (_) => StorySettings(settings: settings)),
     );
@@ -67,6 +69,7 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
   String? _error;
 
   Future<void> _open() async {
+    debugEvent(DebugEvent.story_picker_opened);
     setState(() {
       _busy = true;
       _error = null;
@@ -77,7 +80,10 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
       final Uint8List bytes;
       if (Platform.isWindows) {
         final path = await _channel.invokeMethod<String>('pickStoryDocument');
-        if (path == null) return;
+        if (path == null) {
+          debugEvent(DebugEvent.form_cancelled);
+          return;
+        }
         final file = File(path);
         name = file.uri.pathSegments.last;
         storyId = 'file:${(await file.resolveSymbolicLinks()).toLowerCase()}';
@@ -91,16 +97,21 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
         final file = await _channel.invokeMapMethod<String, Object>(
           'pickStoryDocument',
         );
-        if (file == null) return;
+        if (file == null) {
+          debugEvent(DebugEvent.form_cancelled);
+          return;
+        }
         name = file['name'] as String;
         storyId = 'document:${file['uri'] as String}';
         bytes = file['bytes'] as Uint8List;
       }
+      debugEvent(DebugEvent.story_file_selected);
       final document = await compute(
         (input) => readStoryDocument(input.$1, input.$2),
         (name, bytes),
       );
       if (!mounted) return;
+      debugEvent(DebugEvent.story_opened);
       final settings = StoryDiscordSettings(storyId);
       setState(() {
         _document = document;
@@ -111,6 +122,7 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
       });
       await _loadDestination(settings);
     } on NotStoryDocument {
+      debugEvent(DebugEvent.story_rejected);
       if (mounted) {
         setState(() {
           _document = null;
@@ -120,6 +132,7 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
         });
       }
     } catch (_) {
+      debugEvent(DebugEvent.story_open_failed);
       if (mounted) {
         setState(
           () => _error = 'A dokumentum nem nyitható meg. Válassz egy Word-, TXT- vagy Markdown-fájlt, legfeljebb 8 MB méretben.',
@@ -222,20 +235,29 @@ class _StoryDocumentPreviewState extends State<StoryDocumentPreview> {
                     OutlinedButton(
                       onPressed: _busy || destination == null
                           ? null
-                          : () => Navigator.of(context).push<void>(
-                              MaterialPageRoute(
-                                builder: (_) => DiscordShare(
-                                  title: title,
-                                  message:
-                                      storySectionMessage(document, kind) ?? '',
-                                  storyContext: kind == StorySectionKind.summary
-                                      ? storyContextText(document)
-                                      : null,
-                                  settings: _hasOpenAiKey ? settings : null,
-                                  destination: destination,
+                          : () {
+                              debugEvent(
+                                kind == StorySectionKind.summary
+                                    ? DebugEvent.summary_share_opened
+                                    : DebugEvent.introduction_share_opened,
+                              );
+                              Navigator.of(context).push<void>(
+                                MaterialPageRoute(
+                                  builder: (_) => DiscordShare(
+                                    title: title,
+                                    message:
+                                        storySectionMessage(document, kind) ??
+                                        '',
+                                    storyContext:
+                                        kind == StorySectionKind.summary
+                                        ? storyContextText(document)
+                                        : null,
+                                    settings: _hasOpenAiKey ? settings : null,
+                                    destination: destination,
+                                  ),
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                       child: Text(title),
                     ),
                 if (destination == null &&

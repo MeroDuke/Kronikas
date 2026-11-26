@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'debug_log.dart';
 import 'story_document_preview.dart';
 import 'story_discord_settings.dart';
 import 'story_settings.dart';
@@ -49,7 +50,13 @@ class _LocalAdventuresState extends State<LocalAdventures> {
   Future<void> _sync({bool download = false}) async {
     final sync = widget.storyStorageSync;
     if (sync == null) return;
+    debugEvent(DebugEvent.sync_started);
     final result = await sync.synchronize(download: download);
+    debugEvent(switch (result) {
+      StorySyncResult.complete => DebugEvent.sync_completed,
+      StorySyncResult.conflict => DebugEvent.sync_conflict,
+      StorySyncResult.pending => DebugEvent.sync_pending,
+    });
     if (!mounted) return;
     setState(() {
       _chronicle = widget.store.open();
@@ -70,6 +77,7 @@ class _LocalAdventuresState extends State<LocalAdventures> {
   }
 
   void _save() {
+    debugEvent(DebugEvent.adventure_save_requested);
     if (!_form.currentState!.validate()) return;
     final id = _newId();
     final adventureId = _selected;
@@ -96,16 +104,19 @@ class _LocalAdventuresState extends State<LocalAdventures> {
         _creating = false;
         _error = null;
       });
+      debugEvent(DebugEvent.adventure_saved);
       _title.clear();
       _description.clear();
       unawaited(_sync());
     } on Exception {
+      debugEvent(DebugEvent.adventure_save_failed);
       setState(
         () => _error = adventureId == null
             ? 'A kaland mentése sikertelen.'
             : 'A mérföldkő mentése sikertelen.',
       );
     } on StateError {
+      debugEvent(DebugEvent.adventure_save_failed);
       setState(
         () => _error = adventureId == null
             ? 'A kaland mentése sikertelen.'
@@ -122,17 +133,21 @@ class _LocalAdventuresState extends State<LocalAdventures> {
     ).join();
   }
 
-  void _updateSession(void Function(Chronicle) operation) {
+  void _updateSession(DebugEvent action, void Function(Chronicle) operation) {
+    debugEvent(action);
     try {
       final saved = widget.store.update(operation);
       setState(() {
         _chronicle = saved;
         _error = null;
       });
+      debugEvent(DebugEvent.session_change_saved);
       unawaited(_sync());
     } on Exception {
+      debugEvent(DebugEvent.session_change_failed);
       setState(() => _error = 'A játékalkalom mentése sikertelen.');
     } on StateError {
+      debugEvent(DebugEvent.session_change_failed);
       setState(() => _error = 'A játékalkalom mentése sikertelen.');
     }
   }
@@ -142,6 +157,7 @@ class _LocalAdventuresState extends State<LocalAdventures> {
     Session session,
     Milestone milestone,
   ) async {
+    debugEvent(DebugEvent.outcome_editor_opened);
     var status = MilestoneStatus.completed;
     var description = '';
     final result =
@@ -164,11 +180,16 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                               child: Text(_milestoneStatus(item)),
                             ),
                       ],
-                      onChanged: (item) => update(() => status = item!),
+                      onChanged: (item) {
+                        debugEvent(DebugEvent.field_edited);
+                        update(() => status = item!);
+                      },
                     ),
                     TextField(
-                      onChanged: (value) =>
-                          update(() => description = value.trim()),
+                      onChanged: (value) {
+                        debugEvent(DebugEvent.field_edited);
+                        update(() => description = value.trim());
+                      },
                       decoration: const InputDecoration(
                         labelText: 'Tényleges kimenetel',
                       ),
@@ -193,8 +214,13 @@ class _LocalAdventuresState extends State<LocalAdventures> {
             ),
           ),
         );
-    if (!mounted || result == null) return;
+    if (!mounted) return;
+    if (result == null) {
+      debugEvent(DebugEvent.form_cancelled);
+      return;
+    }
     _updateSession(
+      DebugEvent.outcome_save_requested,
       (chronicle) => chronicle.recordMilestoneOutcome(
         adventure.id,
         session.id,
@@ -211,6 +237,9 @@ class _LocalAdventuresState extends State<LocalAdventures> {
     Session session, {
     required bool note,
   }) async {
+    debugEvent(
+      note ? DebugEvent.note_editor_opened : DebugEvent.event_editor_opened,
+    );
     var text = '';
     var publishable = false;
     final result = await showDialog<({String text, bool publishable})>(
@@ -223,7 +252,10 @@ class _LocalAdventuresState extends State<LocalAdventures> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
-                  onChanged: (value) => update(() => text = value.trim()),
+                  onChanged: (value) {
+                    debugEvent(DebugEvent.field_edited);
+                    update(() => text = value.trim());
+                  },
                   decoration: InputDecoration(
                     labelText: note ? 'Jegyzet szövege' : 'Esemény leírása',
                   ),
@@ -233,8 +265,10 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                   CheckboxListTile(
                     title: const Text('Publikálható'),
                     value: publishable,
-                    onChanged: (value) =>
-                        update(() => publishable = value ?? false),
+                    onChanged: (value) {
+                      debugEvent(DebugEvent.field_edited);
+                      update(() => publishable = value ?? false);
+                    },
                   ),
               ],
             ),
@@ -256,23 +290,30 @@ class _LocalAdventuresState extends State<LocalAdventures> {
         ),
       ),
     );
-    if (!mounted || result == null) return;
+    if (!mounted) return;
+    if (result == null) {
+      debugEvent(DebugEvent.form_cancelled);
+      return;
+    }
     final id = _newId();
-    _updateSession((chronicle) {
-      if (note) {
-        chronicle.saveSessionNote(adventure.id, session.id, id, result.text);
-      } else {
-        chronicle.recordImprovisedEvent(
-          adventure.id,
-          session.id,
-          id: id,
-          description: result.text,
-          visibility: result.publishable
-              ? EventVisibility.publishable
-              : EventVisibility.gmOnly,
-        );
-      }
-    });
+    _updateSession(
+      note ? DebugEvent.note_save_requested : DebugEvent.event_save_requested,
+      (chronicle) {
+        if (note) {
+          chronicle.saveSessionNote(adventure.id, session.id, id, result.text);
+        } else {
+          chronicle.recordImprovisedEvent(
+            adventure.id,
+            session.id,
+            id: id,
+            description: result.text,
+            visibility: result.publishable
+                ? EventVisibility.publishable
+                : EventVisibility.gmOnly,
+          );
+        }
+      },
+    );
   }
 
   String _milestoneStatus(MilestoneStatus status) => switch (status) {
@@ -294,15 +335,20 @@ class _LocalAdventuresState extends State<LocalAdventures> {
       appBar: AppBar(
         title: Text(widget.standalone ? 'Mesék' : 'Helyi kalandok'),
         actions: [
-          if (adventure != null)
+          if (adventure != null || widget.standalone)
             TextButton(
-              onPressed: () => Navigator.of(context).push<void>(
-                MaterialPageRoute(
-                  builder: (_) => StorySettings(
-                    settings: StoryDiscordSettings('adventure:${adventure.id}'),
+              onPressed: () {
+                debugEvent(DebugEvent.settings_opened);
+                Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) => StorySettings(
+                      settings: adventure == null
+                          ? null
+                          : StoryDiscordSettings('adventure:${adventure.id}'),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
               child: const Text('Beállítások'),
             ),
         ],
@@ -322,6 +368,7 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                     children: [
                       TextFormField(
                         controller: _title,
+                        onChanged: (_) => debugEvent(DebugEvent.field_edited),
                         decoration: InputDecoration(
                           labelText: creatingMilestone
                               ? 'Mérföldkő címe'
@@ -336,6 +383,7 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                       ),
                       TextFormField(
                         controller: _description,
+                        onChanged: (_) => debugEvent(DebugEvent.field_edited),
                         decoration: InputDecoration(
                           labelText: creatingMilestone
                               ? 'Tervezett kimenetel'
@@ -355,6 +403,7 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                       ),
                       TextButton(
                         onPressed: () => setState(() {
+                          debugEvent(DebugEvent.form_cancelled);
                           _creating = false;
                           _error = null;
                           _title.clear();
@@ -398,7 +447,10 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                           ),
                   ),
                 FilledButton(
-                  onPressed: () => setState(() => _creating = true),
+                  onPressed: () => setState(() {
+                    debugEvent(DebugEvent.milestone_form_opened);
+                    _creating = true;
+                  }),
                   child: const Text('Új mérföldkő'),
                 ),
                 if (_error case final String error)
@@ -406,6 +458,7 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                 if (active == null)
                   OutlinedButton(
                     onPressed: () => _updateSession(
+                      DebugEvent.session_start_requested,
                       (chronicle) => chronicle.startSession(
                         adventure.id,
                         id: _newId(),
@@ -417,6 +470,7 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                 else
                   OutlinedButton(
                     onPressed: () => _updateSession(
+                      DebugEvent.session_close_requested,
                       (chronicle) => chronicle.closeSession(
                         adventure.id,
                         active.id,
@@ -445,6 +499,8 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                   ExpansionTile(
                     key: ValueKey((session.id, session.isOpen)),
                     initiallyExpanded: session.isOpen,
+                    onExpansionChanged: (_) =>
+                        debugEvent(DebugEvent.session_history_toggled),
                     title: Text(
                       session.isOpen
                           ? 'Aktív játékalkalom'
@@ -468,6 +524,7 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                   ),
                 TextButton(
                   onPressed: () => setState(() {
+                    debugEvent(DebugEvent.story_list_opened);
                     _selected = null;
                     _error = null;
                   }),
@@ -479,7 +536,10 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                 ),
               ] else ...[
                 FilledButton(
-                  onPressed: () => setState(() => _creating = true),
+                  onPressed: () => setState(() {
+                    debugEvent(DebugEvent.adventure_form_opened);
+                    _creating = true;
+                  }),
                   child: Text(
                     widget.standalone ? 'Új mese' : 'Új önálló kaland',
                   ),
@@ -498,7 +558,10 @@ class _LocalAdventuresState extends State<LocalAdventures> {
                 for (final item in _chronicle.adventures.values)
                   ListTile(
                     title: Text(item.title),
-                    onTap: () => setState(() => _selected = item.id),
+                    onTap: () => setState(() {
+                      debugEvent(DebugEvent.adventure_opened);
+                      _selected = item.id;
+                    }),
                   ),
               ],
             ],
